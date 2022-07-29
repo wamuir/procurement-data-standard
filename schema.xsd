@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- edited with XMLSpy v2014 rel. 2 (http://www.altova.com) by Judith Critzer (Northrop Grumman) -->
-<!-- Created with Liquid XML Studio 1.0.8.0 (http://www.liquid-technologies.com) -->
+<!-- edited with XMLSpy v2016 rel. 2 sp1 (http://www.altova.com) by Judith M Critzer (Northrop Grumman Systems CorP) -->
 <!--
-			Final - 4 November 2014  -  Final.
+			Final - 20 June 2016  -  Final
 
-		The capability for telecommunication contracts, soliciations, and amendments has been added.
-
-		4 Nov 2014 - Some changes to type did not carry over to all elements that were defined as that type.  For example, <SystemAdministartorDodaac> and [DoDAACType].  That has been fixed.
+			July 11 - Under <TelecommunicationDetails> moved <TelecommunicationEquiptment> inside <TerminationPoint>.
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="11052014">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="07112016">
   <xs:annotation>
     <xs:documentation>Level 1: top level of Procurement Data Standard for a procurement instrument document.</xs:documentation>
   </xs:annotation>
@@ -24,7 +21,7 @@
           </xs:annotation>
           <xs:simpleType>
             <xs:restriction base="xs:token">
-              <xs:enumeration value="2.5"/>
+              <xs:enumeration value="2.5.1"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -93,12 +90,12 @@
                           <xs:sequence>
                             <xs:element name="ActivityAddressCode" minOccurs="0">
                               <xs:annotation>
-                                <xs:documentation>The Activity Address Code (ACC).</xs:documentation>
+                                <xs:documentation>The Activity Address Code (AAC).</xs:documentation>
                               </xs:annotation>
                               <xs:simpleType>
                                 <xs:restriction base="xs:string">
                                   <xs:pattern value="([0-9AFGJMNRVWY]){1}([0-9A-Z]){5}"/>
-                                  <xs:pattern value="([H]){1}([0-9A-FH-Z]){1}([0-9A-Z]){4}"/>
+                                  <xs:pattern value="([H]){1}([0-9A-HJ-Z]){1}([0-9A-Z]){4}"/>
                                   <xs:pattern value="([S]){1}([0-9A-CE-Z]){1}([0-9A-Z]){4}"/>
                                   <xs:pattern value="([Z]){1}([1-9A-Z]){1}([0-9A-Z]){4}"/>
                                 </xs:restriction>
@@ -264,6 +261,7 @@
       <xs:enumeration value="Cancellation"/>
       <xs:enumeration value="Conformance Test"/>
       <xs:enumeration value="Draft"/>
+      <xs:enumeration value="Funds Certification Request"/>
       <xs:enumeration value="Original"/>
       <xs:enumeration value="Retransmission"/>
       <xs:enumeration value="Transfer"/>
@@ -631,9 +629,9 @@
     </xs:annotation>
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousCancelBalanceOrderExceedAmount" type="DecimalElement5OverZeroType" use="optional"/>
+    <xs:attribute name="previousCancelBalanceOrderExceedAmount" type="DecimalElement5ZeroPlusType" use="optional"/>
     <xs:attribute name="deltaCancelBalanceOrderExceedAmount" type="DecimalElement5Type" use="optional"/>
-    <xs:attribute name="previousCancelEntireOrderAmount" type="DecimalElement5OverZeroType" use="optional"/>
+    <xs:attribute name="previousCancelEntireOrderAmount" type="DecimalElement5ZeroPlusType" use="optional"/>
     <xs:attribute name="deltaCancelEntireOrderAmount" type="DecimalElement5Type" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeSection-FoBDetails">
@@ -728,7 +726,7 @@
     <xs:annotation>
       <xs:documentation>Records changes to an Pricing Arrangement section</xs:documentation>
     </xs:annotation>
-    <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
+    <xs:attribute name="changeFlag" type="ChangeListType-Modify" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousPricingArrangementBase" type="PricingArrangementBaseType" use="optional"/>
     <xs:attribute name="previousAwardFee" type="TrueType" use="optional"/>
@@ -1592,7 +1590,7 @@
         </xs:annotation>
       </xs:element>
       <xs:choice>
-        <xs:element name="UniformProcurementInstrumentIdentifier" type="UniqueProcurementInstrumentIdentifierType"/>
+        <xs:element name="UniformProcurementInstrumentIdentifier" type="UniformProcurementInstrumentIdentifierType"/>
         <xs:element name="ProcurementInstrumentNumber">
           <xs:annotation>
             <xs:documentation>Procurement Instrument Number defined following the rules of the applicable agency and/or vehicle.</xs:documentation>
@@ -4098,101 +4096,6 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="SecurityDetails" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Information about a DD Form 254.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SecuityDetails1999Form" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information on a DD Form 254 dated Dec 1999.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="AddedSecurityDetails" type="SecurityInformationType" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were added.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="DeletedSecurityDetails" type="SecurityInformationType" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were removed.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="ChangedSecurityDetails" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were modified.</xs:documentation>
-                    </xs:annotation>
-                    <xs:complexType>
-                      <xs:sequence>
-                        <xs:element name="SecurityDetailsChangeText" type="xs:string">
-                          <xs:annotation>
-                            <xs:documentation>Description of the change to the security details.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                        <xs:element name="CurrentSecurityDetails" type="SecurityInformationType">
-                          <xs:annotation>
-                            <xs:documentation>The security details after the change was applied.  The result.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                        <xs:element name="PreviousSecurityDetails" type="SecurityInformationType">
-                          <xs:annotation>
-                            <xs:documentation>The security details before the change was applied.  The original.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                      </xs:sequence>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="SecurityDetails2015Form" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information on a DD Form 254 dated 2015.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="AddedSecurityDetails2015Form" type="SecurityInformation2015FormType" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were added.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="DeletedSecurityDetails2015Form" type="SecurityInformation2015FormType" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were removed.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="ChangedSecurityDetails2015Form" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation>
-                      <xs:documentation>Contains security details that were modified.</xs:documentation>
-                    </xs:annotation>
-                    <xs:complexType>
-                      <xs:sequence>
-                        <xs:element name="SecurityDetails2015ChangeText" type="xs:string">
-                          <xs:annotation>
-                            <xs:documentation>Description of the change to the security details.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                        <xs:element name="CurrentSecurityDetails2015" type="SecurityInformation2015FormType">
-                          <xs:annotation>
-                            <xs:documentation>The security details after the change was applied.  The result.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                        <xs:element name="PreviousSecurityDetails2015" type="SecurityInformation2015FormType">
-                          <xs:annotation>
-                            <xs:documentation>The security details before the change was applied.  The original.</xs:documentation>
-                          </xs:annotation>
-                        </xs:element>
-                      </xs:sequence>
-                    </xs:complexType>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
       <xs:element name="ServiceAllowanceCharges" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Services, Allowances and Charges.</xs:documentation>
@@ -4259,7 +4162,7 @@
         </xs:annotation>
         <xs:complexType>
           <xs:choice>
-            <xs:element name="AddedTelecomunicationDetails" type="TelecommunicationDetailsType">
+            <xs:element name="AddedTelecommunicationDetails" type="TelecommunicationDetailsType">
               <xs:annotation>
                 <xs:documentation>Contains telecommunications information that is added.</xs:documentation>
               </xs:annotation>
@@ -4999,7 +4902,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attribute name="AttachmentSecurityLevel" use="optional">
+              <xs:attribute name="attachmentSecurityLevel" use="optional">
                 <xs:annotation>
                   <xs:documentation>Provide when a government security classification is assigned to the document.  (see list)</xs:documentation>
                 </xs:annotation>
@@ -5605,7 +5508,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="ParentLineItem" type="ParentClinType" maxOccurs="unbounded">
+      <xs:element name="ParentLineItem" type="ParentClinType">
         <xs:annotation>
           <xs:documentation>The parent contract line item number of the exhibit line item.</xs:documentation>
         </xs:annotation>
@@ -5662,6 +5565,11 @@
                   <xs:enumeration value="Deviation"/>
                 </xs:restriction>
               </xs:simpleType>
+            </xs:element>
+            <xs:element name="VariationEffectiveDate" type="xs:gYearMonth">
+              <xs:annotation>
+                <xs:documentation>The year and month the clause or provision variation became effective. (Use CCYY-MM format, where CC stands for century.)</xs:documentation>
+              </xs:annotation>
             </xs:element>
             <xs:element name="VariationName" type="xs:string" minOccurs="0">
               <xs:annotation>
@@ -5880,7 +5788,7 @@
                   <xs:documentation>Use only when the line of accounting cannot be represented by its individual components.</xs:documentation>
                 </xs:annotation>
               </xs:element>
-              <xs:element name="LOA" type="LoaCodeType" maxOccurs="unbounded">
+              <xs:element name="LOA" type="LoaCodeType" minOccurs="2" maxOccurs="30">
                 <xs:annotation>
                   <xs:documentation>The Line Of Accounting represented by its individual components.</xs:documentation>
                 </xs:annotation>
@@ -6459,6 +6367,7 @@
               <xs:enumeration value="Federal Supply Classification Code"/>
               <xs:enumeration value="Federal supply schedule (FSS) Item Number"/>
               <xs:enumeration value="CLIN only - Foreign Military Sales Case Number"/>
+              <xs:enumeration value="General Terms and Conditions (GT&amp;C)"/>
               <xs:enumeration value="Government Bill of Lading"/>
               <xs:enumeration value="Lot Number"/>
               <xs:enumeration value="CLIN only - MILSTRIP, DLMS, FEDSTRIP Requisition Suffix Number"/>
@@ -6488,7 +6397,6 @@
               <xs:enumeration value="Simultaneous Action Telecommunications Service Request (TSR) Number"/>
               <xs:enumeration value="Special Price Authorization Number"/>
               <xs:enumeration value="Specification Number"/>
-              <xs:enumeration value="Standard Industry Classification (SIC) Code"/>
               <xs:enumeration value="Statement of Work (SOW)"/>
               <xs:enumeration value="Surveillance Criticality Designator"/>
               <xs:enumeration value="Technical Order Number"/>
@@ -7219,12 +7127,12 @@
                         </xs:element>
                         <xs:element name="LaborRatesHoursEstimate" type="TrueType" minOccurs="0">
                           <xs:annotation>
-                            <xs:documentation>Denotes that the offeror is to provide the estimated number of hours associated with a labor rate. May only be provided if Pricing Type Description is Hourly Labor Rates. (see list)</xs:documentation>
+                            <xs:documentation>Denotes that the offeror is to provide the estimated number of hours associated with a labor rate. May only be provided if Other Pricing Description is Hourly Labor Rates. (see list)</xs:documentation>
                           </xs:annotation>
                         </xs:element>
                         <xs:element name="PackingLevel" minOccurs="0" maxOccurs="unbounded">
                           <xs:annotation>
-                            <xs:documentation>Indicates the packing level that a price is to be provided for.  May only be provided if Pricing Type Description is Packaging Price.</xs:documentation>
+                            <xs:documentation>Indicates the packing level that a price is to be provided for.  May only be provided if Other Pricing Description is Packaging Price.</xs:documentation>
                           </xs:annotation>
                           <xs:complexType>
                             <xs:sequence>
@@ -7375,7 +7283,7 @@
                         </xs:element>
                         <xs:element name="ProtectionLevel" minOccurs="0">
                           <xs:annotation>
-                            <xs:documentation>Indicates the packaging protection level (preservation) that a price is to be provided for.  May only be provided if Pricing Type Description is Packaging Protection Level (Preservation) Price.</xs:documentation>
+                            <xs:documentation>Indicates the packaging protection level (preservation) that a price is to be provided for.  May only be provided if Other Pricing Description is Packaging Protection Level (Preservation) Price.</xs:documentation>
                           </xs:annotation>
                           <xs:complexType>
                             <xs:sequence>
@@ -7908,7 +7816,7 @@
     <xs:sequence>
       <xs:element name="MiscellaneousText" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Text associated with a particular section from the Federal Uniform Contract Format (UCF).</xs:documentation>
+          <xs:documentation>Text associated with a particular section from the Federal Uniform Contract Format (UCF) or CSI Division or Section.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:group ref="ProcurementInstrumentLocationGroup">
@@ -8153,7 +8061,10 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
               </xs:annotation>
               <xs:simpleType>
                 <xs:restriction base="xs:token">
-                  <xs:enumeration value="Palletized"/>
+                  <xs:enumeration value="Pallet"/>
+                  <xs:enumeration value="Pallet - 2 Way"/>
+                  <xs:enumeration value="Pallet - 4 Way"/>
+                  <xs:enumeration value="Pallet Wingtip"/>
                   <xs:enumeration value="Shrink-wrap"/>
                 </xs:restriction>
               </xs:simpleType>
@@ -8409,25 +8320,6 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
         <xs:annotation>
           <xs:documentation>Use to provide numbers referencing documents (MIPR, SOW, GBL, Requisition etc.). Numbers (FMS Case, Package, Drawing etc.), Codes (FSC, Project, Weapon System, etc.) and other Reference Values.</xs:documentation>
         </xs:annotation>
-      </xs:element>
-      <xs:element name="SecurityDetails" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Information about a DD Form 254.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="SecurityDetails1999Form" type="SecurityInformationType" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Information on a DD Form 254 dated Dec 1999.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="SecurityDetails2015Form" type="SecurityInformation2015FormType" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Information on a DD Form 254 dated 2015.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
       </xs:element>
       <xs:element name="ServiceAllowanceCharges" type="ServiceAllowanceChargeType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
@@ -9091,1050 +8983,6 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:complexType name="SecurityInformation2015FormType">
-    <xs:annotation>
-      <xs:documentation> DD Form 254 modified in 2014 - draft</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="AppliesTo">
-        <xs:annotation>
-          <xs:documentation>States whether the DD254 applies to the entire contract or to one or more line items.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="Contract" type="TrueType">
-              <xs:annotation>
-                <xs:documentation>Denotes that the DD254 applies to the entire contract.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="LineItemsAppliedTo" type="LineItemIdentifierType" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Denotes that the DD254 applies to the listed line items.  Cannot be applied to INFOSLINs.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="RequiredFacilityClearance">
-        <xs:annotation>
-          <xs:documentation>Highest level of facility clearance required for the contractor to perform on the award instrument.  Should not be lower than the level of safeguarding clearance.  [DD254 Blocks 1a] (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Confidential"/>
-            <xs:enumeration value="Secret"/>
-            <xs:enumeration value="Top Secret"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="RequiredSafeguardLevel">
-        <xs:annotation>
-          <xs:documentation>Highest level of safeguarding capability required for the contractor to perform on the award instrument.  Should not be higher than the level of facility clearance.  If the contractor will not need to possess or store classified at the facility, select "None".  [DD254 Block 1b] (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Confidential"/>
-            <xs:enumeration value="None"/>
-            <xs:enumeration value="Secret"/>
-            <xs:enumeration value="Top Secret"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="SpecificationIsFor">
-        <xs:annotation>
-          <xs:documentation>Procurement instruments the specification is associated with.  [DD254 Block 2]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="ForDocumentIdentifier">
-              <xs:annotation>
-                <xs:documentation>The type of procurement instrument the specification is for. (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Prime Contract"/>
-                  <xs:enumeration value="Subcontract"/>
-                  <xs:enumeration value="Solicitation or Other"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:choice>
-              <xs:element name="MultiplePrimeContracts" type="xs:string" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>Explanation when the services to be performed do not apply to a specific contract.  [DD254 Block 2a, 9]</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="PrimeContractNumber" type="ProcurementInstrumentType" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>The prime contract number.  [DD254 Block 2a]  </xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:choice>
-            <xs:element name="SubContractNumber" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>The number of the subcontract.  Used when there is a prime/subcontractor relationship.  [DD254 Block 2b]  </xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="SolicitationOrOtherDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Details about an RFP, RFQ, IFB, or other solicitation.  [DD254 Block 2c]</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="SolicitationOrOtherIdentifier">
-                    <xs:annotation>
-                      <xs:documentation>The type of solicitation document.  (see list)</xs:documentation>
-                    </xs:annotation>
-                    <xs:simpleType>
-                      <xs:restriction base="xs:token">
-                        <xs:enumeration value="Invitation For Bid"/>
-                        <xs:enumeration value="Request For Proposal"/>
-                        <xs:enumeration value="Request For Quote"/>
-                        <xs:enumeration value="Solicitation"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="DueDate" type="xs:date" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>The date when responses or bids are due.  Date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:choice>
-                    <xs:element name="OtherNumber" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Used when Solicitation or Other Identifier is not "Solicitation".</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="SolicitationNumber" type="ProcurementInstrumentType">
-                      <xs:annotation>
-                        <xs:documentation>The number of the solicitation document.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:choice>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="DD254PurposeDetails">
-        <xs:annotation>
-          <xs:documentation>Provides information on whether the DD254 is an original, revised, or final specification.  [DD254 Block 3, 5]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="DD254PurposeIdentifier">
-              <xs:annotation>
-                <xs:documentation>The type of specification, e.g. original, revised, final.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Final"/>
-                  <xs:enumeration value="Original"/>
-                  <xs:enumeration value="Revised"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="OriginalDate" type="xs:date" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>The issuance date of the original DD254.  The date in CCYY-MM-DD format.  [DD254 Block 3a]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="RevisedDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information about a changed DD254.  [DD254 Block 3b]</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="RevisionNumber" type="xs:string">
-                    <xs:annotation>
-                      <xs:documentation>The sequential number of the revision.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RevisionDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the revised DD254.  The date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="FinalDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information on the final DD254.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="FinalDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the final DD254.  The date in CCYY-MM-DD format.  [DD254 Block 3c]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RetentionRequestDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the contractor's request for retention.  The date in CCYY-MM-DD format.  [DD254 Block 5]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RetentionPeriod" type="DurationType">
-                    <xs:annotation>
-                      <xs:documentation>The authorized period of retention.  [DD254 Block 5]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="FollowOnContract" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Used when the DD254 is attached to a contract that is let to the same contractor or subcontractor for the same item or services as a preceding contract.  [DD254 Blocks 4, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="PrecedingContractNumber" type="ProcurementInstrumentType">
-              <xs:annotation>
-                <xs:documentation>The preceding procurement instrument number. </xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="TransferredMaterial" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>Description of the material transferred from the preceding contract to the follow-on contract.  [DD254 Block 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="SecurityAddresses" minOccurs="2" maxOccurs="3">
-        <xs:annotation>
-          <xs:documentation>Contractor, Sub-Contractor, and Performance Location addresses.  [DD254 Blocks 6, 7, 8, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SecurityAddressIdentifier">
-              <xs:annotation>
-                <xs:documentation>Identifies the entity for which address information is being provided.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Contractor"/>
-                  <xs:enumeration value="Performance Location"/>
-                  <xs:enumeration value="Subcontractor"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:choice>
-              <xs:element name="SecurityAddressDetails" maxOccurs="unbounded">
-                <xs:annotation>
-                  <xs:documentation>The address of the specified entity and its Cognizant Security Office (CSO).  When there are multiple subcontractors or performance locations, repeat as necessary.  There may be only one contractor address.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Entity">
-                      <xs:annotation>
-                        <xs:documentation>The CAGE and address of the entity specified by the Security Address Identifier.</xs:documentation>
-                      </xs:annotation>
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="Cage" type="CAGEType" minOccurs="0">
-                            <xs:annotation>
-                              <xs:documentation>CAGE: Commercial and Government Entity.  Required when Security Address Identifier is "Contractor" or "Subcontractor".  Required when Security Address Identifier is "Performance Location" and it is not a Government facility.</xs:documentation>
-                            </xs:annotation>
-                          </xs:element>
-                          <xs:element name="OrganizationNameAddress" type="OrganizationNameAddressType">
-                            <xs:annotation>
-                              <xs:documentation>The name and address of the entity specified by the Security Address Identifier.</xs:documentation>
-                            </xs:annotation>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="CognizantSecurityOffice" minOccurs="0">
-                      <xs:annotation>
-                        <xs:documentation>The address and contact for the Cognizant Security Office (CSO) associated with the entity.  Required when Security Address Identifier is "Contractor" or "Subcontractor".  Required when Security Address Identifier is "Performance Location" and it is not a Government facility.</xs:documentation>
-                      </xs:annotation>
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="Telephone">
-                            <xs:annotation>
-                              <xs:documentation>The telephone number of the Cognizant Security Office.</xs:documentation>
-                            </xs:annotation>
-                          </xs:element>
-                          <xs:element name="OrganizationNameAddress" type="OrganizationNameAddressType">
-                            <xs:annotation>
-                              <xs:documentation>The name and address of the Cognizant Security Office.</xs:documentation>
-                            </xs:annotation>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="PerformanceAtContractor" type="TrueType">
-                <xs:annotation>
-                  <xs:documentation>Use when the performance location address is the same as the Prime Contractor's address.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="PerformanceAtSubcontractor" type="TrueType">
-                <xs:annotation>
-                  <xs:documentation>Use when the performance location address is the same as the Sub-Contractor's address.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:choice>
-            <xs:element name="PerformanceAtGovernmentFacility" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use if needed when the performance of the contract is on government facilities.  Used only when Security Address Identifier contains "Performance Location".  [DD254 Block 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="ProcurementActionDescription" type="xs:string">
-        <xs:annotation>
-          <xs:documentation>A short, concise, and unclassified description of the procurement action.  [DD254 Block 9]</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="AccessRequirements">
-        <xs:annotation>
-          <xs:documentation>Information that the contractor will require access to.  [DD254 Block 10, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="AccessRequirementDetails" minOccurs="0" maxOccurs="unbounded">
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="AccessRequirement">
-                    <xs:annotation>
-                      <xs:documentation>A category of information that the contractor will require access to.  [DD254 Block 10]  (see list)</xs:documentation>
-                    </xs:annotation>
-                    <xs:simpleType>
-                      <xs:restriction base="xs:token">
-                        <xs:enumeration value="Alternative Compensatory Control Measures (ACCM) Information"/>
-                        <xs:enumeration value="Foreign Government Information"/>
-                        <xs:enumeration value="Formerly Restricted Data"/>
-                        <xs:enumeration value="National Intelligence Information:  Sensitive Compartmented Information (SCI)"/>
-                        <xs:enumeration value="Special Access Program (SAP) Information"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="GuidanceAndInformation" type="xs:string" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>Provide additional information pertaining to the access requirement if needed.  [DD254 Block 13]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="ControlledUnclassifiedInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide the guidance on protection procedures concerning Controlled Unclassified Information (CUI).   [DD254 Block 10j, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OtherInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to list other information the contractor will access that is not otherwise covered.  Specify the type of information along with any additional remarks.   [DD254 Block 10k, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CommunicationsSecurityInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide guidance concerning Communications Security (COMSEC) Information).   [DD254 Block 10a, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="RestrictedData" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide guidance concerning Restricted Data.   [DD254 Block 10b, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CriticalNuclearWeaponDesignInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide guidance concerning Critical Nuclear Weapon Design Information (CNWDI).   [DD254 Block 10c, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="NATOInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide guidance concerning North Atlantic Treaty Organization (NATO) Information.   [DD254 Block 10g, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="PerformanceRequirements">
-        <xs:annotation>
-          <xs:documentation>Things the contractor will have or do while performing the contract.  For example, require a COMSEC account or store classified hardware.  [DD254 Block 11, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="PerformanceRequirementDetails" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Individual requirements that the contractor will need or have in performing the contract.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="PerformanceRequirement">
-                    <xs:annotation>
-                      <xs:documentation>A function that the contractor will have or do.  (see list)</xs:documentation>
-                    </xs:annotation>
-                    <xs:simpleType>
-                      <xs:restriction base="xs:token">
-                        <xs:enumeration value="Have access to classified information only at another contractor's facility or a government activity"/>
-                        <xs:enumeration value="Receive and store classified documents only"/>
-                        <xs:enumeration value="Receive, store, and generate classified information or material"/>
-                        <xs:enumeration value="Perform Services only"/>
-                        <xs:enumeration value="Be authorized to use the services of Defense Technical Information Center (DITC) or other secondary distribution center"/>
-                        <xs:enumeration value="Require a COMSEC Account"/>
-                        <xs:enumeration value="Have a TEMPEST requirement"/>
-                        <xs:enumeration value="Have Operations Security (OPSEC) requirements"/>
-                        <xs:enumeration value="Be authorized to use the Defense Courier Service"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="ContractorWillGuidance" type="xs:string" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>Provide additional information pertaining to the performance requirement if needed.  [DD254 Block 13]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="ClassifiedHardware" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the contractor is expected to generate or utilize classified hardware, describe the nature and extent of the storage that will be required.  [DD154 Block 11d, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ClassifiedInformationOutsideUS" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the contractor will have access to U.S. classified information outside the U.S., Puerto Rico, U.S. possessions and trust territories, list the U.S. activity, city and country where the overseas performance will occur.  [DD254 Block 11f, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ControlledUnclassifiedInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to provide guidance on protection procedures when the contractor will receive, store, or generate Controlled Unclassified Information (CUI).  [DD254 Block 11l, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OtherDetails" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to provide additional performance requirements not otherwise covered.  Provide the necessary remarks.  [DD254 Block 11m, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="PublicRelease">
-        <xs:annotation>
-          <xs:documentation>Denotes where to obtain approval prior to the release of information received or generated under the contract.  [DD254 Block 12]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:choice>
-              <xs:element name="Direct">
-                <xs:annotation>
-                  <xs:documentation>Select when the request should be submitted directly to the Directorate for Freedom of Information and Security Review, Office of the Assistant Secretary of Defense (Public Affairs) for review.</xs:documentation>
-                </xs:annotation>
-                <xs:simpleType>
-                  <xs:restriction base="xs:string"/>
-                </xs:simpleType>
-              </xs:element>
-              <xs:element name="Through" type="OrganizationDetailType">
-                <xs:annotation>
-                  <xs:documentation>Use when the request should be directed to an office other than the Directorate for Freedom of Information and Security Review, Office of the Assistant Secretary of Defense (Public Affairs) for review.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:choice>
-            <xs:element name="PublicReleaseAuthority" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>The U. S. Government Authority that approved the public release of information pertaining to the contract.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="SecurityGuidance" type="xs:string" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Use to expand or explain information referenced in other sections of the DD254 when it cannot be provided elsewhere.  [DD254 Block 13]</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="AdditionalSecurityRequirements" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Requirements, in addition to NISPOM requirements, that are established for this contract.  Identify the pertinent clauses in the contract document or provide any appropriate statement which identifies the additional requirements.  [DD254 Block 13, 14]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="PertinentClause" type="ClauseDetailsType" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>The contract clause that imposes additional security requirements.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="AdditionalSecurityStatement" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>A statement identifying additional security requirements.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="InspectionExceptions" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Provide if the cognizant security office is relieved, in whole or in part, of the responsibility to conduct security reviews and provide security oversight to the contractor.  [DD254 Block 13, 15]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SpecificArea" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>Explain and identify specific areas or elements that are outside the inspection responsibility of the cognizant security office.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OversightAgency" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>The activity responsible for inspections.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="GovernmentContractActivityDetails">
-        <xs:annotation>
-          <xs:documentation>Address and contact information for the Government Contracting Activity (GCA).  [DD254 Block 16]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="GovernmentContractActivityAddress" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>The address of the Government Contracting Activity (GCA)</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="GovernmentContractActivityContact" type="ContactType">
-              <xs:annotation>
-                <xs:documentation>The contact of the Government Contracting Activity (GCA)</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="CertifyingOfficialDetails">
-        <xs:annotation>
-          <xs:documentation>Information about the certifying official.  [DD254 Block 17]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="CertifyingOfficialSignatureDate" type="xs:date">
-              <xs:annotation>
-                <xs:documentation>The date the DD254 was signed by the Certifying Official.  Date in CCYY-MM-DD format.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CertifyingOfficial" type="ContactType">
-              <xs:annotation>
-                <xs:documentation>The title, name, and method of contact with the certifying official.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CertifyingOfficialAddress" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>The office responsible for the certification.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="RequiredDistribution">
-        <xs:annotation>
-          <xs:documentation>Distribution list for the DD254.  At a minimum, Cognizant Security Office for Prime and Subcontractor must be provided.  [DD254 Block 18]  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="RequiredDistributionList" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Distribution list for the DD254.  At a minimum, Cognizant Security Office for Prime and Subcontractor must be provided.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Contractor"/>
-                  <xs:enumeration value="Subcontractor"/>
-                  <xs:enumeration value="Cognizant Security Office for Prime and Subcontractor"/>
-                  <xs:enumeration value="U.S. Activity Responsible for Overseas Security Administration"/>
-                  <xs:enumeration value="Administrative Contracting Officer"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="OthersAsNecessary" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When not covered by Required Distribution List, provide list of others that need to receive the DD254.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="SecurityInformationType">
-    <xs:annotation>
-      <xs:documentation> DD Form 254 dated 1999.</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="RequiredFacilityClearance">
-        <xs:annotation>
-          <xs:documentation>Highest level of facility clearance required for the contractor to perform on the award instrument.  Should not be lower than the level of safeguarding clearance.  [DD254 Block 1a] (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Confidential"/>
-            <xs:enumeration value="None"/>
-            <xs:enumeration value="Secret"/>
-            <xs:enumeration value="Top Secret"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="RequiredSafeguardLevel">
-        <xs:annotation>
-          <xs:documentation>Highest level of safeguarding capability required for the contractor to perform on the award instrument.  Should not be higher than the level of facility clearance.  If the contractor will not need to possess or store classified at the facility, select "Not Applicable".  [DD254 Block 1b] (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Confidential"/>
-            <xs:enumeration value="None"/>
-            <xs:enumeration value="Secret"/>
-            <xs:enumeration value="Top Secret"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="SpecificationIsFor">
-        <xs:annotation>
-          <xs:documentation>Procurement instruments the specification is associated with.  [DD254 Block 2]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="ForDocumentIdentifier">
-              <xs:annotation>
-                <xs:documentation>The type of procurement instrument the specification is for. (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Prime Contract"/>
-                  <xs:enumeration value="Subcontract"/>
-                  <xs:enumeration value="Solicitation or Other"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="PrimeContract" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Denotes whether the DD254 is related to the prime contract or to multiple contracts.  "Multiple contracts" is used when performing services only and the services to be performed do not apply to a specific contract (i.e. guard services, maintenance, etc.).  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Multiple Prime Contracts"/>
-                  <xs:enumeration value="Prime Contract"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="SubContractNumber" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>The number of the subcontract.  Used when there is a prime/subcontractor relationship.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="SolicitationOrOtherDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Details about an RFP, RFQ, IFB, or other solicitation.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="SolicitationOrOtherIdentifier">
-                    <xs:annotation>
-                      <xs:documentation>The type of solicitation document.  (see list)</xs:documentation>
-                    </xs:annotation>
-                    <xs:simpleType>
-                      <xs:restriction base="xs:token">
-                        <xs:enumeration value="Invitation For Bid"/>
-                        <xs:enumeration value="Request For Proposal"/>
-                        <xs:enumeration value="Request For Quote"/>
-                        <xs:enumeration value="Solicitation"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="DueDate" type="xs:date" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>The date when responses or bids are due.  Date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:choice>
-                    <xs:element name="OtherNumber" type="xs:string">
-                      <xs:annotation>
-                        <xs:documentation>Used when Solicitation or Other Identifier is not "Solicitation".</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="SolicitationNumber" type="ProcurementInstrumentType">
-                      <xs:annotation>
-                        <xs:documentation>The number of the solicitation document.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:choice>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="DD254PurposeDetails">
-        <xs:annotation>
-          <xs:documentation>Provides information on whether the DD254 is an original, revised, or final specification.  [DD254 Block 3]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="DD254PurposeIdentifier">
-              <xs:annotation>
-                <xs:documentation>The type of specification, e.g. original, revised, final.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Final"/>
-                  <xs:enumeration value="Original"/>
-                  <xs:enumeration value="Revised"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="OriginalDate" type="xs:date" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>The issuance date of the original DD254.  The date in CCYY-MM-DD format.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="RevisedDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information about a changed DD254.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="RevisionNumber" type="xs:string">
-                    <xs:annotation>
-                      <xs:documentation>The sequential number of the revision.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RevisionDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the revised DD254.  The date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="FinalDetails" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Information on the final DD254.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="FinalDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the final DD254.  The date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RetentionRequestDate" type="xs:date">
-                    <xs:annotation>
-                      <xs:documentation>The date of the contractor's request for retention.  The date in CCYY-MM-DD format.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="RetentionPeriod" type="DurationType">
-                    <xs:annotation>
-                      <xs:documentation>The authorized period of retention.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="FollowOnContract" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Used when the DD254 is attached to a contract that is let to the same contractor or subcontractor for the same item or services as a preceding contract.  [DD254 Blocks 4, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="PrecedingContractNumber" type="ProcurementInstrumentType">
-              <xs:annotation>
-                <xs:documentation>The preceding procurement instrument number. </xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="TransferredMaterial" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>Description of the material transferred from the preceding contract to the follow-on contract.  [DD254 Block 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="SecurityAddresses" minOccurs="2" maxOccurs="3">
-        <xs:annotation>
-          <xs:documentation>Contractor, Sub-Contractor, and Performance Location addresses.  [DD254 Blocks 6, 7, 8, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SecurityAddressIdentifier">
-              <xs:annotation>
-                <xs:documentation>Identifies the entity for which address information is being provided.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Contractor"/>
-                  <xs:enumeration value="Performance Location"/>
-                  <xs:enumeration value="Subcontractor"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:choice>
-              <xs:element name="SecurityAddressDetails" maxOccurs="unbounded">
-                <xs:annotation>
-                  <xs:documentation>The address of the specified entity and its Cognizant Security Office (CSO).  When there are multiple performance locations, repeat as necessary.</xs:documentation>
-                </xs:annotation>
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="Entity" type="OrganizationDetailType">
-                      <xs:annotation>
-                        <xs:documentation>The address of the entity specified by the Security Address Identifier.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="CognizantSecurityOffice" type="OrganizationDetailType">
-                      <xs:annotation>
-                        <xs:documentation>The address of the Cognizant Security Office (CSO) associated with the entity.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="PerformanceAtContractor" type="TrueType">
-                <xs:annotation>
-                  <xs:documentation>Use when the performance location address is the same as the Prime Contractor's address.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="PerformanceAtSubcontractor" type="TrueType">
-                <xs:annotation>
-                  <xs:documentation>Use when the performance location address is the same as the Sub-Contractor's address.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:choice>
-            <xs:element name="PerformanceAtGovernmentFacility" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the performance of the contract is on government facilities, provide an explanation why.  Used only when Security Address Identifier contains "Performance Location".  [DD254 Block 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="ProcurementActionDescription" type="xs:string">
-        <xs:annotation>
-          <xs:documentation>A short, concise, and unclassified description of the procurement action.  [DD254 Block 9]</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="AccessRequirements">
-        <xs:annotation>
-          <xs:documentation>Information that the contractor will require access to.  [DD254 Block 10, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="AccessRequirement" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>A category of information that the contractor will require access to.  [DD254 Block 10]  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Communications Security (COMSEC) Information"/>
-                  <xs:enumeration value="Restricted Data"/>
-                  <xs:enumeration value="Critical Nuclear Weapon Design Information"/>
-                  <xs:enumeration value="Formerly Restricted Data"/>
-                  <xs:enumeration value="Intelligence Information:  Sensitive Compartmented Information (SCI)"/>
-                  <xs:enumeration value="Intelligence Information:  Non-Sensitive Compartmented Information (Non-SCI)"/>
-                  <xs:enumeration value="Special Access Information"/>
-                  <xs:enumeration value="NATO Information"/>
-                  <xs:enumeration value="Foreign Government Information"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="SpecialAccessInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Provide the additional requirements associated with Special Access Programs when necessary.   {DD254 Block 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ForOfficialUseOnly" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When applicable, use to provide the guidance on protection procedures concerning For Official Use Only (FOUO) information.   [DD254 Block 10j, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ProtectedUnclassifiedInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to list unclassified information that is protected that the contractor will access.   [DD254 Block 10, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OtherInformation" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to list other information the contractor will access that is not otherwise covered.  Specify the type of information along with any additional remarks.   [DD254 Block 10k, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="PerformanceRequirements">
-        <xs:annotation>
-          <xs:documentation>Things the contractor will have or do while performing the contract.  For example, require a COMSEC account or store classified hardware.  [DD254 Block 11, 13]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="PerformanceRequirementDetails" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Individual requirements that the contractor will need or have in performing the contract.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="PerformanceRequirement">
-                    <xs:annotation>
-                      <xs:documentation>A function that the contractor will have or do.  (see list)</xs:documentation>
-                    </xs:annotation>
-                    <xs:simpleType>
-                      <xs:restriction base="xs:token">
-                        <xs:enumeration value="Have access to classified information only at another contractor's facility or a government activity"/>
-                        <xs:enumeration value="Receive classified documents only"/>
-                        <xs:enumeration value="Receive and generate classified material"/>
-                        <xs:enumeration value="Be authorized to use the services of Defense Technical Information Center (DITC) or other secondary distribution center"/>
-                        <xs:enumeration value="Require a COMSEC Account"/>
-                        <xs:enumeration value="Have TEMPEST requirements"/>
-                        <xs:enumeration value="Have Operations Security (OPSEC) requirements"/>
-                        <xs:enumeration value="Be authorized to use the Defense Courier Service"/>
-                      </xs:restriction>
-                    </xs:simpleType>
-                  </xs:element>
-                  <xs:element name="ContractorWillGuidance" type="xs:string" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>Provide additional information pertaining to the performance requirement if needed.  [DD254 Block 13]</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-            <xs:element name="ServicesOnly" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the contractor is performing a service only and is not expected to produce a deliverable item, provide a statement that explains the services and that provides appropriate security guidance.  [DD254 Block 11e, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ClassifiedHardware" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the contractor is expected to generate or utilize classified hardware, describe the nature and extent of the storage that will be required.  [DD154 Block 11d, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="ClassifiedInformationOutsideUS" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>When the contractor will have access to U.S. classified information outside the U.S., Puerto Rico, U.S. possessions and trust territories, list the U.S. activity, city and country where the overseas performance will occur.  [DD254 Block 11f, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OtherDetails" type="xs:string" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Use to provide additional performance requirements not otherwise covered.  Provide the necessary remarks.  [DD254 Block 11i, 13]</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="PublicRelease">
-        <xs:annotation>
-          <xs:documentation>Denotes where to obtain approval prior to the release of information received or generated under the contract.  [DD254 Block 12]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="Direct">
-              <xs:annotation>
-                <xs:documentation>Select when the request should be submitted directly to the Directorate for Freedom of Information and Security Review, Office of the Assistant Secretary of Defense (Public Affairs) for review.</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:string"/>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="Through" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>Use when the request should be directed to an office other than the Directorate for Freedom of Information and Security Review, Office of the Assistant Secretary of Defense (Public Affairs) for review.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="SecurityGuidance" type="xs:string" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Use to expand or explain information referenced in other sections of the DD254 when it cannot be provided elsewhere.  [DD254 Block 13]</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="AdditionalSecurityRequirements" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Requirements, in addition to NISPOM requirements, that are established for this contract.  Identify the pertinent clauses in the contract document or provide any appropriate statement which identifies the additional requirements.  [DD254 Block 13, 14]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="PertinentClause" type="ClauseDetailsType" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>The contract clause that imposes additional security requirements.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="AdditionalSecurityStatement" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>A statement identifying additional security requirements.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="InspectionExceptions" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Provide if the cognizant security office is relieved, in whole or in part, of the responsibility to conduct security reviews and provide security oversight to the contractor.  [DD254 Block 13, 15]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SpecificArea" type="xs:string">
-              <xs:annotation>
-                <xs:documentation>Explain and identify specific areas or elements that are outside the inspection responsibility of the cognizant security office.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="OversightAgency" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>The activity responsible for inspections.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="CertifyingOfficialDetails">
-        <xs:annotation>
-          <xs:documentation>Information about the certifying official.  [DD254 Block 16]</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SignatureDate" type="xs:date">
-              <xs:annotation>
-                <xs:documentation>The date the DD254 was signed by the Certifying Official.  Date in CCYY-MM-DD format.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CertifyingOfficial" type="ContactType">
-              <xs:annotation>
-                <xs:documentation>The title, name, and method of contact with the certifying official.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="CertifyingOfficialAddress" type="OrganizationDetailType">
-              <xs:annotation>
-                <xs:documentation>The office responsible for the certification.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="RequiredDistributionList" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Distribution list for the DD254.  At a minimum, Cognizant Security Office for Prime and Subcontractor must be provided.  [DD254 Block 17]  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Contractor"/>
-            <xs:enumeration value="Subcontractor"/>
-            <xs:enumeration value="Cognizant Security Office for Prime and Subcontractor"/>
-            <xs:enumeration value="U.S. Activity Responsible for Overseas Security Administration"/>
-            <xs:enumeration value="Administrative Contracting Officer"/>
-            <xs:enumeration value="Others as Necessary"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
   <xs:complexType name="ServiceAllowanceChargeType">
     <xs:annotation>
       <xs:documentation>Service, allowance, and charge structure.</xs:documentation>
@@ -10570,11 +9418,6 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
           <xs:documentation>Guidance to the contractor on how to gain access to military installations.  Specifies when and where a security clearance and/or an escort is required as well as additional security instructions as required for the site.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="TerminationEquipment" type="xs:string" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Describes the operating instruments to be employed by the user at the termination.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
       <xs:element name="TestingRequirements" type="xs:string" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Specifies the testing requirements.</xs:documentation>
@@ -10721,7 +9564,7 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
             </xs:element>
             <xs:element name="SignalConversion" type="xs:string" minOccurs="0">
               <xs:annotation>
-                <xs:documentation>Indicates that signal conversion by the Telecom Providers (TP) is required.  (see list)</xs:documentation>
+                <xs:documentation>Indicates that signal conversion by the Telecom Providers (TP) is required.</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:element name="TypeOfOperation" minOccurs="0">
@@ -10844,6 +9687,11 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
                 <xs:documentation>The center (telephone exchange, repeater station, etc.) to which the termination equipment is connected.</xs:documentation>
               </xs:annotation>
             </xs:element>
+            <xs:element name="TerminationEquipment" type="xs:string" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Describes the operating instruments to be employed by the user at the termination.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
             <xs:element name="Address" type="OrganizationAddressType">
               <xs:annotation>
                 <xs:documentation>The address of the termination point.</xs:documentation>
@@ -10911,11 +9759,11 @@ government-owned facilities or commercial companies.</xs:documentation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="UniqueProcurementInstrumentIdentifierType">
+  <xs:complexType name="UniformProcurementInstrumentIdentifierType">
     <xs:sequence>
       <xs:element name="ActivityAddressCode" type="DoDAACType-BadMod">
         <xs:annotation>
-          <xs:documentation>The Activity Address Code (ACC) of the procurement instrument issuing office.</xs:documentation>
+          <xs:documentation>The Activity Address Code (AAC) of the procurement instrument issuing office.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="Year">
@@ -11346,6 +10194,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Hypertext Markup Language (HTML)"/>
       <xs:enumeration value="Inno Setup String Tables File (SHL)"/>
       <xs:enumeration value="InRoads Survey Alignment File (ALG)"/>
+      <xs:enumeration value="JPEG/JIFF Image (JPEG)"/>
       <xs:enumeration value="JPEG/JIFF Image (JPG)"/>
       <xs:enumeration value="Keyhole Markup Language File (KML)"/>
       <xs:enumeration value="Log File (LOG)"/>
@@ -11396,6 +10245,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="OpenOffice Text Document Template (STW)"/>
       <xs:enumeration value="OpenOffice Writer Document (SXW)"/>
       <xs:enumeration value="OpenOffice Writer Text Document (ODT)"/>
+      <xs:enumeration value="Portable Network Graphics (PNG)"/>
       <xs:enumeration value="Power Point HTML Document (PPTHTML)"/>
       <xs:enumeration value="Power Point Microsoft Office Open XML Format Presentation (PPTX)"/>
       <xs:enumeration value="Power Point Microsoft Office Open XML Format Presentation with Macros Enabled (PPTM)"/>
@@ -11456,6 +10306,8 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Proof of Insurance"/>
       <xs:enumeration value="Proposal"/>
       <xs:enumeration value="Purchase Plan"/>
+      <xs:enumeration value="Requisitioned Government Furnished Property"/>
+      <xs:enumeration value="Scheduled Government Furnished Property"/>
       <xs:enumeration value="Small Business Subcontracting Plan"/>
       <xs:enumeration value="Specification"/>
       <xs:enumeration value="Statement of Objectives"/>
@@ -12259,10 +11111,11 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Physical Address"/>
       <xs:enumeration value="Pick up Address"/>
       <xs:enumeration value="Place of Performance"/>
-      <xs:enumeration value="Pre-Proposal Property Inspection Location"/>
       <xs:enumeration value="Pre-Proposal Conference Location"/>
+      <xs:enumeration value="Pre-Proposal Property Inspection Location"/>
       <xs:enumeration value="Pre-Solicitation Conference Location"/>
       <xs:enumeration value="Remit To"/>
+      <xs:enumeration value="Requirements Approver"/>
       <xs:enumeration value="Requiring Activity"/>
       <xs:enumeration value="Resource Management Office"/>
       <xs:enumeration value="SBA Contracting Office"/>
@@ -12675,6 +11528,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Product ID Attribute Code"/>
       <xs:enumeration value="Product Type Code"/>
       <xs:enumeration value="Property and Casualty Service Code"/>
+      <xs:enumeration value="Property System Identifier"/>
       <xs:enumeration value="Publication Number"/>
       <xs:enumeration value="Publisher Code"/>
       <xs:enumeration value="Purchaser's Item Code"/>
@@ -14142,7 +12996,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="100 Pound Drum"/>
       <xs:enumeration value="1000 Cubic Feet"/>
       <xs:enumeration value="1000 Meters"/>
-      <xs:enumeration value="1000 Pounds per Square Inch"/>
       <xs:enumeration value="100-Pack"/>
       <xs:enumeration value="115 Kilogram Drum"/>
       <xs:enumeration value="15 Kilogram Drum"/>
@@ -14246,7 +13099,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Cassette"/>
       <xs:enumeration value="Catchweight"/>
       <xs:enumeration value="Cell"/>
-      <xs:enumeration value="Centigrade, Celsius"/>
       <xs:enumeration value="Centigram"/>
       <xs:enumeration value="Centiliter"/>
       <xs:enumeration value="Centimeter"/>
@@ -14268,7 +13120,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Count"/>
       <xs:enumeration value="Cover"/>
       <xs:enumeration value="Crate"/>
-      <xs:enumeration value="Credits"/>
       <xs:enumeration value="Cubic Centimeter"/>
       <xs:enumeration value="Cubic Decimeter"/>
       <xs:enumeration value="Cubic Feet"/>
@@ -14282,13 +13133,11 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Cylinder"/>
       <xs:enumeration value="Data Records"/>
       <xs:enumeration value="Days"/>
-      <xs:enumeration value="Deal"/>
       <xs:enumeration value="Decagram"/>
       <xs:enumeration value="Decibels"/>
       <xs:enumeration value="Decigram"/>
       <xs:enumeration value="Deciliter"/>
       <xs:enumeration value="Decimeter"/>
-      <xs:enumeration value="Digits"/>
       <xs:enumeration value="Directory Books"/>
       <xs:enumeration value="Disk (Disc)"/>
       <xs:enumeration value="Dispenser"/>
@@ -14307,7 +13156,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Dry Ton"/>
       <xs:enumeration value="Duty"/>
       <xs:enumeration value="Each"/>
-      <xs:enumeration value="Each per Month"/>
       <xs:enumeration value="Eight-pack"/>
       <xs:enumeration value="Electronic Mail Boxes"/>
       <xs:enumeration value="Eleven pack"/>
@@ -14334,6 +13182,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Fixed Rate"/>
       <xs:enumeration value="Flake Ton"/>
       <xs:enumeration value="Flat"/>
+      <xs:enumeration value="Flight Hours"/>
       <xs:enumeration value="Fluid Ounce"/>
       <xs:enumeration value="Fluid Ounce (Imperial)"/>
       <xs:enumeration value="Fold"/>
@@ -14370,7 +13219,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Hectogram"/>
       <xs:enumeration value="Hectoliter"/>
       <xs:enumeration value="Hectometer"/>
-      <xs:enumeration value="Henry"/>
       <xs:enumeration value="Hogshead"/>
       <xs:enumeration value="Horsepower"/>
       <xs:enumeration value="Hospital Beds"/>
@@ -14413,7 +13261,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Jug"/>
       <xs:enumeration value="Jumbo"/>
       <xs:enumeration value="Keg"/>
-      <xs:enumeration value="Kelvin"/>
       <xs:enumeration value="Kilobyte"/>
       <xs:enumeration value="Kilocharacters"/>
       <xs:enumeration value="Kilogram"/>
@@ -14423,12 +13270,11 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Kilopackets"/>
       <xs:enumeration value="Kilosegments"/>
       <xs:enumeration value="Kilovolt Amperes Reactive Hour"/>
-      <xs:enumeration value="Kilovolts"/>
-      <xs:enumeration value="Kilowatt"/>
       <xs:enumeration value="Kilowatt Demand"/>
       <xs:enumeration value="Kilowatt Hour"/>
       <xs:enumeration value="Kit"/>
       <xs:enumeration value="Labor Hours"/>
+      <xs:enumeration value="Landings"/>
       <xs:enumeration value="Large Spray"/>
       <xs:enumeration value="Layer(s)"/>
       <xs:enumeration value="Leaf"/>
@@ -14445,6 +13291,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Liquid Pounds"/>
       <xs:enumeration value="Lite"/>
       <xs:enumeration value="Liter"/>
+      <xs:enumeration value="Liters at 15 Degrees Celsius"/>
       <xs:enumeration value="Load"/>
       <xs:enumeration value="Loaf"/>
       <xs:enumeration value="Locations"/>
@@ -14477,12 +13324,10 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Microfiche Sheet"/>
       <xs:enumeration value="Microgram"/>
       <xs:enumeration value="Microliter"/>
-      <xs:enumeration value="Micrometer"/>
       <xs:enumeration value="Micromolar"/>
       <xs:enumeration value="Microns (Micrometers)"/>
       <xs:enumeration value="Mil"/>
       <xs:enumeration value="Miles"/>
-      <xs:enumeration value="Millequivalence Caustic Potash per Gram of Product"/>
       <xs:enumeration value="Milliequivalent"/>
       <xs:enumeration value="Milligram"/>
       <xs:enumeration value="Milliliter"/>
@@ -14500,9 +13345,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Minutes"/>
       <xs:enumeration value="Minutes or Messages"/>
       <xs:enumeration value="Mixed"/>
-      <xs:enumeration value="Million Standard Cubic Feet (MMSCF)/Day"/>
       <xs:enumeration value="Mole (mol)"/>
-      <xs:enumeration value="Monetary Value"/>
       <xs:enumeration value="Months"/>
       <xs:enumeration value="Nautical Mile"/>
       <xs:enumeration value="Net Barrels"/>
@@ -14544,7 +13387,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Pen Calories"/>
       <xs:enumeration value="Pen Grams (Protein)"/>
       <xs:enumeration value="Pennyweight"/>
-      <xs:enumeration value="Percent"/>
       <xs:enumeration value="Person"/>
       <xs:enumeration value="Photographs"/>
       <xs:enumeration value="Pica"/>
@@ -14614,7 +13456,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Shipment"/>
       <xs:enumeration value="Short Ton"/>
       <xs:enumeration value="Shot"/>
-      <xs:enumeration value="Siemens"/>
       <xs:enumeration value="Sitas"/>
       <xs:enumeration value="Six pack"/>
       <xs:enumeration value="Sixty-fourths of an Inch"/>
@@ -14631,12 +13472,10 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Square"/>
       <xs:enumeration value="Square Centimeter"/>
       <xs:enumeration value="Square Decimeter"/>
-      <xs:enumeration value="Square Feet per Second"/>
       <xs:enumeration value="Square Foot"/>
       <xs:enumeration value="Square Inch"/>
       <xs:enumeration value="Square Kilometer"/>
       <xs:enumeration value="Square Meter"/>
-      <xs:enumeration value="Square Meters per Second"/>
       <xs:enumeration value="Square Mile"/>
       <xs:enumeration value="Square Millimeter"/>
       <xs:enumeration value="Square Rod"/>
@@ -14671,7 +13510,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Tenth Cubic Foot"/>
       <xs:enumeration value="Tenth Hours"/>
       <xs:enumeration value="Tenth Minutes"/>
-      <xs:enumeration value="Test Specific Scale"/>
       <xs:enumeration value="Theoretical Kilograms"/>
       <xs:enumeration value="Theoretical Pounds"/>
       <xs:enumeration value="Theoretical Tonnes"/>
@@ -14704,7 +13542,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Three pack"/>
       <xs:enumeration value="Tire"/>
       <xs:enumeration value="Ton Miles"/>
-      <xs:enumeration value="Ton Per Hour"/>
       <xs:enumeration value="Total Car Count"/>
       <xs:enumeration value="Total Car Mile"/>
       <xs:enumeration value="Tote"/>
@@ -14729,7 +13566,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Two Hundred Fifty"/>
       <xs:enumeration value="Two pack"/>
       <xs:enumeration value="U.S. Gallons At 60 Degrees Fahrenheit"/>
-      <xs:enumeration value="U.S. Pharmacopoeia (USP) Un"/>
+      <xs:enumeration value="U.S. Pharmacopoeia (USP) Unit"/>
       <xs:enumeration value="Unit"/>
       <xs:enumeration value="Unitless"/>
       <xs:enumeration value="Usage per Telecommunications Line - Average"/>
@@ -14737,7 +13574,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Vial"/>
       <xs:enumeration value="Visit"/>
       <xs:enumeration value="Wafer"/>
-      <xs:enumeration value="Watt"/>
       <xs:enumeration value="Week"/>
       <xs:enumeration value="Wet Kilo"/>
       <xs:enumeration value="Wet Pound"/>
@@ -15001,6 +13837,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Fixed Rate"/>
       <xs:enumeration value="Flake Ton"/>
       <xs:enumeration value="Flat"/>
+      <xs:enumeration value="Flight Hours"/>
       <xs:enumeration value="Fluid Ounce"/>
       <xs:enumeration value="Fluid Ounce (Imperial)"/>
       <xs:enumeration value="Fold"/>
@@ -15150,6 +13987,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Kit"/>
       <xs:enumeration value="Knots"/>
       <xs:enumeration value="Labor Hours"/>
+      <xs:enumeration value="Landings"/>
       <xs:enumeration value="Large Spray"/>
       <xs:enumeration value="Layer(s)"/>
       <xs:enumeration value="Leaf"/>
@@ -15167,6 +14005,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Liquid Pounds"/>
       <xs:enumeration value="Lite"/>
       <xs:enumeration value="Liter"/>
+      <xs:enumeration value="Liters at 15 Degrees Celsius"/>
       <xs:enumeration value="Liters Per Day"/>
       <xs:enumeration value="Liters Per Minute"/>
       <xs:enumeration value="Load"/>
