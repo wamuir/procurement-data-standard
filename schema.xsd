@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- edited with XMLSpy v2016 rel. 2 sp1 (http://www.altova.com) by Judith M Critzer (Northrop Grumman Systems CorP) -->
+<!-- edited with XMLSpy v2017 sp1 (http://www.altova.com) by Judith M. Critzer (Northrop Grumman Systems Corp) -->
 <!--
-			Final - 20 June 2016  -  Final
+			FINAL - 23 May 2018  -  FINAL
 
-			July 11 - Under <TelecommunicationDetails> moved <TelecommunicationEquiptment> inside <TerminationPoint>.
+			- Adds elements to support the Solicitation Module.
+			- Replaces schema enumeration lists with referenced lists for the following:
+				- Attachment Standard Type
+				- Organization Qualifer Role Type (Address Description)
+				- Unit Of Measure
+				- Unit Of Measure With Dollars
+				- Attachment Data Format
+				- LOA Component Title
+				- Reference Description
+			- Simplifies Business Classification structure to two elements that will be populated with values in a referenced list.
+
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="07112016">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="05232018">
   <xs:annotation>
     <xs:documentation>Level 1: top level of Procurement Data Standard for a procurement instrument document.</xs:documentation>
   </xs:annotation>
@@ -21,7 +31,7 @@
           </xs:annotation>
           <xs:simpleType>
             <xs:restriction base="xs:token">
-              <xs:enumeration value="2.5.1"/>
+              <xs:enumeration value="2.6"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -305,7 +315,6 @@
       <xs:enumeration value="Allowed Per Order"/>
       <xs:enumeration value="Contractor Obligation to Deliver"/>
       <xs:enumeration value="Government Obligation to Order"/>
-      <xs:enumeration value="Order Limit"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="NotFullOpenCompetitionType">
@@ -364,6 +373,7 @@
       <xs:enumeration value="Prior Contract to a Follow-on Contract"/>
       <xs:enumeration value="Represented Contract"/>
       <xs:enumeration value="Represented Solicitation"/>
+      <xs:enumeration value="Represented Solicitation and Synopsis"/>
       <xs:enumeration value="Small Business Administration Contract"/>
       <xs:enumeration value="Solicitation being Amended"/>
       <xs:enumeration value="Solicitation Number"/>
@@ -621,7 +631,7 @@
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousQuantityValue" type="DecimalElement5OverZeroType" use="optional"/>
     <xs:attribute name="deltaQuantityValue" type="DecimalElement5Type" use="optional"/>
-    <xs:attribute name="previousUnitOfMeasure" type="UnitOfMeasureWithDollarsType" use="optional"/>
+    <xs:attribute name="previousUnitOfMeasure" type="xs:string" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeSection-ExcessDeliveryAction">
     <xs:annotation>
@@ -676,7 +686,8 @@
     <xs:attribute name="deltaMinimum" type="DecimalElement5Type" use="optional"/>
     <xs:attribute name="previousMaximum" type="DecimalElement5Type" use="optional"/>
     <xs:attribute name="deltaMaximum" type="DecimalElement5Type" use="optional"/>
-    <xs:attribute name="previousUnitOfMeasure" type="UnitOfMeasureWithDollarsType" use="optional"/>
+    <xs:attribute name="previousUnitOfMeasure" type="xs:string" use="optional"/>
+    <xs:attribute name="previousForeignCurrency" type="xs:string" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeSection-MiscellaneousTextDetails">
     <xs:annotation>
@@ -710,7 +721,7 @@
     <xs:attribute name="deltaQuantityUnder" type="DecimalElement5Type" use="optional"/>
     <xs:attribute name="previousQuantityOver" type="DecimalElement5Type" use="optional"/>
     <xs:attribute name="deltaQuantityOver" type="DecimalElement5Type" use="optional"/>
-    <xs:attribute name="previousUnitOfMeasure" type="UnitOfMeasureWithDollarsType" use="optional"/>
+    <xs:attribute name="previousUnitOfMeasure" type="xs:string" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeSection-OtherAmounts">
     <xs:annotation>
@@ -918,9 +929,9 @@
     </xs:annotation>
     <xs:sequence>
       <xs:choice>
-        <xs:element name="AddressDescription" type="OrganizationQualifierRoleType">
+        <xs:element name="AddressDescription" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Type of addresses. (see list)</xs:documentation>
+            <xs:documentation>Type of address.  (see Address Description list at dodprocurementtoolbox.com)</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="AlternateAddressDescription" type="xs:string">
@@ -973,7 +984,7 @@
       </xs:element>
       <xs:element name="ContractorRepresentative" type="SigneeType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>The Contractor's name, contact information, and signature date.  May only have more than one when Procurement Instrument Form is SF 252. </xs:documentation>
+          <xs:documentation>The Contractor's name, contact information, and signature date.  May only have more than one when Procurement Instrument Form is SF 252.  May not be provided on a solicitation.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -1086,7 +1097,7 @@
       </xs:element>
       <xs:element name="ContractDescription" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Reference line 17 of Synopsis in FAR 5.203</xs:documentation>
+          <xs:documentation>Reference line 16 of Synopsis in FAR 5.207.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -1152,6 +1163,11 @@
       <xs:element name="SignedOrderCopies" type="xs:positiveInteger" minOccurs="0">
         <xs:annotation>
           <xs:documentation>The number of copies to be returned to indicate acceptance of the order.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecialReportingRequirement" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Denotes special reporting requirements when needed.  (see Special Reporting Requirement list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="OrderingInformation" type="OrderingInformationType" minOccurs="0">
@@ -1480,9 +1496,9 @@
                 <xs:documentation>The quantity by which the order can be above the expected quantity.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="UnitOfMeasure" type="UnitOfMeasureWithDollarsType">
+            <xs:element name="UnitOfMeasure" type="xs:string">
               <xs:annotation>
-                <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+                <xs:documentation>The unit of measure.  (see Unit of Measure With Dollars list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -1543,7 +1559,7 @@
                   </xs:element>
                   <xs:element name="ForeignCurrency" maxOccurs="unbounded">
                     <xs:annotation>
-                      <xs:documentation>The textual name of the foreign currency that must be used in the response (may include US Dollar).  See ISO 4217 from the International Organization for Standardization for the correct values.</xs:documentation>
+                      <xs:documentation>The textual name of the foreign currency that must be used in the response (may include US Dollar from ISO 4217 from the International Organization for Standardization.  (see Currency list at dodprocurementtoolbox.com)</xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                       <xs:simpleContent>
@@ -1860,6 +1876,7 @@
                   <xs:enumeration value="Date of Site or Property Inspection"/>
                   <xs:enumeration value="Pre-Proposal Conference"/>
                   <xs:enumeration value="Pre-Solicitation Conference"/>
+                  <xs:enumeration value="Synopsis Archiving Date"/>
                 </xs:restriction>
               </xs:simpleType>
             </xs:element>
@@ -1902,9 +1919,9 @@
     </xs:annotation>
     <xs:sequence>
       <xs:choice>
-        <xs:element name="AddressDescription" type="OrganizationQualifierRoleType">
+        <xs:element name="AddressDescription" type="xs:string">
           <xs:annotation>
-            <xs:documentation>Type of addresses being changed. (see list)</xs:documentation>
+            <xs:documentation>Type of address being changed.  (see Address Description list at dodprocurementtoolbox.com)</xs:documentation>
           </xs:annotation>
         </xs:element>
         <xs:element name="AlternateAddressDescription" type="xs:string">
@@ -2061,14 +2078,14 @@
           <xs:documentation>Effective date of the represented procurement instrument. Date in CCYY-MM-DD format.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="ContractingOfficer" type="SigneeType">
+      <xs:element name="ContractingOfficer" type="SigneeType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>The Contracting officer's name, contact information, and signature date. The signature date is also known as the Award date.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="ContractorRepresentative" type="SigneeType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>The Contractor's name, contact information, and signature date.  May only have more than one when Procurement Instrument Form is SF 252. </xs:documentation>
+          <xs:documentation>The Contractor's name, contact information, and signature date.  May only have more than one when Procurement Instrument Form is SF 252.  May not be provided on a solicitation amendment.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -2362,7 +2379,7 @@
       </xs:element>
       <xs:element name="ContractDescription" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Reference line 17 of Synopsis in FAR 5.203</xs:documentation>
+          <xs:documentation>Reference line 16 of Synopsis in FAR 5.207.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -2456,6 +2473,18 @@
           </xs:simpleContent>
         </xs:complexType>
       </xs:element>
+      <xs:element name="SpecialReportingRequirement" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Denotes special reporting requirements when needed.  (see Special Reporting Requirement list at dodprocurementtoolbox.com)</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attributeGroup ref="ChangeDetails-AddDelete"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="OrderingInformation" type="OrderingInformationModificationType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Provides parameters for orders on an indefinite delivery contract or other ordering instrument.</xs:documentation>
@@ -2473,7 +2502,7 @@
           </xs:complexContent>
         </xs:complexType>
       </xs:element>
-      <xs:element name="ShareRatio" type="ShareRatioType_1" minOccurs="0">
+      <xs:element name="ShareRatio" type="ShareRatioType 1" minOccurs="0">
         <xs:annotation>
           <xs:documentation>The government and contractor share ratios.</xs:documentation>
         </xs:annotation>
@@ -2590,7 +2619,7 @@
     <xs:sequence>
       <xs:element name="ProcurementInstrumentEffectiveDate" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Records changes to the effective date of the procurement instrument being modified. Date in CCYY-MM-DD format.</xs:documentation>
+          <xs:documentation>Records changes to the effective date of the procurement instrument being modified. Date in CCYY-MM-DD format.  May not be provided on an amendment.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -3082,7 +3111,7 @@
                       <xs:documentation>The line item list to which the share ratio being modified is associated.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="ItemShareRatioModification" type="ShareRatioType_1">
+                  <xs:element name="ItemShareRatioModification" type="ShareRatioType 1">
                     <xs:annotation>
                       <xs:documentation>Records the share ratio that has been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
@@ -3101,7 +3130,7 @@
                       <xs:documentation>Records line items that have been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="ShareRatioChange" type="ShareRatioType_1">
+                  <xs:element name="ShareRatioChange" type="ShareRatioType 1">
                     <xs:annotation>
                       <xs:documentation>Records the share ratio that has been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
@@ -3442,9 +3471,9 @@
                 <xs:documentation>The quantity by which the order can be above the expected quantity.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="UnitOfMeasure" type="UnitOfMeasureWithDollarsType">
+            <xs:element name="UnitOfMeasure" type="xs:string">
               <xs:annotation>
-                <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+                <xs:documentation>The unit of measure.  (see Unit of Measure With Dollars list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -3528,7 +3557,7 @@
                   </xs:element>
                   <xs:element name="ForeignCurrency" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation>
-                      <xs:documentation>The textual name of the foreign currency that must be used in the response (may include US Dollar).  See ISO 4217 from the International Organization for Standardization for the correct values.</xs:documentation>
+                      <xs:documentation>The textual name of the foreign currency that must be used in the response (may include US Dollar from ISO 4217 from the International Organization for Standardization.  (see Currency list at dodprocurementtoolbox.com)</xs:documentation>
                     </xs:annotation>
                     <xs:complexType>
                       <xs:simpleContent>
@@ -3845,6 +3874,30 @@
                 <xs:documentation>The purchase requisition number.</xs:documentation>
               </xs:annotation>
             </xs:element>
+            <xs:element name="AmendmentInformation" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Information relevant to a solicitation amendment procurement instrument.  May not be used for modifications.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="AcknowledgeReceiptCopies" type="xs:positiveInteger" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>The number of copies that is to be completed and signed by a contractor to acknowledge receipt of the amendment document.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="AmendmentDescriptiveText" type="xs:string" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Amendment text that does not change the text of the solicitation such as questions and answers.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="OfferReceiptExtended" type="TrueFalseType">
+                    <xs:annotation>
+                      <xs:documentation>Indicates whether or not the hour and date specified for receipt of Offers is extended.  (see list)</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
             <xs:element name="ModificationAddresses" type="AddressDetailType" maxOccurs="3">
               <xs:annotation>
                 <xs:documentation>For a modification, must provide the addresses of the issuing office and the contractor.  If applicable to the modification, provide the address of the administrative office.  For a Solicitation, must provide the address of the issuing office.</xs:documentation>
@@ -3894,9 +3947,9 @@
           <xs:documentation>Changes to dates and date periods applicable to the procurement instrument(s) being modified.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="ProcurementInstrumentDates" type="DatesModificationHeaderOnlyType" minOccurs="0">
+      <xs:element name="ProcurementInstrumentDates" type="DatesModificationHeaderOnlyType">
         <xs:annotation>
-          <xs:documentation>Effective Date and signatures applicable to the represented procurement instrument.  Required on modifications; not allowed on amendments.</xs:documentation>
+          <xs:documentation>Effective Date and signatures applicable to the represented procurement instrument. </xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="ProcurementInstrumentAddresses" type="AddressDetailModificationType" minOccurs="0" maxOccurs="unbounded">
@@ -4284,7 +4337,7 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="ShareRatioType_1">
+  <xs:complexType name="ShareRatioType 1">
     <xs:choice>
       <xs:element name="AddedShareRatio" type="ShareRatioType">
         <xs:annotation>
@@ -4882,9 +4935,9 @@
         </xs:annotation>
         <xs:complexType>
           <xs:choice>
-            <xs:element name="StandardAttachment" type="AttachmentStandardType">
+            <xs:element name="StandardAttachment" type="xs:string">
               <xs:annotation>
-                <xs:documentation>Description of the attachment. (see list)</xs:documentation>
+                <xs:documentation>Description of the attachment. (see Standard Attachment list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:element name="OtherAttachment" type="xs:string">
@@ -4923,9 +4976,9 @@
           <xs:documentation>The attachment contents in binary text.   Cannot be provided when Attachment Security Level is populated.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="AttachmentDataFormat" type="AttachmentDataFormatType" minOccurs="0">
+      <xs:element name="AttachmentDataFormat" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The format of the attachment such as Microsoft Word, Lotus 1.2.3 etc. Required when Attachment Binary Text is provided.  (see list)</xs:documentation>
+          <xs:documentation>The format of the attachment such as Microsoft Word, Lotus 1.2.3 etc. Required when Attachment Binary Text is provided.  (see Attachment Data Format list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="AttachmentDate" type="xs:date" minOccurs="0">
@@ -4971,7 +5024,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="BusinessType" type="BusinessTypeType" minOccurs="0">
+      <xs:element name="BusinessType" type="BusinessTypeType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Type of business such as disadvantaged, women owned, hospital etc. </xs:documentation>
         </xs:annotation>
@@ -5125,7 +5178,7 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="BusinessTypeType">
+  <xs:complexType name="BusinessTypeTypeOld">
     <xs:sequence>
       <xs:element name="DotCertifiedDbe" type="TrueFalseType" minOccurs="0">
         <xs:annotation>
@@ -5210,6 +5263,23 @@
             </xs:element>
           </xs:sequence>
         </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BusinessTypeType">
+    <xs:annotation>
+      <xs:documentation>Contractor Business Type structure.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="BusinessTypeDescription" type="xs:anySimpleType">
+        <xs:annotation>
+          <xs:documentation>Business category from the System for Award Management (SAM).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="BusinessTypeValue" type="xs:string" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Specific business type for the category provided in Business Type Description; from the System for Award Management (SAM).</xs:documentation>
+        </xs:annotation>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
@@ -5822,7 +5892,7 @@
     <xs:sequence>
       <xs:element name="BuyingCurrency" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The textual name of the foreign currency the procurement instrument is issued in.  See ISO 4217 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>The textual name of the foreign currency the procurement instrument is issued in from ISO 4217 from the International Organization for Standardization.  (see Currency list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -5834,7 +5904,7 @@
       </xs:element>
       <xs:element name="PaymentCurrency" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The textual name of the foreign currency in which payment is authorized and will be made.  See ISO 4217 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>The textual name of the foreign currency in which payment is authorized and will be made from ISO 4217 from the International Organization for Standardization.  (see Currency list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -6231,9 +6301,9 @@
           <xs:documentation>Value. Express 4.25% as 4.25</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureWithDollarsType" minOccurs="0">
+      <xs:element name="UnitOfMeasure" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure With Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="PercentageBasis" minOccurs="0">
@@ -6342,75 +6412,10 @@
         </xs:annotation>
       </xs:element>
       <xs:choice>
-        <xs:element name="ReferenceDescription">
+        <xs:element name="ReferenceDescription" type="xs:string">
           <xs:annotation>
-            <xs:documentation>The item for which a reference number is being provided. (see list)</xs:documentation>
+            <xs:documentation>The item for which a reference number is being provided.  (see Reference Description list at dodprocurementtoolbox.com)</xs:documentation>
           </xs:annotation>
-          <xs:simpleType>
-            <xs:restriction base="xs:token">
-              <xs:enumeration value="Acquisition Program Unique Identifier (APUID)"/>
-              <xs:enumeration value="Agency Hierarchy Number"/>
-              <xs:enumeration value="Alliance Long Lines Activity (ALLA) Number"/>
-              <xs:enumeration value="Basic Contract Line Item Number"/>
-              <xs:enumeration value="Cargo Control Number"/>
-              <xs:enumeration value="Charge Card Number"/>
-              <xs:enumeration value="Code of Federal Regulations"/>
-              <xs:enumeration value="Command Communications Service Designator (CCSD)"/>
-              <xs:enumeration value="Contract Number"/>
-              <xs:enumeration value="Customer Reference Number"/>
-              <xs:enumeration value="Defense Priorities Allocation System (DPAS) Priority Rating"/>
-              <xs:enumeration value="Department of Labor Wage Determination number"/>
-              <xs:enumeration value="Disposal Turn-In Document Number"/>
-              <xs:enumeration value="Drawing Number"/>
-              <xs:enumeration value="End Item Program"/>
-              <xs:enumeration value="Exercise or Project Name"/>
-              <xs:enumeration value="Federal Supply Classification Code"/>
-              <xs:enumeration value="Federal supply schedule (FSS) Item Number"/>
-              <xs:enumeration value="CLIN only - Foreign Military Sales Case Number"/>
-              <xs:enumeration value="General Terms and Conditions (GT&amp;C)"/>
-              <xs:enumeration value="Government Bill of Lading"/>
-              <xs:enumeration value="Lot Number"/>
-              <xs:enumeration value="CLIN only - MILSTRIP, DLMS, FEDSTRIP Requisition Suffix Number"/>
-              <xs:enumeration value="Military Interdepartmental Purchase Request (MIPR) Number"/>
-              <xs:enumeration value="North American Industry Classification System (NAICS)"/>
-              <xs:enumeration value="Other than a Military Specification (MIL-SPEC)"/>
-              <xs:enumeration value="Other than a Military Standard (MIL-STD)"/>
-              <xs:enumeration value="Package Number"/>
-              <xs:enumeration value="Pre-Award Survey"/>
-              <xs:enumeration value="Price List Number"/>
-              <xs:enumeration value="Price Quote Number"/>
-              <xs:enumeration value="Priority Rating including MILSTRIP, DLMS, FEDSTRIP"/>
-              <xs:enumeration value="Product Group"/>
-              <xs:enumeration value="Product Service Code"/>
-              <xs:enumeration value="Product Specification Document Number"/>
-              <xs:enumeration value="Project Code"/>
-              <xs:enumeration value="Proposal Identifier"/>
-              <xs:enumeration value="Purchase Requisition Number"/>
-              <xs:enumeration value="Purchase Requisition Line Item Number"/>
-              <xs:enumeration value="Qualified Bidders List"/>
-              <xs:enumeration value="Qualified Manufacturer List"/>
-              <xs:enumeration value="Qualified Product List"/>
-              <xs:enumeration value="Real Property Unique Identifier (RPUID)"/>
-              <xs:enumeration value="Related Contract Line Item Number"/>
-              <xs:enumeration value="CLIN only - Requisition Document Number (MILSTRIP, DLMS, FEDSTRIP)"/>
-              <xs:enumeration value="Signal Code"/>
-              <xs:enumeration value="Simultaneous Action Telecommunications Service Request (TSR) Number"/>
-              <xs:enumeration value="Special Price Authorization Number"/>
-              <xs:enumeration value="Specification Number"/>
-              <xs:enumeration value="Statement of Work (SOW)"/>
-              <xs:enumeration value="Surveillance Criticality Designator"/>
-              <xs:enumeration value="Technical Order Number"/>
-              <xs:enumeration value="Telecommunications Service Priority (TSP) Authorization Code"/>
-              <xs:enumeration value="Telecommunications Service Request (TSR) Number"/>
-              <xs:enumeration value="Test Specification Number"/>
-              <xs:enumeration value="Transportation Control Number (TCN)"/>
-              <xs:enumeration value="Transportation Priority Number"/>
-              <xs:enumeration value="Union Agreement number"/>
-              <xs:enumeration value="Weapon System Code"/>
-              <xs:enumeration value="Weapon System Type Designator"/>
-              <xs:enumeration value="X12 Transaction Reference Number"/>
-            </xs:restriction>
-          </xs:simpleType>
         </xs:element>
         <xs:element name="AlternateDescription" type="xs:string">
           <xs:annotation>
@@ -6468,9 +6473,9 @@
           <xs:documentation>Quantity.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureWithDollarsType">
+      <xs:element name="UnitOfMeasure" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure With Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -6982,11 +6987,18 @@
           <xs:documentation>Maximum limit</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureWithDollarsType">
-        <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
-        </xs:annotation>
-      </xs:element>
+      <xs:choice>
+        <xs:element name="UnitOfMeasure" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The unit of measure.  (see Unit of Measure With Dollars list at dodprocurementtoolbox.com)</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="ForeignCurrency" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The textual name of the foreign currency the limit is provided in from ISO 4217 from the International Organization for Standardization.  (see Currency list at dodprocurementtoolbox.com)</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:choice>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="LineItemAmountsType">
@@ -7029,6 +7041,11 @@
       <xs:element name="OptionLineItem" type="TrueFalseType">
         <xs:annotation>
           <xs:documentation>Denotes whether or not the line item is an option line item.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="SpecialReportingRequirement" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Denotes special reporting requirements when needed.  (see Special Reporting Requirement list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="LineItemSolicitationInformation" minOccurs="0">
@@ -7316,7 +7333,7 @@
                               </xs:element>
                               <xs:element name="SpecialPreservationCode" minOccurs="0" maxOccurs="unbounded">
                                 <xs:annotation>
-                                  <xs:documentation>Specialized preservation codes (MIL_STD_2073-1D J.4.2.1).</xs:documentation>
+                                  <xs:documentation>Specialized preservation codes (MIL STD 2073-1D J.4.2.1).</xs:documentation>
                                 </xs:annotation>
                                 <xs:simpleType>
                                   <xs:restriction base="xs:token">
@@ -7346,7 +7363,7 @@
                               </xs:element>
                               <xs:element name="SupplementaryOrSpecialRequirements" type="xs:string" minOccurs="0">
                                 <xs:annotation>
-                                  <xs:documentation>Supplementary or Special Requirements.  (MIL_STD_2073-1D J.1.4.c)</xs:documentation>
+                                  <xs:documentation>Supplementary or Special Requirements.  (MIL STD 2073-1D J.1.4.c)</xs:documentation>
                                 </xs:annotation>
                               </xs:element>
                             </xs:sequence>
@@ -7376,9 +7393,9 @@
                             </xs:complexContent>
                           </xs:complexType>
                         </xs:element>
-                        <xs:element name="UnitOfMeasure" type="UnitOfMeasureType">
+                        <xs:element name="UnitOfMeasure" type="xs:string">
                           <xs:annotation>
-                            <xs:documentation>The unit of measure of the quantity range.  (see list)</xs:documentation>
+                            <xs:documentation>The unit of measure of the quantity range.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
                           </xs:annotation>
                         </xs:element>
                       </xs:sequence>
@@ -7625,9 +7642,9 @@
                 <xs:documentation>The rate amount.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="RateUnitOfMeasure" type="UnitOfMeasureType">
+            <xs:element name="RateUnitOfMeasure" type="xs:string">
               <xs:annotation>
-                <xs:documentation>The unit of measure to which the rate applies such as second, messages, etc.  (see list)</xs:documentation>
+                <xs:documentation>The unit of measure to which the rate applies such as second, messages, etc.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -7705,44 +7722,10 @@
   </xs:complexType>
   <xs:complexType name="LoaCodeType">
     <xs:sequence>
-      <xs:element name="ComponentTitle">
+      <xs:element name="ComponentTitle" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Component description. (see list)</xs:documentation>
+          <xs:documentation>Component description.  (see LOA Component list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Abbreviated DoD Budget Accounting Classification Code (BACC)"/>
-            <xs:enumeration value="Accounting Installation Number (L1)"/>
-            <xs:enumeration value="Basic Symbol Number"/>
-            <xs:enumeration value="Budget Activity Number"/>
-            <xs:enumeration value="Budget Program Activity"/>
-            <xs:enumeration value="Budget Sub Activity Number"/>
-            <xs:enumeration value="Component Sub-allocation Recipient"/>
-            <xs:enumeration value="Contract Payment Notice Recipient Number"/>
-            <xs:enumeration value="Cost Code"/>
-            <xs:enumeration value="Customer Indicator"/>
-            <xs:enumeration value="Defense Agency Allocation Recipient"/>
-            <xs:enumeration value="Department Indicator"/>
-            <xs:enumeration value="Detail Reimbursement Source Code"/>
-            <xs:enumeration value="Document or Record Reference Number"/>
-            <xs:enumeration value="Fiscal Year Indicator"/>
-            <xs:enumeration value="Foreign Military Sales Line Item Number"/>
-            <xs:enumeration value="Funds Appropriation (18)"/>
-            <xs:enumeration value="Government or Public Sector Identifier"/>
-            <xs:enumeration value="Local Installation Data"/>
-            <xs:enumeration value="Object Class"/>
-            <xs:enumeration value="Program Element"/>
-            <xs:enumeration value="Program Year Indicator"/>
-            <xs:enumeration value="Project Task or Budget Sub line"/>
-            <xs:enumeration value="Special Interest Code or Special Program Cost Code"/>
-            <xs:enumeration value="Sub Account Symbol"/>
-            <xs:enumeration value="Sub-allotment Recipient"/>
-            <xs:enumeration value="Sub-Class"/>
-            <xs:enumeration value="Transaction Type"/>
-            <xs:enumeration value="Transfer from Department"/>
-            <xs:enumeration value="Work Center Recipient"/>
-          </xs:restriction>
-        </xs:simpleType>
       </xs:element>
       <xs:element name="ComponentValue" type="xs:string">
         <xs:annotation>
@@ -7829,7 +7812,7 @@
   <xs:complexType name="OrganizationIDType">
     <xs:annotation>
       <xs:documentation>Organization ID as pre-defined by various entities.  Examples are DUNS, CAGE, DoDAAC etc. 
-In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:documentation>
+In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
       <xs:element name="AustinTetraNumber" minOccurs="0">
@@ -7849,7 +7832,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
       </xs:element>
       <xs:element name="CountryCode" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The three alpha character code of the country.  See ISO 3166 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>Three character alpha Country code from Geopolitical Entities, Names, and Codes (GENC).  (see Country list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -8478,6 +8461,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
         <xs:simpleType>
           <xs:restriction base="xs:token">
             <xs:enumeration value="Catalog"/>
+            <xs:enumeration value="Drained Net Weight"/>
             <xs:enumeration value="Estimated"/>
             <xs:enumeration value="Includes Government Furnished Property (GFP) - Incorporation"/>
             <xs:enumeration value="Includes Government Furnished Property (GFP) - Usage"/>
@@ -8489,9 +8473,9 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureType" minOccurs="0">
+      <xs:element name="UnitOfMeasure" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="UnitPrice" minOccurs="0">
@@ -8540,9 +8524,9 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
           <xs:documentation>Quantity.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureType">
+      <xs:element name="UnitOfMeasure" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -8562,9 +8546,9 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
           <xs:documentation>The upper end of the quantity range.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureType" minOccurs="0">
+      <xs:element name="UnitOfMeasure" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -8922,7 +8906,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
       </xs:element>
       <xs:element name="CountryISOA3Code" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Three character alpha Country code.  See ISO 3166 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>Three character alpha Country code from Geopolitical Entities, Names, and Codes (GENC).  (see Country list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -8932,7 +8916,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
       </xs:element>
       <xs:element name="CountryISON3Code" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>three digit numeric Country code.  See ISO 3166 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>Three digit numeric Country code from Geopolitical Entities, Names, and Codes (GENC).  (see Country list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -8942,7 +8926,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
       </xs:element>
       <xs:element name="CountryName" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The textual name of the country.  See ISO 3166 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>The textual name of the country from Geopolitical Entities, Names, and Codes (GENC).</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="LocationDirectionsText" minOccurs="0">
@@ -9250,9 +9234,9 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="SizeMeasurement" type="UnitOfMeasureType">
+      <xs:element name="SizeMeasurement" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The unit of measurement of the length, height, width. (see list)</xs:documentation>
+          <xs:documentation>The unit of measurement of the length, height, width.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -9283,9 +9267,9 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
           </xs:complexContent>
         </xs:complexType>
       </xs:element>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureType">
+      <xs:element name="UnitOfMeasure" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The unit of measure.  (see list)</xs:documentation>
+          <xs:documentation>The unit of measure.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -9643,9 +9627,9 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
                 <xs:documentation>The rate amount.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="RateUnitOfMeasure" type="UnitOfMeasureType">
+            <xs:element name="RateUnitOfMeasure" type="xs:string">
               <xs:annotation>
-                <xs:documentation>The unit of measure to which the rate applies such as second, messages, etc.  (see list)</xs:documentation>
+                <xs:documentation>The unit of measure to which the rate applies such as second, messages, etc.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -9845,9 +9829,9 @@ government-owned facilities or commercial companies.</xs:documentation>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="PieceSizeMeasurement" type="UnitOfMeasureType" minOccurs="0">
+      <xs:element name="PieceSizeMeasurement" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The unit of measurement of the individual piece's or supplier unit's size. (see list)</xs:documentation>
+          <xs:documentation>The unit of measurement of the individual piece's or supplier unit's size.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -9998,7 +9982,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       </xs:element>
       <xs:element name="Country">
         <xs:annotation>
-          <xs:documentation>The textual name of the country.  See ISO 3166 from the International Organization for Standardization for the correct values.</xs:documentation>
+          <xs:documentation>The textual name of the country from Geopolitical Entities, Names, and Codes (GENC).</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -10006,15 +9990,6 @@ government-owned facilities or commercial companies.</xs:documentation>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="ValueType1">
-    <xs:annotation>
-      <xs:documentation>Generic - Value, UOM pair</xs:documentation>
-    </xs:annotation>
-    <xs:sequence>
-      <xs:element name="Value" type="xs:float"/>
-      <xs:element name="UnitOfMeasure" type="UnitOfMeasureType"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="VariableRangePricingType">
@@ -10062,9 +10037,9 @@ government-owned facilities or commercial companies.</xs:documentation>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="VolumeMeasurement" type="UnitOfMeasureType">
+      <xs:element name="VolumeMeasurement" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The volume unit of measurement. (see list)</xs:documentation>
+          <xs:documentation>The volume unit of measurement.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -10081,9 +10056,9 @@ government-owned facilities or commercial companies.</xs:documentation>
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="WeightMeasurement" type="UnitOfMeasureType">
+      <xs:element name="WeightMeasurement" type="xs:string">
         <xs:annotation>
-          <xs:documentation>The weight unit of measurement. (see list)</xs:documentation>
+          <xs:documentation>The weight unit of measurement.  (see Unit of Measure Without Dollars list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="WeightDescription" type="PackWeightDescriptionType" minOccurs="0">
@@ -10143,180 +10118,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Target Price"/>
       <xs:enumeration value="Target Profit"/>
       <xs:enumeration value="Header Only - Total Contract Value"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="AttachmentDataFormatType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Attachment Format Descriptions</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="ABAQUS File (FIL)"/>
-      <xs:enumeration value="Access Database (ACCDB)"/>
-      <xs:enumeration value="Access Database (MDB)"/>
-      <xs:enumeration value="Access Form File (FRM)"/>
-      <xs:enumeration value="Acrobat Portable Document Format (PDF)"/>
-      <xs:enumeration value="ArcView Design Drawing File (DGN)"/>
-      <xs:enumeration value="ArcView Geocoding Support Table (TBL)"/>
-      <xs:enumeration value="ArcView Image File (BIL)"/>
-      <xs:enumeration value="ArcView Image File (BIP)"/>
-      <xs:enumeration value="ArchiCAD 3D Model File (PLN)"/>
-      <xs:enumeration value="AudioVideo Interleave File (AVI)"/>
-      <xs:enumeration value="AutoCAD Drawing Database (DWG)"/>
-      <xs:enumeration value="AutoCAD Drawing Interchange Format (DXF)"/>
-      <xs:enumeration value="AutoCAD Plot drawing (PLT)"/>
-      <xs:enumeration value="Autodesk Design Web Format (DWF)"/>
-      <xs:enumeration value="Autodesk Revit File (RVT)"/>
-      <xs:enumeration value="Batch Processing (BAT)"/>
-      <xs:enumeration value="Batchplot File (JOB)"/>
-      <xs:enumeration value="Bentley Digital Print Format (DPR)"/>
-      <xs:enumeration value="Bentley Navigator File (JSM)"/>
-      <xs:enumeration value="CAD Overlay (IGS)"/>
-      <xs:enumeration value="CAMtasticLayer20GerberData (G20)"/>
-      <xs:enumeration value="Comma Delimited Coordinate File (XYZ)"/>
-      <xs:enumeration value="Comma-Separated Variables (CSV)"/>
-      <xs:enumeration value="Compressed Archive File (ZIP)"/>
-      <xs:enumeration value="Data Exchange File - Symbolic Link Format (SLK)"/>
-      <xs:enumeration value="Database Text File (DBT)"/>
-      <xs:enumeration value="Digital Terrain Model (DTM)"/>
-      <xs:enumeration value="Drawing Binary File (DWG)"/>
-      <xs:enumeration value="Edimics (C4)"/>
-      <xs:enumeration value="ESRI Layer File (LYR)"/>
-      <xs:enumeration value="ESRI ArcMap Map File (MXD)"/>
-      <xs:enumeration value="Excel Macro-Enabled Workbook (XLSM)"/>
-      <xs:enumeration value="Excel Microsoft Office Open XML Format Spreadsheet (XLSX)"/>
-      <xs:enumeration value="Executable File (EXE)"/>
-      <xs:enumeration value="Extensible Markup Language File (XML)"/>
-      <xs:enumeration value="GEOPAK Survey File (COR)"/>
-      <xs:enumeration value="Google Earth Archive File (KMZ)"/>
-      <xs:enumeration value="Graph Coordinates (XYZ)"/>
-      <xs:enumeration value="Graphic Interchange Format (GIF)"/>
-      <xs:enumeration value="Hemera Thumbnail Archive (HTA)"/>
-      <xs:enumeration value="Hypertext Markup Language (HTML)"/>
-      <xs:enumeration value="Inno Setup String Tables File (SHL)"/>
-      <xs:enumeration value="InRoads Survey Alignment File (ALG)"/>
-      <xs:enumeration value="JPEG/JIFF Image (JPEG)"/>
-      <xs:enumeration value="JPEG/JIFF Image (JPG)"/>
-      <xs:enumeration value="Keyhole Markup Language File (KML)"/>
-      <xs:enumeration value="Log File (LOG)"/>
-      <xs:enumeration value="MPEG 1 System Stream (MPG)"/>
-      <xs:enumeration value="MPEG Audio Stream, Layer III (MP3)"/>
-      <xs:enumeration value="InRoads Preferences File (XIN)"/>
-      <xs:enumeration value="InRoads Project File (RWK)"/>
-      <xs:enumeration value="InRoads Roadway Library (RWL)"/>
-      <xs:enumeration value="InRoads Survey Data (FWD)"/>
-      <xs:enumeration value="InRoads Survey Feature Table (FWF)"/>
-      <xs:enumeration value="InRoads Survey Preference File (FXP)"/>
-      <xs:enumeration value="Iplot Organizer Set File (IPS)"/>
-      <xs:enumeration value="Microsoft Excel Template (XLTX)"/>
-      <xs:enumeration value="Microsoft Excel Template with Macros Enabled (XLTM)"/>
-      <xs:enumeration value="Microsoft Excel Worksheet (XLS)"/>
-      <xs:enumeration value="Microsoft Excel Worksheet (XLSX)"/>
-      <xs:enumeration value="Microsoft Excel Worksheet with Macros Enabled (XLSM)"/>
-      <xs:enumeration value="Microsoft PowerPoint Presentation (PPT)"/>
-      <xs:enumeration value="Microsoft Project File (PRJ)"/>
-      <xs:enumeration value="Microsoft Project Project (MPP)"/>
-      <xs:enumeration value="MicroStation 2D Design File (2D)"/>
-      <xs:enumeration value="MicroStation 3D Design File (3D)"/>
-      <xs:enumeration value="MicroStation Cell Library (CEL)"/>
-      <xs:enumeration value="MicroStation Design File (DGN)"/>
-      <xs:enumeration value="MicroStation Design Library File (DGNLIB)"/>
-      <xs:enumeration value="Office Document Imaging File (MDI)"/>
-      <xs:enumeration value="OpenOffice 1.0 Math File (SXM)"/>
-      <xs:enumeration value="OpenOffice Calc Spreadsheet File (ODS)"/>
-      <xs:enumeration value="OpenOffice Formula File (ODF)"/>
-      <xs:enumeration value="OpenOffice Graphics Document Template (OTG)"/>
-      <xs:enumeration value="OpenOffice Mail Document File (SMD)"/>
-      <xs:enumeration value="OpenOffice Master Document (SXG)"/>
-      <xs:enumeration value="OpenOffice OpenDocument File (ODC)"/>
-      <xs:enumeration value="OpenOffice OpenDocument Global Text Document (ODM)"/>
-      <xs:enumeration value="OpenOffice OpenDocument HTML Text Template (OTH)"/>
-      <xs:enumeration value="OpenOffice OpenDocument Presentation File (ODP)"/>
-      <xs:enumeration value="OpenOffice OpenDocument Spreadsheet Template File (OTS)"/>
-      <xs:enumeration value="OpenOffice Presentation (SDD)"/>
-      <xs:enumeration value="OpenOffice Presentation File (SDP)"/>
-      <xs:enumeration value="OpenOffice Presentation File (SXI)"/>
-      <xs:enumeration value="OpenOffice Presentation Template (OTP)"/>
-      <xs:enumeration value="OpenOffice Presentation Template (STI)"/>
-      <xs:enumeration value="OpenOffice Spreadsheet (SDC)"/>
-      <xs:enumeration value="OpenOffice Spreadsheet File (SXC)"/>
-      <xs:enumeration value="OpenOffice Template File (VOR)"/>
-      <xs:enumeration value="OpenOffice Text Document (SDW)"/>
-      <xs:enumeration value="OpenOffice Text Document Template (OTT)"/>
-      <xs:enumeration value="OpenOffice Text Document Template (STW)"/>
-      <xs:enumeration value="OpenOffice Writer Document (SXW)"/>
-      <xs:enumeration value="OpenOffice Writer Text Document (ODT)"/>
-      <xs:enumeration value="Portable Network Graphics (PNG)"/>
-      <xs:enumeration value="Power Point HTML Document (PPTHTML)"/>
-      <xs:enumeration value="Power Point Microsoft Office Open XML Format Presentation (PPTX)"/>
-      <xs:enumeration value="Power Point Microsoft Office Open XML Format Presentation with Macros Enabled (PPTM)"/>
-      <xs:enumeration value="Power Point Microsoft Office Open XML Format Presentation Slide Show with Macros Enabled (PPSM)"/>
-      <xs:enumeration value="Power Point Slideshow (PPS)"/>
-      <xs:enumeration value="Power Point Slideshow (PPSX)"/>
-      <xs:enumeration value="Print Organizer Set File (PSET)"/>
-      <xs:enumeration value="QuattroPro for Windows Spreadsheet (WB3)"/>
-      <xs:enumeration value="Rich Text Format File (RTF)"/>
-      <xs:enumeration value="Shell Scrap Object File (SHS)"/>
-      <xs:enumeration value="Standard Generalized Markup Language IETF Document (SGML)"/>
-      <xs:enumeration value="Tagged Image Format File (TIF)"/>
-      <xs:enumeration value="Text File (TXT)"/>
-      <xs:enumeration value="Triangulated Irregular Networks File (TIN)"/>
-      <xs:enumeration value="Video CD File (SVD)"/>
-      <xs:enumeration value="Visio Drawing (VSD)"/>
-      <xs:enumeration value="WinRAR Archive (RAR)"/>
-      <xs:enumeration value="Windows OS/2 Bitmap Graphics (BMP)"/>
-      <xs:enumeration value="Word Document (DOC)"/>
-      <xs:enumeration value="Word Document (DOCX)"/>
-      <xs:enumeration value="Word Document Template (DOT)"/>
-      <xs:enumeration value="Word Document Template (DOTX)"/>
-      <xs:enumeration value="Word Microsoft Office Open XML Format Document (DOCX)"/>
-      <xs:enumeration value="Word Microsoft Office Open XML Format Document with Macros Enabled (DOCM)"/>
-      <xs:enumeration value="Word Microsoft Office Open XML Format Template (DOTX)"/>
-      <xs:enumeration value="Word Microsoft Office Open XML Format Template with Macros Enabled (DOTM)"/>
-      <xs:enumeration value="Word Perfect (WPD)"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="AttachmentStandardType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Attachment Content Descriptions</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="BUY AMERICA Certificate of Compliance"/>
-      <xs:enumeration value="Certificate of Conformance"/>
-      <xs:enumeration value="Certified Cost and Price Data"/>
-      <xs:enumeration value="Certified Inspection and Test Results"/>
-      <xs:enumeration value="Contract Data Requirements List (CDRL)"/>
-      <xs:enumeration value="Contract Funds Status Report (CFSR)"/>
-      <xs:enumeration value="Contract Security Classification Specification (DD 254)"/>
-      <xs:enumeration value="Cost Data Summary"/>
-      <xs:enumeration value="Cost Performance Report (CPR) Format 1"/>
-      <xs:enumeration value="Cost Performance Report (CPR) Format 2"/>
-      <xs:enumeration value="Cost Performance Report (CPR) Format 3"/>
-      <xs:enumeration value="Cost Performance Report (CPR) Format 4"/>
-      <xs:enumeration value="Cost Performance Report (CPR) Format 5"/>
-      <xs:enumeration value="Cost/Schedule Status Report (C/SSR)"/>
-      <xs:enumeration value="Drawings"/>
-      <xs:enumeration value="Embedded IUID List"/>
-      <xs:enumeration value="Government Furnished Equipment List"/>
-      <xs:enumeration value="Government Furnished Information List"/>
-      <xs:enumeration value="Make or Buy Plan"/>
-      <xs:enumeration value="Material Safety Data Sheet"/>
-      <xs:enumeration value="Payment and Performance Bond"/>
-      <xs:enumeration value="Performance Based Payment Schedule"/>
-      <xs:enumeration value="Performance Work Statement"/>
-      <xs:enumeration value="Proof of Insurance"/>
-      <xs:enumeration value="Proposal"/>
-      <xs:enumeration value="Purchase Plan"/>
-      <xs:enumeration value="Requisitioned Government Furnished Property"/>
-      <xs:enumeration value="Scheduled Government Furnished Property"/>
-      <xs:enumeration value="Small Business Subcontracting Plan"/>
-      <xs:enumeration value="Specification"/>
-      <xs:enumeration value="Statement of Objectives"/>
-      <xs:enumeration value="Statement of Work"/>
-      <xs:enumeration value="Subcontractor Plan"/>
-      <xs:enumeration value="Supporting Technical Documentation"/>
-      <xs:enumeration value="Wage Determination"/>
-      <xs:enumeration value="Warranty Repair Source Instruction"/>
-      <xs:enumeration value="Warranty Tracking Information"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="Classification">
@@ -11050,83 +10851,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Must Ship Complete"/>
       <xs:enumeration value="Restricted to Qualified Products List (QPL) Products"/>
       <xs:enumeration value="Shipped in Place"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="OrganizationQualifierRoleType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:   Organization/Location Descriptions</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="Acceptance Location"/>
-      <xs:enumeration value="Audit Office"/>
-      <xs:enumeration value="Authorized Accepting Official"/>
-      <xs:enumeration value="Authorized Entity to Place Orders"/>
-      <xs:enumeration value="Bid Opening Location"/>
-      <xs:enumeration value="Bonding Organization"/>
-      <xs:enumeration value="CDRL-Approver"/>
-      <xs:enumeration value="CDRL-Preliminary Inspection Location"/>
-      <xs:enumeration value="CDRL-Preparer"/>
-      <xs:enumeration value="CDRL-Vendor"/>
-      <xs:enumeration value="Cognizant Security Office"/>
-      <xs:enumeration value="Construction Field Office"/>
-      <xs:enumeration value="Construction Site"/>
-      <xs:enumeration value="Contract Administrative Office"/>
-      <xs:enumeration value="Contract Issuing Office"/>
-      <xs:enumeration value="Contracting Officer Representative"/>
-      <xs:enumeration value="Contractor"/>
-      <xs:enumeration value="Delivery Zone"/>
-      <xs:enumeration value="Disclosure Approval Organization"/>
-      <xs:enumeration value="Facility"/>
-      <xs:enumeration value="Foreign Military Sales Country"/>
-      <xs:enumeration value="Free on Board Point"/>
-      <xs:enumeration value="Freight Forwarder"/>
-      <xs:enumeration value="Government Furnished Property FOB Point"/>
-      <xs:enumeration value="Government Furnished Property Inspection Site"/>
-      <xs:enumeration value="Government Furnished Property Pick Up Site"/>
-      <xs:enumeration value="Government Project Manager"/>
-      <xs:enumeration value="Government Property Office"/>
-      <xs:enumeration value="Hazardous Material Office"/>
-      <xs:enumeration value="Inspection and Acceptance Location"/>
-      <xs:enumeration value="Inspection Location"/>
-      <xs:enumeration value="Insurance Company"/>
-      <xs:enumeration value="International Freight Forwarder"/>
-      <xs:enumeration value="Inventory Control Point"/>
-      <xs:enumeration value="Mark for Party"/>
-      <xs:enumeration value="Material Safety Data Sheet Recipient"/>
-      <xs:enumeration value="Outside Inspection Agency"/>
-      <xs:enumeration value="Party Authorized to Definitize Contract Action"/>
-      <xs:enumeration value="Party to Perform Packaging"/>
-      <xs:enumeration value="Party to receive Award Instrument"/>
-      <xs:enumeration value="Party to receive Certificate of Conformance"/>
-      <xs:enumeration value="Party to receive Certified Inspection Report"/>
-      <xs:enumeration value="Party to receive Certified Test Results"/>
-      <xs:enumeration value="Party to receive Inspection"/>
-      <xs:enumeration value="Party to receive Invoice"/>
-      <xs:enumeration value="Party to receive Proposal"/>
-      <xs:enumeration value="Party to receive Reports"/>
-      <xs:enumeration value="Party to receive Shipping Manifest"/>
-      <xs:enumeration value="Party to receive Shipping Notice"/>
-      <xs:enumeration value="Party to receive Solicitation"/>
-      <xs:enumeration value="Paying Office"/>
-      <xs:enumeration value="Physical Address"/>
-      <xs:enumeration value="Pick up Address"/>
-      <xs:enumeration value="Place of Performance"/>
-      <xs:enumeration value="Pre-Proposal Conference Location"/>
-      <xs:enumeration value="Pre-Proposal Property Inspection Location"/>
-      <xs:enumeration value="Pre-Solicitation Conference Location"/>
-      <xs:enumeration value="Remit To"/>
-      <xs:enumeration value="Requirements Approver"/>
-      <xs:enumeration value="Requiring Activity"/>
-      <xs:enumeration value="Resource Management Office"/>
-      <xs:enumeration value="SBA Contracting Office"/>
-      <xs:enumeration value="Service Performance Site"/>
-      <xs:enumeration value="Ship To"/>
-      <xs:enumeration value="Shipment in Place Location"/>
-      <xs:enumeration value="Subcontractor"/>
-      <xs:enumeration value="Survey Site"/>
-      <xs:enumeration value="Technical Office"/>
-      <xs:enumeration value="Telecom Demander"/>
-      <xs:enumeration value="Transportation Office"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="PackWeightDescriptionType">
@@ -12981,1441 +12705,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Three Day Service"/>
       <xs:enumeration value="Tracking - Ground"/>
       <xs:enumeration value="Work Train"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="UnitOfMeasureType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Unit Of Measure without dollar values</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="10 Kilogram Drum"/>
-      <xs:enumeration value="10,000 Gallon Tankcar"/>
-      <xs:enumeration value="100 Board Feet"/>
-      <xs:enumeration value="100 Kilograms"/>
-      <xs:enumeration value="100 Lineal Yards"/>
-      <xs:enumeration value="100 Pound Drum"/>
-      <xs:enumeration value="1000 Cubic Feet"/>
-      <xs:enumeration value="1000 Meters"/>
-      <xs:enumeration value="100-Pack"/>
-      <xs:enumeration value="115 Kilogram Drum"/>
-      <xs:enumeration value="15 Kilogram Drum"/>
-      <xs:enumeration value="20 Foot Container"/>
-      <xs:enumeration value="20,000 Gallon Tankcar"/>
-      <xs:enumeration value="20-Pack"/>
-      <xs:enumeration value="25 Kilogram Bulk Bag"/>
-      <xs:enumeration value="300 Kilogram Bulk Bag"/>
-      <xs:enumeration value="40 Foot Container"/>
-      <xs:enumeration value="50 Pound Bag"/>
-      <xs:enumeration value="500 Kilogram Bulk Bag"/>
-      <xs:enumeration value="55 Gallon Drum"/>
-      <xs:enumeration value="Access Lines"/>
-      <xs:enumeration value="Acre"/>
-      <xs:enumeration value="Actual Kilograms"/>
-      <xs:enumeration value="Actual Pounds"/>
-      <xs:enumeration value="Actual Tonnes"/>
-      <xs:enumeration value="Actual Tons"/>
-      <xs:enumeration value="Additional Minutes"/>
-      <xs:enumeration value="Air Dry Metric Ton"/>
-      <xs:enumeration value="Aluminum Pounds Only"/>
-      <xs:enumeration value="Ampoule"/>
-      <xs:enumeration value="Anti-hemophilic Factor (AHF) Units"/>
-      <xs:enumeration value="Apothecary Dram"/>
-      <xs:enumeration value="Apothecary Grain"/>
-      <xs:enumeration value="Apothecary Ounce"/>
-      <xs:enumeration value="Apothecary Pound"/>
-      <xs:enumeration value="Apothecary Scruple"/>
-      <xs:enumeration value="Application"/>
-      <xs:enumeration value="Assembly"/>
-      <xs:enumeration value="Assortment"/>
-      <xs:enumeration value="Atmosphere"/>
-      <xs:enumeration value="Bag"/>
-      <xs:enumeration value="Bale"/>
-      <xs:enumeration value="Ball"/>
-      <xs:enumeration value="Band"/>
-      <xs:enumeration value="Bar"/>
-      <xs:enumeration value="Barge"/>
-      <xs:enumeration value="Barrel"/>
-      <xs:enumeration value="Barrel, Dry"/>
-      <xs:enumeration value="Barrel, Imperial"/>
-      <xs:enumeration value="Barrel, Liquid"/>
-      <xs:enumeration value="Base Box"/>
-      <xs:enumeration value="Base Weight"/>
-      <xs:enumeration value="Basis Points"/>
-      <xs:enumeration value="Basket"/>
-      <xs:enumeration value="Batch"/>
-      <xs:enumeration value="Batt"/>
-      <xs:enumeration value="Batting Pound"/>
-      <xs:enumeration value="Beam"/>
-      <xs:enumeration value="Belt"/>
-      <xs:enumeration value="Billboard"/>
-      <xs:enumeration value="Billet"/>
-      <xs:enumeration value="Bimonthly"/>
-      <xs:enumeration value="Bin"/>
-      <xs:enumeration value="Biweekly"/>
-      <xs:enumeration value="Block"/>
-      <xs:enumeration value="Board"/>
-      <xs:enumeration value="Board Feet"/>
-      <xs:enumeration value="Bobbin"/>
-      <xs:enumeration value="Bolt"/>
-      <xs:enumeration value="Book"/>
-      <xs:enumeration value="Bottle"/>
-      <xs:enumeration value="Box"/>
-      <xs:enumeration value="Briquet"/>
-      <xs:enumeration value="British Thermal Unit (BTU)"/>
-      <xs:enumeration value="Brush"/>
-      <xs:enumeration value="Bucket"/>
-      <xs:enumeration value="Bulk"/>
-      <xs:enumeration value="Bulk Car Load"/>
-      <xs:enumeration value="Bulk Pack"/>
-      <xs:enumeration value="Bun"/>
-      <xs:enumeration value="Bunch"/>
-      <xs:enumeration value="Bundle"/>
-      <xs:enumeration value="Bunks"/>
-      <xs:enumeration value="Bushel"/>
-      <xs:enumeration value="Bushel, Dry Imperial"/>
-      <xs:enumeration value="Bytes"/>
-      <xs:enumeration value="Caboose Count"/>
-      <xs:enumeration value="Caboose Mile"/>
-      <xs:enumeration value="Cake"/>
-      <xs:enumeration value="Calendar Days"/>
-      <xs:enumeration value="Calls"/>
-      <xs:enumeration value="Calorie"/>
-      <xs:enumeration value="Can"/>
-      <xs:enumeration value="Cap"/>
-      <xs:enumeration value="Capsule"/>
-      <xs:enumeration value="Car"/>
-      <xs:enumeration value="Car Count"/>
-      <xs:enumeration value="Car Mile"/>
-      <xs:enumeration value="Carat"/>
-      <xs:enumeration value="Carboy"/>
-      <xs:enumeration value="Card"/>
-      <xs:enumeration value="Carload"/>
-      <xs:enumeration value="Carset"/>
-      <xs:enumeration value="Carton"/>
-      <xs:enumeration value="Cartridge"/>
-      <xs:enumeration value="Cartridge Needle"/>
-      <xs:enumeration value="Case"/>
-      <xs:enumeration value="Cask"/>
-      <xs:enumeration value="Cassette"/>
-      <xs:enumeration value="Catchweight"/>
-      <xs:enumeration value="Cell"/>
-      <xs:enumeration value="Centigram"/>
-      <xs:enumeration value="Centiliter"/>
-      <xs:enumeration value="Centimeter"/>
-      <xs:enumeration value="Chains (Land Survey)"/>
-      <xs:enumeration value="Channel"/>
-      <xs:enumeration value="Chest"/>
-      <xs:enumeration value="Clove"/>
-      <xs:enumeration value="Coil"/>
-      <xs:enumeration value="Coil Group"/>
-      <xs:enumeration value="Combo"/>
-      <xs:enumeration value="Composite Product Pounds (Total Weight)"/>
-      <xs:enumeration value="Cone"/>
-      <xs:enumeration value="Conference Points"/>
-      <xs:enumeration value="Connector"/>
-      <xs:enumeration value="Container"/>
-      <xs:enumeration value="Cop"/>
-      <xs:enumeration value="Cord"/>
-      <xs:enumeration value="Cost"/>
-      <xs:enumeration value="Count"/>
-      <xs:enumeration value="Cover"/>
-      <xs:enumeration value="Crate"/>
-      <xs:enumeration value="Cubic Centimeter"/>
-      <xs:enumeration value="Cubic Decimeter"/>
-      <xs:enumeration value="Cubic Feet"/>
-      <xs:enumeration value="Cubic Inches"/>
-      <xs:enumeration value="Cubic Meter"/>
-      <xs:enumeration value="Cubic Meters (Net)"/>
-      <xs:enumeration value="Cubic Yard"/>
-      <xs:enumeration value="Cup"/>
-      <xs:enumeration value="Curl Units"/>
-      <xs:enumeration value="Cycles"/>
-      <xs:enumeration value="Cylinder"/>
-      <xs:enumeration value="Data Records"/>
-      <xs:enumeration value="Days"/>
-      <xs:enumeration value="Decagram"/>
-      <xs:enumeration value="Decibels"/>
-      <xs:enumeration value="Decigram"/>
-      <xs:enumeration value="Deciliter"/>
-      <xs:enumeration value="Decimeter"/>
-      <xs:enumeration value="Directory Books"/>
-      <xs:enumeration value="Disk (Disc)"/>
-      <xs:enumeration value="Dispenser"/>
-      <xs:enumeration value="Display"/>
-      <xs:enumeration value="Dosage Form"/>
-      <xs:enumeration value="Double-time Hours"/>
-      <xs:enumeration value="Dozen"/>
-      <xs:enumeration value="Dozen Pair"/>
-      <xs:enumeration value="Draize Score"/>
-      <xs:enumeration value="Dram"/>
-      <xs:enumeration value="Dram (Minim)"/>
-      <xs:enumeration value="Drop"/>
-      <xs:enumeration value="Drum"/>
-      <xs:enumeration value="Dry Pounds"/>
-      <xs:enumeration value="Dry Quarts"/>
-      <xs:enumeration value="Dry Ton"/>
-      <xs:enumeration value="Duty"/>
-      <xs:enumeration value="Each"/>
-      <xs:enumeration value="Eight-pack"/>
-      <xs:enumeration value="Electronic Mail Boxes"/>
-      <xs:enumeration value="Eleven pack"/>
-      <xs:enumeration value="Employees"/>
-      <xs:enumeration value="Empty Car"/>
-      <xs:enumeration value="English (Feet, Inches)"/>
-      <xs:enumeration value="Envelope"/>
-      <xs:enumeration value="Equivalent"/>
-      <xs:enumeration value="Equivalent Gallons"/>
-      <xs:enumeration value="Fahrenheit"/>
-      <xs:enumeration value="Family Unit"/>
-      <xs:enumeration value="Fathom"/>
-      <xs:enumeration value="Feet and Decimal"/>
-      <xs:enumeration value="Feet, Inches and Decimal"/>
-      <xs:enumeration value="Feet, Inches and Fraction"/>
-      <xs:enumeration value="Fibers"/>
-      <xs:enumeration value="Fields"/>
-      <xs:enumeration value="Fifty"/>
-      <xs:enumeration value="Fifty Count"/>
-      <xs:enumeration value="Fifty Square Feet"/>
-      <xs:enumeration value="Five"/>
-      <xs:enumeration value="Five Hundred"/>
-      <xs:enumeration value="Five-pack"/>
-      <xs:enumeration value="Fixed Rate"/>
-      <xs:enumeration value="Flake Ton"/>
-      <xs:enumeration value="Flat"/>
-      <xs:enumeration value="Flight Hours"/>
-      <xs:enumeration value="Fluid Ounce"/>
-      <xs:enumeration value="Fluid Ounce (Imperial)"/>
-      <xs:enumeration value="Fold"/>
-      <xs:enumeration value="Foot"/>
-      <xs:enumeration value="Foot Pounds"/>
-      <xs:enumeration value="Four-pack"/>
-      <xs:enumeration value="Frames"/>
-      <xs:enumeration value="Fuel Usage (Gallons)"/>
-      <xs:enumeration value="Furlong"/>
-      <xs:enumeration value="Gage Systems"/>
-      <xs:enumeration value="Gallon"/>
-      <xs:enumeration value="Gill (Imperial)"/>
-      <xs:enumeration value="Grain"/>
-      <xs:enumeration value="Gram"/>
-      <xs:enumeration value="Great Gross (Dozen Gross)"/>
-      <xs:enumeration value="Gross"/>
-      <xs:enumeration value="Gross Barrels"/>
-      <xs:enumeration value="Gross Gallons"/>
-      <xs:enumeration value="Gross Kilogram"/>
-      <xs:enumeration value="Gross Ton"/>
-      <xs:enumeration value="Gross Yard"/>
-      <xs:enumeration value="Group"/>
-      <xs:enumeration value="Half Dozen"/>
-      <xs:enumeration value="Half Gallon"/>
-      <xs:enumeration value="Half Hour"/>
-      <xs:enumeration value="Half Liter"/>
-      <xs:enumeration value="Half Pages - Electronic"/>
-      <xs:enumeration value="Half Pint"/>
-      <xs:enumeration value="Hank"/>
-      <xs:enumeration value="Head"/>
-      <xs:enumeration value="Heart"/>
-      <xs:enumeration value="Heat Lots"/>
-      <xs:enumeration value="Hectare"/>
-      <xs:enumeration value="Hectogram"/>
-      <xs:enumeration value="Hectoliter"/>
-      <xs:enumeration value="Hectometer"/>
-      <xs:enumeration value="Hogshead"/>
-      <xs:enumeration value="Horsepower"/>
-      <xs:enumeration value="Hospital Beds"/>
-      <xs:enumeration value="Hours"/>
-      <xs:enumeration value="Hundred"/>
-      <xs:enumeration value="Hundred Boxes"/>
-      <xs:enumeration value="Hundred Count"/>
-      <xs:enumeration value="Hundred Cubic Feet"/>
-      <xs:enumeration value="Hundred Cubic Meters"/>
-      <xs:enumeration value="Hundred Feet"/>
-      <xs:enumeration value="Hundred Feet - Linear"/>
-      <xs:enumeration value="Hundred Kilograms"/>
-      <xs:enumeration value="Hundred Pounds (CWT)"/>
-      <xs:enumeration value="Hundred Sheets"/>
-      <xs:enumeration value="Hundred Square Feet"/>
-      <xs:enumeration value="Hundred Troy Ounces"/>
-      <xs:enumeration value="Hundred Weight (Long)"/>
-      <xs:enumeration value="Hundred Weight (Short)"/>
-      <xs:enumeration value="Hundred Yards"/>
-      <xs:enumeration value="Hundredth of a Carat"/>
-      <xs:enumeration value="Imperial Gallons"/>
-      <xs:enumeration value="Impressions"/>
-      <xs:enumeration value="Inch"/>
-      <xs:enumeration value="Inches of Water"/>
-      <xs:enumeration value="Inches, Decimal--Actual"/>
-      <xs:enumeration value="Inches, Decimal--Average"/>
-      <xs:enumeration value="Inches, Decimal-Minimum"/>
-      <xs:enumeration value="Inches, Decimal--Nominal"/>
-      <xs:enumeration value="Inches, Fraction--Actual"/>
-      <xs:enumeration value="Inches, Fraction--Average"/>
-      <xs:enumeration value="Inches, Fraction--Minimum"/>
-      <xs:enumeration value="Inches, Fraction-Nominal"/>
-      <xs:enumeration value="Inhalation"/>
-      <xs:enumeration value="Inhaler"/>
-      <xs:enumeration value="International Unit"/>
-      <xs:enumeration value="Jar"/>
-      <xs:enumeration value="Job"/>
-      <xs:enumeration value="Joint"/>
-      <xs:enumeration value="Joules"/>
-      <xs:enumeration value="Jug"/>
-      <xs:enumeration value="Jumbo"/>
-      <xs:enumeration value="Keg"/>
-      <xs:enumeration value="Kilobyte"/>
-      <xs:enumeration value="Kilocharacters"/>
-      <xs:enumeration value="Kilogram"/>
-      <xs:enumeration value="Kilograms Decimal"/>
-      <xs:enumeration value="Kiloliter"/>
-      <xs:enumeration value="Kilometers"/>
-      <xs:enumeration value="Kilopackets"/>
-      <xs:enumeration value="Kilosegments"/>
-      <xs:enumeration value="Kilovolt Amperes Reactive Hour"/>
-      <xs:enumeration value="Kilowatt Demand"/>
-      <xs:enumeration value="Kilowatt Hour"/>
-      <xs:enumeration value="Kit"/>
-      <xs:enumeration value="Labor Hours"/>
-      <xs:enumeration value="Landings"/>
-      <xs:enumeration value="Large Spray"/>
-      <xs:enumeration value="Layer(s)"/>
-      <xs:enumeration value="Leaf"/>
-      <xs:enumeration value="Length"/>
-      <xs:enumeration value="Lifetime"/>
-      <xs:enumeration value="Lift Van"/>
-      <xs:enumeration value="Lifts"/>
-      <xs:enumeration value="Linear Centimeter"/>
-      <xs:enumeration value="Linear Foot"/>
-      <xs:enumeration value="Linear Inch"/>
-      <xs:enumeration value="Linear Meter"/>
-      <xs:enumeration value="Linear Yard"/>
-      <xs:enumeration value="Link"/>
-      <xs:enumeration value="Liquid Pounds"/>
-      <xs:enumeration value="Lite"/>
-      <xs:enumeration value="Liter"/>
-      <xs:enumeration value="Liters at 15 Degrees Celsius"/>
-      <xs:enumeration value="Load"/>
-      <xs:enumeration value="Loaf"/>
-      <xs:enumeration value="Locations"/>
-      <xs:enumeration value="Locomotive Count"/>
-      <xs:enumeration value="Locomotive Mile"/>
-      <xs:enumeration value="Long Ton"/>
-      <xs:enumeration value="Lot"/>
-      <xs:enumeration value="Lozenge"/>
-      <xs:enumeration value="Lug"/>
-      <xs:enumeration value="Machine/Unit"/>
-      <xs:enumeration value="Magnetic Tapes"/>
-      <xs:enumeration value="Manmonth"/>
-      <xs:enumeration value="Mass Pounds"/>
-      <xs:enumeration value="Mat"/>
-      <xs:enumeration value="Meal"/>
-      <xs:enumeration value="Megabyte"/>
-      <xs:enumeration value="Megagram"/>
-      <xs:enumeration value="Megajoule"/>
-      <xs:enumeration value="Mesh"/>
-      <xs:enumeration value="Message Hours"/>
-      <xs:enumeration value="Messages"/>
-      <xs:enumeration value="Meter"/>
-      <xs:enumeration value="Metric"/>
-      <xs:enumeration value="Metric Gross Ton"/>
-      <xs:enumeration value="Metric Long Ton"/>
-      <xs:enumeration value="Metric Net Ton"/>
-      <xs:enumeration value="Metric Ton"/>
-      <xs:enumeration value="Metric Ton Kilograms"/>
-      <xs:enumeration value="Micro Inch"/>
-      <xs:enumeration value="Microfiche Sheet"/>
-      <xs:enumeration value="Microgram"/>
-      <xs:enumeration value="Microliter"/>
-      <xs:enumeration value="Micromolar"/>
-      <xs:enumeration value="Microns (Micrometers)"/>
-      <xs:enumeration value="Mil"/>
-      <xs:enumeration value="Miles"/>
-      <xs:enumeration value="Milliequivalent"/>
-      <xs:enumeration value="Milligram"/>
-      <xs:enumeration value="Milliliter"/>
-      <xs:enumeration value="Milliliters of Water"/>
-      <xs:enumeration value="Millimeter"/>
-      <xs:enumeration value="Millimeter-Actual"/>
-      <xs:enumeration value="Millimeter-Average"/>
-      <xs:enumeration value="Millimeter-minimum"/>
-      <xs:enumeration value="Millimeter-Nominal"/>
-      <xs:enumeration value="Millimeters of Mercury"/>
-      <xs:enumeration value="Million British Thermal Units"/>
-      <xs:enumeration value="Million Cubic Feet"/>
-      <xs:enumeration value="Million Units"/>
-      <xs:enumeration value="Minim"/>
-      <xs:enumeration value="Minutes"/>
-      <xs:enumeration value="Minutes or Messages"/>
-      <xs:enumeration value="Mixed"/>
-      <xs:enumeration value="Mole (mol)"/>
-      <xs:enumeration value="Months"/>
-      <xs:enumeration value="Nautical Mile"/>
-      <xs:enumeration value="Net Barrels"/>
-      <xs:enumeration value="Net Gallons"/>
-      <xs:enumeration value="Net Imperial Gallons"/>
-      <xs:enumeration value="Net Kilograms"/>
-      <xs:enumeration value="Net Liters"/>
-      <xs:enumeration value="Net Ton (2,000 LB)."/>
-      <xs:enumeration value="Newspaper Agate Line"/>
-      <xs:enumeration value="Nights"/>
-      <xs:enumeration value="Nine pack"/>
-      <xs:enumeration value="Number of Lines"/>
-      <xs:enumeration value="Number of Mults"/>
-      <xs:enumeration value="Number of Screens"/>
-      <xs:enumeration value="Ocular Insert System"/>
-      <xs:enumeration value="Operating Unit"/>
-      <xs:enumeration value="Ounce - Av"/>
-      <xs:enumeration value="Outfit"/>
-      <xs:enumeration value="Outlet"/>
-      <xs:enumeration value="Overtime Hours"/>
-      <xs:enumeration value="Pack (PAK)"/>
-      <xs:enumeration value="Package"/>
-      <xs:enumeration value="Packet"/>
-      <xs:enumeration value="Pad"/>
-      <xs:enumeration value="Page"/>
-      <xs:enumeration value="Pages - Electronic"/>
-      <xs:enumeration value="Pages - Facsimile"/>
-      <xs:enumeration value="Pages - Hardcopy"/>
-      <xs:enumeration value="Pail"/>
-      <xs:enumeration value="Pair"/>
-      <xs:enumeration value="Pair Inches"/>
-      <xs:enumeration value="Pallet (Lift)"/>
-      <xs:enumeration value="Pallet/Unit Load"/>
-      <xs:enumeration value="Panel"/>
-      <xs:enumeration value="Parts"/>
-      <xs:enumeration value="Peck, Dry Imperial"/>
-      <xs:enumeration value="Peck, Dry U.S."/>
-      <xs:enumeration value="Pellet"/>
-      <xs:enumeration value="Pen Calories"/>
-      <xs:enumeration value="Pen Grams (Protein)"/>
-      <xs:enumeration value="Pennyweight"/>
-      <xs:enumeration value="Person"/>
-      <xs:enumeration value="Photographs"/>
-      <xs:enumeration value="Pica"/>
-      <xs:enumeration value="Piece"/>
-      <xs:enumeration value="Pillow"/>
-      <xs:enumeration value="Pint"/>
-      <xs:enumeration value="Pint U.S. Dry"/>
-      <xs:enumeration value="Pint, Imperial"/>
-      <xs:enumeration value="Pitch"/>
-      <xs:enumeration value="Plate"/>
-      <xs:enumeration value="Portion"/>
-      <xs:enumeration value="Pouch"/>
-      <xs:enumeration value="Pound"/>
-      <xs:enumeration value="Pounds Equivalent"/>
-      <xs:enumeration value="Pounds Gross"/>
-      <xs:enumeration value="Pounds Net"/>
-      <xs:enumeration value="Powder-Filled Vials"/>
-      <xs:enumeration value="Print Point"/>
-      <xs:enumeration value="Program"/>
-      <xs:enumeration value="Project"/>
-      <xs:enumeration value="Proof Gallons"/>
-      <xs:enumeration value="Pump"/>
-      <xs:enumeration value="Quart"/>
-      <xs:enumeration value="Quart, Dry U.S."/>
-      <xs:enumeration value="Quart, Imperial"/>
-      <xs:enumeration value="Quarter"/>
-      <xs:enumeration value="Quarter (Time)"/>
-      <xs:enumeration value="Quarter Dozen"/>
-      <xs:enumeration value="Quarter Hours"/>
-      <xs:enumeration value="Quarter Kilogram"/>
-      <xs:enumeration value="Quarter Mile"/>
-      <xs:enumeration value="Quire"/>
-      <xs:enumeration value="Rack"/>
-      <xs:enumeration value="Ration"/>
-      <xs:enumeration value="Ream"/>
-      <xs:enumeration value="Ream-Metric Measure"/>
-      <xs:enumeration value="Reel"/>
-      <xs:enumeration value="Resets"/>
-      <xs:enumeration value="Revenue Ton Miles"/>
-      <xs:enumeration value="Ring"/>
-      <xs:enumeration value="Rod (area) - 16.25 Square Yards"/>
-      <xs:enumeration value="Rod (length) - 5.5 Yards"/>
-      <xs:enumeration value="Roll"/>
-      <xs:enumeration value="Roll-Metric Measure"/>
-      <xs:enumeration value="Round"/>
-      <xs:enumeration value="Run"/>
-      <xs:enumeration value="Running or Operating Hours"/>
-      <xs:enumeration value="Sack"/>
-      <xs:enumeration value="Sandwich"/>
-      <xs:enumeration value="Saybold Universal Second"/>
-      <xs:enumeration value="Season"/>
-      <xs:enumeration value="Seat"/>
-      <xs:enumeration value="Seconds"/>
-      <xs:enumeration value="Section"/>
-      <xs:enumeration value="Segment"/>
-      <xs:enumeration value="Semester"/>
-      <xs:enumeration value="Semiannual"/>
-      <xs:enumeration value="Session"/>
-      <xs:enumeration value="Sessions"/>
-      <xs:enumeration value="Set"/>
-      <xs:enumeration value="Seven pack"/>
-      <xs:enumeration value="Shares"/>
-      <xs:enumeration value="Sheet"/>
-      <xs:enumeration value="Sheet-Metric Measure"/>
-      <xs:enumeration value="Shelf Package"/>
-      <xs:enumeration value="Ship Set"/>
-      <xs:enumeration value="Shipment"/>
-      <xs:enumeration value="Short Ton"/>
-      <xs:enumeration value="Shot"/>
-      <xs:enumeration value="Sitas"/>
-      <xs:enumeration value="Six pack"/>
-      <xs:enumeration value="Sixty-fourths of an Inch"/>
-      <xs:enumeration value="Sizing Factor"/>
-      <xs:enumeration value="Skein"/>
-      <xs:enumeration value="Skid"/>
-      <xs:enumeration value="Sleeve"/>
-      <xs:enumeration value="Slice"/>
-      <xs:enumeration value="Slip Sheet"/>
-      <xs:enumeration value="Small Spray"/>
-      <xs:enumeration value="Solid Pounds"/>
-      <xs:enumeration value="Split Tanktruck"/>
-      <xs:enumeration value="Spool"/>
-      <xs:enumeration value="Square"/>
-      <xs:enumeration value="Square Centimeter"/>
-      <xs:enumeration value="Square Decimeter"/>
-      <xs:enumeration value="Square Foot"/>
-      <xs:enumeration value="Square Inch"/>
-      <xs:enumeration value="Square Kilometer"/>
-      <xs:enumeration value="Square Meter"/>
-      <xs:enumeration value="Square Mile"/>
-      <xs:enumeration value="Square Millimeter"/>
-      <xs:enumeration value="Square Rod"/>
-      <xs:enumeration value="Square Yard"/>
-      <xs:enumeration value="Stage"/>
-      <xs:enumeration value="Standard Advertising Units (SAUs)"/>
-      <xs:enumeration value="Standard Cubic Foot"/>
-      <xs:enumeration value="Statute Mile"/>
-      <xs:enumeration value="Stick"/>
-      <xs:enumeration value="Stop"/>
-      <xs:enumeration value="Storage Units"/>
-      <xs:enumeration value="Strand"/>
-      <xs:enumeration value="Strip"/>
-      <xs:enumeration value="Super Bulk Bag"/>
-      <xs:enumeration value="Suppository"/>
-      <xs:enumeration value="Syringe"/>
-      <xs:enumeration value="Tablespoon"/>
-      <xs:enumeration value="Tablet"/>
-      <xs:enumeration value="Tank"/>
-      <xs:enumeration value="Tank Car"/>
-      <xs:enumeration value="Tank Truck"/>
-      <xs:enumeration value="Task"/>
-      <xs:enumeration value="Teaspoon"/>
-      <xs:enumeration value="Telecommunications Lines in Service"/>
-      <xs:enumeration value="Telecommunications Ports"/>
-      <xs:enumeration value="Ten"/>
-      <xs:enumeration value="Ten Square Feet"/>
-      <xs:enumeration value="Ten Square Yards"/>
-      <xs:enumeration value="Ten Thousand Yards"/>
-      <xs:enumeration value="Ten Yards"/>
-      <xs:enumeration value="Ten-pack"/>
-      <xs:enumeration value="Tenth Cubic Foot"/>
-      <xs:enumeration value="Tenth Hours"/>
-      <xs:enumeration value="Tenth Minutes"/>
-      <xs:enumeration value="Theoretical Kilograms"/>
-      <xs:enumeration value="Theoretical Pounds"/>
-      <xs:enumeration value="Theoretical Tonnes"/>
-      <xs:enumeration value="Theoretical Tons"/>
-      <xs:enumeration value="Therms"/>
-      <xs:enumeration value="Thirty-Six"/>
-      <xs:enumeration value="Thousand"/>
-      <xs:enumeration value="Thousand Bags"/>
-      <xs:enumeration value="Thousand Casings"/>
-      <xs:enumeration value="Thousand Cubic Feet"/>
-      <xs:enumeration value="Thousand Cubic Meters"/>
-      <xs:enumeration value="Thousand Feet"/>
-      <xs:enumeration value="Thousand Feet (Board)"/>
-      <xs:enumeration value="Thousand Feet (Linear)"/>
-      <xs:enumeration value="Thousand Gallons"/>
-      <xs:enumeration value="Thousand Impressions"/>
-      <xs:enumeration value="Thousand Kilograms"/>
-      <xs:enumeration value="Thousand Kilowatt Hours"/>
-      <xs:enumeration value="Thousand Linear Inches"/>
-      <xs:enumeration value="Thousand Linear Meters"/>
-      <xs:enumeration value="Thousand Linear Yards"/>
-      <xs:enumeration value="Thousand Pieces"/>
-      <xs:enumeration value="Thousand Pounds Gross"/>
-      <xs:enumeration value="Thousand Rounds"/>
-      <xs:enumeration value="Thousand Sheets"/>
-      <xs:enumeration value="Thousand Sq. Centimeters"/>
-      <xs:enumeration value="Thousand Square Feet"/>
-      <xs:enumeration value="Thousand Square Inches"/>
-      <xs:enumeration value="Thousandths of an Inch"/>
-      <xs:enumeration value="Three pack"/>
-      <xs:enumeration value="Tire"/>
-      <xs:enumeration value="Ton Miles"/>
-      <xs:enumeration value="Total Car Count"/>
-      <xs:enumeration value="Total Car Mile"/>
-      <xs:enumeration value="Tote"/>
-      <xs:enumeration value="Track Foot"/>
-      <xs:enumeration value="Trailer"/>
-      <xs:enumeration value="Train"/>
-      <xs:enumeration value="Train Mile"/>
-      <xs:enumeration value="Transactions"/>
-      <xs:enumeration value="Transdermal Patch"/>
-      <xs:enumeration value="Tray"/>
-      <xs:enumeration value="Treatments"/>
-      <xs:enumeration value="Trimester"/>
-      <xs:enumeration value="Troche"/>
-      <xs:enumeration value="Troy Ounce"/>
-      <xs:enumeration value="Troy Pound"/>
-      <xs:enumeration value="Truckload"/>
-      <xs:enumeration value="Tub"/>
-      <xs:enumeration value="Tube"/>
-      <xs:enumeration value="Twenty"/>
-      <xs:enumeration value="Twenty-Five"/>
-      <xs:enumeration value="Twenty-Four"/>
-      <xs:enumeration value="Two Hundred Fifty"/>
-      <xs:enumeration value="Two pack"/>
-      <xs:enumeration value="U.S. Gallons At 60 Degrees Fahrenheit"/>
-      <xs:enumeration value="U.S. Pharmacopoeia (USP) Unit"/>
-      <xs:enumeration value="Unit"/>
-      <xs:enumeration value="Unitless"/>
-      <xs:enumeration value="Usage per Telecommunications Line - Average"/>
-      <xs:enumeration value="Vehicle"/>
-      <xs:enumeration value="Vial"/>
-      <xs:enumeration value="Visit"/>
-      <xs:enumeration value="Wafer"/>
-      <xs:enumeration value="Week"/>
-      <xs:enumeration value="Wet Kilo"/>
-      <xs:enumeration value="Wet Pound"/>
-      <xs:enumeration value="Wet Ton"/>
-      <xs:enumeration value="Wheel"/>
-      <xs:enumeration value="Wine Gallon"/>
-      <xs:enumeration value="Work Days"/>
-      <xs:enumeration value="Working Months"/>
-      <xs:enumeration value="Wrap"/>
-      <xs:enumeration value="Yard"/>
-      <xs:enumeration value="Years"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="UnitOfMeasureWithDollarsType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Unit Of Measure with dollar values</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="10 Kilogram Drum"/>
-      <xs:enumeration value="10,000 Gallon Tankcar"/>
-      <xs:enumeration value="100 Board Feet"/>
-      <xs:enumeration value="100 Kilograms"/>
-      <xs:enumeration value="100 Lineal Yards"/>
-      <xs:enumeration value="100 Pound Drum"/>
-      <xs:enumeration value="1000 Cubic Feet"/>
-      <xs:enumeration value="1000 Meters"/>
-      <xs:enumeration value="1000 Pounds per Square Inch"/>
-      <xs:enumeration value="100-Pack"/>
-      <xs:enumeration value="115 Kilogram Drum"/>
-      <xs:enumeration value="15 Kilogram Drum"/>
-      <xs:enumeration value="20 Foot Container"/>
-      <xs:enumeration value="20,000 Gallon Tankcar"/>
-      <xs:enumeration value="20-Pack"/>
-      <xs:enumeration value="25 Kilogram Bulk Bag"/>
-      <xs:enumeration value="300 Kilogram Bulk Bag"/>
-      <xs:enumeration value="40 Foot Container"/>
-      <xs:enumeration value="50 Pound Bag"/>
-      <xs:enumeration value="500 Kilogram Bulk Bag"/>
-      <xs:enumeration value="55 Gallon Drum"/>
-      <xs:enumeration value="Access Lines"/>
-      <xs:enumeration value="Acre"/>
-      <xs:enumeration value="Actual Kilograms"/>
-      <xs:enumeration value="Actual Pounds"/>
-      <xs:enumeration value="Actual Tonnes"/>
-      <xs:enumeration value="Actual Tons"/>
-      <xs:enumeration value="Additional Minutes"/>
-      <xs:enumeration value="Air Dry Metric Ton"/>
-      <xs:enumeration value="Aluminum Pounds Only"/>
-      <xs:enumeration value="Ampere"/>
-      <xs:enumeration value="Ampere Turn Per Centimeter"/>
-      <xs:enumeration value="Amperes per Meter"/>
-      <xs:enumeration value="Ampere-turn"/>
-      <xs:enumeration value="Ampoule"/>
-      <xs:enumeration value="Angstrom"/>
-      <xs:enumeration value="Anti-hemophilic Factor (AHF) Units"/>
-      <xs:enumeration value="Apothecary Dram"/>
-      <xs:enumeration value="Apothecary Grain"/>
-      <xs:enumeration value="Apothecary Ounce"/>
-      <xs:enumeration value="Apothecary Pound"/>
-      <xs:enumeration value="Apothecary Scruple"/>
-      <xs:enumeration value="Application"/>
-      <xs:enumeration value="Assembly"/>
-      <xs:enumeration value="Assortment"/>
-      <xs:enumeration value="Atmosphere"/>
-      <xs:enumeration value="Average Minutes Per Call"/>
-      <xs:enumeration value="Bag"/>
-      <xs:enumeration value="Bale"/>
-      <xs:enumeration value="Ball"/>
-      <xs:enumeration value="Band"/>
-      <xs:enumeration value="Bar"/>
-      <xs:enumeration value="Barge"/>
-      <xs:enumeration value="Barrel"/>
-      <xs:enumeration value="Barrel, Dry"/>
-      <xs:enumeration value="Barrel, Imperial"/>
-      <xs:enumeration value="Barrel, Liquid"/>
-      <xs:enumeration value="Barrels per Day"/>
-      <xs:enumeration value="Barrels per Minute"/>
-      <xs:enumeration value="Base Box"/>
-      <xs:enumeration value="Base Box per Pound"/>
-      <xs:enumeration value="Base Weight"/>
-      <xs:enumeration value="Basis Points"/>
-      <xs:enumeration value="Basket"/>
-      <xs:enumeration value="Batch"/>
-      <xs:enumeration value="Batt"/>
-      <xs:enumeration value="Batting Pound"/>
-      <xs:enumeration value="Beam"/>
-      <xs:enumeration value="Becquerel"/>
-      <xs:enumeration value="Belt"/>
-      <xs:enumeration value="Billboard"/>
-      <xs:enumeration value="Billet"/>
-      <xs:enumeration value="Billions of Dollars"/>
-      <xs:enumeration value="Bimonthly"/>
-      <xs:enumeration value="Bin"/>
-      <xs:enumeration value="Biweekly"/>
-      <xs:enumeration value="Block"/>
-      <xs:enumeration value="Board"/>
-      <xs:enumeration value="Board Feet"/>
-      <xs:enumeration value="Bobbin"/>
-      <xs:enumeration value="Bolt"/>
-      <xs:enumeration value="Book"/>
-      <xs:enumeration value="Bottle"/>
-      <xs:enumeration value="Box"/>
-      <xs:enumeration value="Brake horse power"/>
-      <xs:enumeration value="Briquet"/>
-      <xs:enumeration value="British Thermal Unit (BTU)"/>
-      <xs:enumeration value="British Thermal Units (BTUs) per Cubic Foot"/>
-      <xs:enumeration value="British Thermal Units (BTUs) Per Hour"/>
-      <xs:enumeration value="British Thermal Units (BTUs) per Pound"/>
-      <xs:enumeration value="Brush"/>
-      <xs:enumeration value="Bucket"/>
-      <xs:enumeration value="Bulk"/>
-      <xs:enumeration value="Bulk Car Load"/>
-      <xs:enumeration value="Bulk Pack"/>
-      <xs:enumeration value="Bun"/>
-      <xs:enumeration value="Bunch"/>
-      <xs:enumeration value="Bundle"/>
-      <xs:enumeration value="Bunks"/>
-      <xs:enumeration value="Bushel"/>
-      <xs:enumeration value="Bushel, Dry Imperial"/>
-      <xs:enumeration value="Bytes"/>
-      <xs:enumeration value="Caboose Count"/>
-      <xs:enumeration value="Caboose Mile"/>
-      <xs:enumeration value="Cake"/>
-      <xs:enumeration value="Calendar Days"/>
-      <xs:enumeration value="Calls"/>
-      <xs:enumeration value="Calorie"/>
-      <xs:enumeration value="Calories per Cubic Centimeter"/>
-      <xs:enumeration value="Calories per Gram"/>
-      <xs:enumeration value="Can"/>
-      <xs:enumeration value="Cap"/>
-      <xs:enumeration value="Capsule"/>
-      <xs:enumeration value="Car"/>
-      <xs:enumeration value="Car Count"/>
-      <xs:enumeration value="Car Mile"/>
-      <xs:enumeration value="Carat"/>
-      <xs:enumeration value="Carboy"/>
-      <xs:enumeration value="Card"/>
-      <xs:enumeration value="Carload"/>
-      <xs:enumeration value="Carset"/>
-      <xs:enumeration value="Carton"/>
-      <xs:enumeration value="Cartridge"/>
-      <xs:enumeration value="Cartridge Needle"/>
-      <xs:enumeration value="Case"/>
-      <xs:enumeration value="Cask"/>
-      <xs:enumeration value="Cassette"/>
-      <xs:enumeration value="Catchweight"/>
-      <xs:enumeration value="Cell"/>
-      <xs:enumeration value="Centigrade, Celsius"/>
-      <xs:enumeration value="Centigram"/>
-      <xs:enumeration value="Centiliter"/>
-      <xs:enumeration value="Centimeter"/>
-      <xs:enumeration value="Centimeters Per Second"/>
-      <xs:enumeration value="Centipoise (CPS)"/>
-      <xs:enumeration value="Centistokes"/>
-      <xs:enumeration value="Chains (Land Survey)"/>
-      <xs:enumeration value="Channel"/>
-      <xs:enumeration value="Chest"/>
-      <xs:enumeration value="Clove"/>
-      <xs:enumeration value="Coil"/>
-      <xs:enumeration value="Coil Group"/>
-      <xs:enumeration value="Column-Inches"/>
-      <xs:enumeration value="Combo"/>
-      <xs:enumeration value="Composite Product Pounds (Total Weight)"/>
-      <xs:enumeration value="Cone"/>
-      <xs:enumeration value="Conference Points"/>
-      <xs:enumeration value="Connector"/>
-      <xs:enumeration value="Container"/>
-      <xs:enumeration value="Cop"/>
-      <xs:enumeration value="Cord"/>
-      <xs:enumeration value="Cost"/>
-      <xs:enumeration value="Coulomb"/>
-      <xs:enumeration value="Count"/>
-      <xs:enumeration value="Count per Minute"/>
-      <xs:enumeration value="Counts per Centimeter"/>
-      <xs:enumeration value="Counts per Inch"/>
-      <xs:enumeration value="Cover"/>
-      <xs:enumeration value="Crate"/>
-      <xs:enumeration value="Credits"/>
-      <xs:enumeration value="Cubic Centimeter"/>
-      <xs:enumeration value="Cubic Centimeters Per Second"/>
-      <xs:enumeration value="Cubic Decimeter"/>
-      <xs:enumeration value="Cubic Feet"/>
-      <xs:enumeration value="Cubic Feet Per Hour"/>
-      <xs:enumeration value="Cubic Feet Per Minute"/>
-      <xs:enumeration value="Cubic Feet per Minute per Square Foot"/>
-      <xs:enumeration value="Cubic Inches"/>
-      <xs:enumeration value="Cubic Meter"/>
-      <xs:enumeration value="Cubic Meter Per Hour"/>
-      <xs:enumeration value="Cubic Meters (Net)"/>
-      <xs:enumeration value="Cubic Yard"/>
-      <xs:enumeration value="Cup"/>
-      <xs:enumeration value="Curie"/>
-      <xs:enumeration value="Curl Units"/>
-      <xs:enumeration value="Cycles"/>
-      <xs:enumeration value="Cylinder"/>
-      <xs:enumeration value="Data Records"/>
-      <xs:enumeration value="Days"/>
-      <xs:enumeration value="Deal"/>
-      <xs:enumeration value="Decagram"/>
-      <xs:enumeration value="Deci Newton-Meter"/>
-      <xs:enumeration value="Decibels"/>
-      <xs:enumeration value="Decigram"/>
-      <xs:enumeration value="Deciliter"/>
-      <xs:enumeration value="Deciliter per Gram"/>
-      <xs:enumeration value="Decimeter"/>
-      <xs:enumeration value="Degree"/>
-      <xs:enumeration value="Digits"/>
-      <xs:enumeration value="Directory Books"/>
-      <xs:enumeration value="Disk (Disc)"/>
-      <xs:enumeration value="Dispenser"/>
-      <xs:enumeration value="Display"/>
-      <xs:enumeration value="Dollars per Hours"/>
-      <xs:enumeration value="Dollars, U.S."/>
-      <xs:enumeration value="Dosage Form"/>
-      <xs:enumeration value="Double-time Hours"/>
-      <xs:enumeration value="Dozen"/>
-      <xs:enumeration value="Dozen Pair"/>
-      <xs:enumeration value="Draize Score"/>
-      <xs:enumeration value="Dram"/>
-      <xs:enumeration value="Dram (Minim)"/>
-      <xs:enumeration value="Drop"/>
-      <xs:enumeration value="Drum"/>
-      <xs:enumeration value="Dry Pounds"/>
-      <xs:enumeration value="Dry Quarts"/>
-      <xs:enumeration value="Dry Ton"/>
-      <xs:enumeration value="Duty"/>
-      <xs:enumeration value="Dyne"/>
-      <xs:enumeration value="Dyne per Square Centimeter"/>
-      <xs:enumeration value="Dynes per Centimeter"/>
-      <xs:enumeration value="Each"/>
-      <xs:enumeration value="Each per Month"/>
-      <xs:enumeration value="Eight-pack"/>
-      <xs:enumeration value="Electron Volt"/>
-      <xs:enumeration value="Electronic Mail Boxes"/>
-      <xs:enumeration value="Eleven pack"/>
-      <xs:enumeration value="Employees"/>
-      <xs:enumeration value="Empty Car"/>
-      <xs:enumeration value="English (Feet, Inches)"/>
-      <xs:enumeration value="Envelope"/>
-      <xs:enumeration value="Equivalent"/>
-      <xs:enumeration value="Equivalent Gallons"/>
-      <xs:enumeration value="Fahrenheit"/>
-      <xs:enumeration value="Failure Rate In Time"/>
-      <xs:enumeration value="Family Unit"/>
-      <xs:enumeration value="Farad"/>
-      <xs:enumeration value="Fathom"/>
-      <xs:enumeration value="Feet and Decimal"/>
-      <xs:enumeration value="Feet Per Minute"/>
-      <xs:enumeration value="Feet Per Second"/>
-      <xs:enumeration value="Feet, Inches and Decimal"/>
-      <xs:enumeration value="Feet, Inches and Fraction"/>
-      <xs:enumeration value="Fibers"/>
-      <xs:enumeration value="Fibers per Cubic Centimeter of Air"/>
-      <xs:enumeration value="Fields"/>
-      <xs:enumeration value="Fifty"/>
-      <xs:enumeration value="Fifty Count"/>
-      <xs:enumeration value="Fifty Square Feet"/>
-      <xs:enumeration value="Five"/>
-      <xs:enumeration value="Five Hundred"/>
-      <xs:enumeration value="Five-pack"/>
-      <xs:enumeration value="Fixed Rate"/>
-      <xs:enumeration value="Flake Ton"/>
-      <xs:enumeration value="Flat"/>
-      <xs:enumeration value="Flight Hours"/>
-      <xs:enumeration value="Fluid Ounce"/>
-      <xs:enumeration value="Fluid Ounce (Imperial)"/>
-      <xs:enumeration value="Fold"/>
-      <xs:enumeration value="Foot"/>
-      <xs:enumeration value="Foot Pounds"/>
-      <xs:enumeration value="Four-pack"/>
-      <xs:enumeration value="Frames"/>
-      <xs:enumeration value="Fuel Usage (Gallons)"/>
-      <xs:enumeration value="Furlong"/>
-      <xs:enumeration value="Gage Systems"/>
-      <xs:enumeration value="Gallon"/>
-      <xs:enumeration value="Gallons per Thousand"/>
-      <xs:enumeration value="Gallons Per Thousand Cubic Feet"/>
-      <xs:enumeration value="Gallons/Day"/>
-      <xs:enumeration value="Gauss"/>
-      <xs:enumeration value="Gauss per Oersteds"/>
-      <xs:enumeration value="Gigabecquerel"/>
-      <xs:enumeration value="Gigajoules"/>
-      <xs:enumeration value="Gill (Imperial)"/>
-      <xs:enumeration value="Grain"/>
-      <xs:enumeration value="Gram"/>
-      <xs:enumeration value="Grams per 100 Centimeters"/>
-      <xs:enumeration value="Grams per 100 Grams"/>
-      <xs:enumeration value="Grams per Cubic Centimeter"/>
-      <xs:enumeration value="Grams per Kilogram"/>
-      <xs:enumeration value="Grams per Liter"/>
-      <xs:enumeration value="Grams per Milliliter"/>
-      <xs:enumeration value="Grams per Sq. Meter"/>
-      <xs:enumeration value="Grams per Square Centimeter"/>
-      <xs:enumeration value="Great Gross (Dozen Gross)"/>
-      <xs:enumeration value="Gross"/>
-      <xs:enumeration value="Gross Barrels"/>
-      <xs:enumeration value="Gross Gallons"/>
-      <xs:enumeration value="Gross Kilogram"/>
-      <xs:enumeration value="Gross Ton"/>
-      <xs:enumeration value="Gross Yard"/>
-      <xs:enumeration value="Group"/>
-      <xs:enumeration value="Half Dozen"/>
-      <xs:enumeration value="Half Gallon"/>
-      <xs:enumeration value="Half Hour"/>
-      <xs:enumeration value="Half Liter"/>
-      <xs:enumeration value="Half Pages - Electronic"/>
-      <xs:enumeration value="Half Pint"/>
-      <xs:enumeration value="Hank"/>
-      <xs:enumeration value="Head"/>
-      <xs:enumeration value="Heart"/>
-      <xs:enumeration value="Heat Lots"/>
-      <xs:enumeration value="Hectare"/>
-      <xs:enumeration value="Hectogram"/>
-      <xs:enumeration value="Hectoliter"/>
-      <xs:enumeration value="Hectometer"/>
-      <xs:enumeration value="Henry"/>
-      <xs:enumeration value="Hertz"/>
-      <xs:enumeration value="Hogshead"/>
-      <xs:enumeration value="Horsepower"/>
-      <xs:enumeration value="Horsepower Days per Air Dry Metric Tons"/>
-      <xs:enumeration value="Hospital Beds"/>
-      <xs:enumeration value="Hours"/>
-      <xs:enumeration value="Hundred"/>
-      <xs:enumeration value="Hundred Boxes"/>
-      <xs:enumeration value="Hundred Count"/>
-      <xs:enumeration value="Hundred Cubic Feet"/>
-      <xs:enumeration value="Hundred Cubic Meters"/>
-      <xs:enumeration value="Hundred Feet"/>
-      <xs:enumeration value="Hundred Feet - Linear"/>
-      <xs:enumeration value="Hundred Kilograms"/>
-      <xs:enumeration value="Hundred Pounds (CWT)"/>
-      <xs:enumeration value="Hundred Sheets"/>
-      <xs:enumeration value="Hundred Square Feet"/>
-      <xs:enumeration value="Hundred Troy Ounces"/>
-      <xs:enumeration value="Hundred Weight (Long)"/>
-      <xs:enumeration value="Hundred Weight (Short)"/>
-      <xs:enumeration value="Hundred Yards"/>
-      <xs:enumeration value="Hundredth of a Carat"/>
-      <xs:enumeration value="Hydraulic Horse Power"/>
-      <xs:enumeration value="Imperial Gallons"/>
-      <xs:enumeration value="Imperial Gallons Per Minute"/>
-      <xs:enumeration value="Impressions"/>
-      <xs:enumeration value="Inch"/>
-      <xs:enumeration value="Inch Pound"/>
-      <xs:enumeration value="Inches of Water"/>
-      <xs:enumeration value="Inches per Minute"/>
-      <xs:enumeration value="Inches Per Second (Linear Speed)"/>
-      <xs:enumeration value="Inches Per Second (Vibration Velocity)"/>
-      <xs:enumeration value="Inches Per Second Per Second (Acceleration)"/>
-      <xs:enumeration value="Inches Per Second Per Second (Vibration Acceleration)"/>
-      <xs:enumeration value="Inches, Decimal--Actual"/>
-      <xs:enumeration value="Inches, Decimal--Average"/>
-      <xs:enumeration value="Inches, Decimal-Minimum"/>
-      <xs:enumeration value="Inches, Decimal--Nominal"/>
-      <xs:enumeration value="Inches, Fraction--Actual"/>
-      <xs:enumeration value="Inches, Fraction--Average"/>
-      <xs:enumeration value="Inches, Fraction--Minimum"/>
-      <xs:enumeration value="Inches, Fraction-Nominal"/>
-      <xs:enumeration value="Inhalation"/>
-      <xs:enumeration value="Inhaler"/>
-      <xs:enumeration value="International Unit"/>
-      <xs:enumeration value="Jar"/>
-      <xs:enumeration value="Job"/>
-      <xs:enumeration value="Joint"/>
-      <xs:enumeration value="Joule per Gram"/>
-      <xs:enumeration value="Joule Per Kelvin"/>
-      <xs:enumeration value="Joule Per Kilogram"/>
-      <xs:enumeration value="Joules"/>
-      <xs:enumeration value="Jug"/>
-      <xs:enumeration value="Jumbo"/>
-      <xs:enumeration value="Keg"/>
-      <xs:enumeration value="Kelvin"/>
-      <xs:enumeration value="Kilo Pounds Per Square Inch (KSI)"/>
-      <xs:enumeration value="Kilobecquerel"/>
-      <xs:enumeration value="Kilobyte"/>
-      <xs:enumeration value="Kilocharacters"/>
-      <xs:enumeration value="Kilocurie"/>
-      <xs:enumeration value="Kilogauss"/>
-      <xs:enumeration value="Kilogram"/>
-      <xs:enumeration value="Kilogram Per Square Centimeter"/>
-      <xs:enumeration value="Kilograms Decimal"/>
-      <xs:enumeration value="Kilograms per Air Dry Metric Tons"/>
-      <xs:enumeration value="Kilograms per Cubic Meter"/>
-      <xs:enumeration value="Kilograms Per Kilogram of Product"/>
-      <xs:enumeration value="Kilograms Per Liter of Product"/>
-      <xs:enumeration value="Kilograms per Millimeter"/>
-      <xs:enumeration value="Kilograms per Millimeter Squared (KG/MM2)"/>
-      <xs:enumeration value="Kilograms Per Piece of Product"/>
-      <xs:enumeration value="Kilograms per Square Meter"/>
-      <xs:enumeration value="Kilograms per Square Meter, Kilograms, Decimal"/>
-      <xs:enumeration value="Kilograms/Meter"/>
-      <xs:enumeration value="Kilograms/Millimeter Width"/>
-      <xs:enumeration value="Kiloliter"/>
-      <xs:enumeration value="Kiloliter Per Hour"/>
-      <xs:enumeration value="Kilometers"/>
-      <xs:enumeration value="Kilometers Per Hour"/>
-      <xs:enumeration value="Kilopackets"/>
-      <xs:enumeration value="Kilopascal"/>
-      <xs:enumeration value="Kilopascal Square Meters per Gram"/>
-      <xs:enumeration value="Kilopascals per Millimeter"/>
-      <xs:enumeration value="Kiloroentgen"/>
-      <xs:enumeration value="Kilosegments"/>
-      <xs:enumeration value="Kilovolt Amperes"/>
-      <xs:enumeration value="Kilovolt Amperes Reactive"/>
-      <xs:enumeration value="Kilovolt Amperes Reactive Demand"/>
-      <xs:enumeration value="Kilovolt Amperes Reactive Hour"/>
-      <xs:enumeration value="Kilovolts"/>
-      <xs:enumeration value="Kilowatt"/>
-      <xs:enumeration value="Kilowatt Demand"/>
-      <xs:enumeration value="Kilowatt Hour"/>
-      <xs:enumeration value="Kit"/>
-      <xs:enumeration value="Knots"/>
-      <xs:enumeration value="Labor Hours"/>
-      <xs:enumeration value="Landings"/>
-      <xs:enumeration value="Large Spray"/>
-      <xs:enumeration value="Layer(s)"/>
-      <xs:enumeration value="Leaf"/>
-      <xs:enumeration value="Length"/>
-      <xs:enumeration value="Lifetime"/>
-      <xs:enumeration value="Lift Van"/>
-      <xs:enumeration value="Lifts"/>
-      <xs:enumeration value="Linear Centimeter"/>
-      <xs:enumeration value="Linear Foot"/>
-      <xs:enumeration value="Linear Inch"/>
-      <xs:enumeration value="Linear Meter"/>
-      <xs:enumeration value="Linear Yard"/>
-      <xs:enumeration value="Linear Yards Per Pound"/>
-      <xs:enumeration value="Link"/>
-      <xs:enumeration value="Liquid Pounds"/>
-      <xs:enumeration value="Lite"/>
-      <xs:enumeration value="Liter"/>
-      <xs:enumeration value="Liters at 15 Degrees Celsius"/>
-      <xs:enumeration value="Liters Per Day"/>
-      <xs:enumeration value="Liters Per Minute"/>
-      <xs:enumeration value="Load"/>
-      <xs:enumeration value="Loaf"/>
-      <xs:enumeration value="Locations"/>
-      <xs:enumeration value="Locomotive Count"/>
-      <xs:enumeration value="Locomotive Mile"/>
-      <xs:enumeration value="Long Ton"/>
-      <xs:enumeration value="Lot"/>
-      <xs:enumeration value="Lozenge"/>
-      <xs:enumeration value="Lug"/>
-      <xs:enumeration value="Machine/Unit"/>
-      <xs:enumeration value="Magnetic Tapes"/>
-      <xs:enumeration value="Manmonth"/>
-      <xs:enumeration value="Mass Pounds"/>
-      <xs:enumeration value="Mat"/>
-      <xs:enumeration value="Meal"/>
-      <xs:enumeration value="Mega Joule per Kilogram"/>
-      <xs:enumeration value="Mega Pascals"/>
-      <xs:enumeration value="Megabecquerel"/>
-      <xs:enumeration value="Megabyte"/>
-      <xs:enumeration value="Megagram"/>
-      <xs:enumeration value="Megagrams Per Hour"/>
-      <xs:enumeration value="Megahertz"/>
-      <xs:enumeration value="Megajoule"/>
-      <xs:enumeration value="Megajoule/Cubic Meter"/>
-      <xs:enumeration value="Mesh"/>
-      <xs:enumeration value="Message Hours"/>
-      <xs:enumeration value="Messages"/>
-      <xs:enumeration value="Meter"/>
-      <xs:enumeration value="Meters Per Minute"/>
-      <xs:enumeration value="Meters Per Second"/>
-      <xs:enumeration value="Meters Per Second Per Second"/>
-      <xs:enumeration value="Metric"/>
-      <xs:enumeration value="Metric Gross Ton"/>
-      <xs:enumeration value="Metric Long Ton"/>
-      <xs:enumeration value="Metric Net Ton"/>
-      <xs:enumeration value="Metric Ton"/>
-      <xs:enumeration value="Metric Ton Kilograms"/>
-      <xs:enumeration value="Mho"/>
-      <xs:enumeration value="Micro Inch"/>
-      <xs:enumeration value="Micro Mho"/>
-      <xs:enumeration value="Microcurie"/>
-      <xs:enumeration value="Microfarad"/>
-      <xs:enumeration value="Microfiche Sheet"/>
-      <xs:enumeration value="Microgram"/>
-      <xs:enumeration value="Micrograms per Cubic Meter"/>
-      <xs:enumeration value="Microliter"/>
-      <xs:enumeration value="Micrometer"/>
-      <xs:enumeration value="Micromolar"/>
-      <xs:enumeration value="Microns (Micrometers)"/>
-      <xs:enumeration value="Mil"/>
-      <xs:enumeration value="Miles"/>
-      <xs:enumeration value="Miles Per Hour"/>
-      <xs:enumeration value="Millequivalence Caustic Potash per Gram of Product"/>
-      <xs:enumeration value="Milli Pascals"/>
-      <xs:enumeration value="Milliamperes"/>
-      <xs:enumeration value="Millibar"/>
-      <xs:enumeration value="Millicurie"/>
-      <xs:enumeration value="Milliequivalent"/>
-      <xs:enumeration value="Milligram"/>
-      <xs:enumeration value="Milligram per Sq. Ft. per Side"/>
-      <xs:enumeration value="Milligrams per Cubic Meter"/>
-      <xs:enumeration value="Milligrams Per Hour"/>
-      <xs:enumeration value="Milligrams per Kilogram"/>
-      <xs:enumeration value="Milligrams per Liter"/>
-      <xs:enumeration value="Milligrams Per Square Inch"/>
-      <xs:enumeration value="Milligrams per Square Meter"/>
-      <xs:enumeration value="Milliliter"/>
-      <xs:enumeration value="Milliliter per Minute"/>
-      <xs:enumeration value="Milliliter per Second"/>
-      <xs:enumeration value="Milliliters of Water"/>
-      <xs:enumeration value="Milliliters per Kilogram"/>
-      <xs:enumeration value="Milliliters per Square Centimeter Second"/>
-      <xs:enumeration value="Millimeter"/>
-      <xs:enumeration value="Millimeter H20"/>
-      <xs:enumeration value="Millimeter-Actual"/>
-      <xs:enumeration value="Millimeter-Average"/>
-      <xs:enumeration value="Millimeter-minimum"/>
-      <xs:enumeration value="Millimeter-Nominal"/>
-      <xs:enumeration value="Millimeters of Mercury"/>
-      <xs:enumeration value="Million British Thermal Units per One Thousand Cubic Feet"/>
-      <xs:enumeration value="Million British Thermal Units"/>
-      <xs:enumeration value="Million Cubic Feet"/>
-      <xs:enumeration value="Million Particles per Cubic Foot"/>
-      <xs:enumeration value="Million Units"/>
-      <xs:enumeration value="Millions of Dollars"/>
-      <xs:enumeration value="Milliroentgen"/>
-      <xs:enumeration value="Millivolts"/>
-      <xs:enumeration value="Minim"/>
-      <xs:enumeration value="Minutes"/>
-      <xs:enumeration value="Minutes or Messages"/>
-      <xs:enumeration value="Mixed"/>
-      <xs:enumeration value="Million Standard Cubic Feet (MMSCF)/Day"/>
-      <xs:enumeration value="Mole (mol)"/>
-      <xs:enumeration value="Monetary Value"/>
-      <xs:enumeration value="Months"/>
-      <xs:enumeration value="Nautical Mile"/>
-      <xs:enumeration value="Net Barrels"/>
-      <xs:enumeration value="Net Gallons"/>
-      <xs:enumeration value="Net Imperial Gallons"/>
-      <xs:enumeration value="Net Kilograms"/>
-      <xs:enumeration value="Net Liters"/>
-      <xs:enumeration value="Net Ton (2,000 LB)."/>
-      <xs:enumeration value="Newspaper Agate Line"/>
-      <xs:enumeration value="Newton"/>
-      <xs:enumeration value="Newton-Meter"/>
-      <xs:enumeration value="Newtons Per Meter"/>
-      <xs:enumeration value="Nights"/>
-      <xs:enumeration value="Nine pack"/>
-      <xs:enumeration value="Number of Lines"/>
-      <xs:enumeration value="Number of Mults"/>
-      <xs:enumeration value="Number of Screens"/>
-      <xs:enumeration value="Ocular Insert System"/>
-      <xs:enumeration value="Oersteds"/>
-      <xs:enumeration value="Ohm"/>
-      <xs:enumeration value="Operating Unit"/>
-      <xs:enumeration value="Ounce - Av"/>
-      <xs:enumeration value="Ounce Foot"/>
-      <xs:enumeration value="Ounce Inch"/>
-      <xs:enumeration value="Ounces per Square Foot"/>
-      <xs:enumeration value="Ounces per Square Foot per 0.01 Inch"/>
-      <xs:enumeration value="Ounces per Square Yard"/>
-      <xs:enumeration value="Outfit"/>
-      <xs:enumeration value="Outlet"/>
-      <xs:enumeration value="Overtime Hours"/>
-      <xs:enumeration value="Pack (PAK)"/>
-      <xs:enumeration value="Package"/>
-      <xs:enumeration value="Packet"/>
-      <xs:enumeration value="Pad"/>
-      <xs:enumeration value="Page"/>
-      <xs:enumeration value="Pages - Electronic"/>
-      <xs:enumeration value="Pages - Facsimile"/>
-      <xs:enumeration value="Pages - Hardcopy"/>
-      <xs:enumeration value="Pages per Inch"/>
-      <xs:enumeration value="Pail"/>
-      <xs:enumeration value="Pair"/>
-      <xs:enumeration value="Pair Inches"/>
-      <xs:enumeration value="Pallet (Lift)"/>
-      <xs:enumeration value="Pallet/Unit Load"/>
-      <xs:enumeration value="Panel"/>
-      <xs:enumeration value="Parts"/>
-      <xs:enumeration value="Parts Per Billion"/>
-      <xs:enumeration value="Parts Per Million"/>
-      <xs:enumeration value="Parts Per Thousand"/>
-      <xs:enumeration value="Pascal"/>
-      <xs:enumeration value="Peaks per Inch (PPI)"/>
-      <xs:enumeration value="Peck, Dry Imperial"/>
-      <xs:enumeration value="Peck, Dry U.S."/>
-      <xs:enumeration value="Pellet"/>
-      <xs:enumeration value="Pen Calories"/>
-      <xs:enumeration value="Pen Grams (Protein)"/>
-      <xs:enumeration value="Pennyweight"/>
-      <xs:enumeration value="Percent"/>
-      <xs:enumeration value="Percent Per 1000 Hours"/>
-      <xs:enumeration value="Percent Topical Only"/>
-      <xs:enumeration value="Percent Volume"/>
-      <xs:enumeration value="Percent Weight"/>
-      <xs:enumeration value="Person"/>
-      <xs:enumeration value="Persons, Capacity"/>
-      <xs:enumeration value="Photographs"/>
-      <xs:enumeration value="Pica"/>
-      <xs:enumeration value="Picofarad"/>
-      <xs:enumeration value="Piece"/>
-      <xs:enumeration value="Pillow"/>
-      <xs:enumeration value="Pint"/>
-      <xs:enumeration value="Pint U.S. Dry"/>
-      <xs:enumeration value="Pint, Imperial"/>
-      <xs:enumeration value="Pitch"/>
-      <xs:enumeration value="Plate"/>
-      <xs:enumeration value="Poise"/>
-      <xs:enumeration value="Portion"/>
-      <xs:enumeration value="Pouch"/>
-      <xs:enumeration value="Pound"/>
-      <xs:enumeration value="Pounds Equivalent"/>
-      <xs:enumeration value="Pounds Gross"/>
-      <xs:enumeration value="Pounds Net"/>
-      <xs:enumeration value="Pounds per 1000 Square Feet"/>
-      <xs:enumeration value="Pounds Per Air-Dry Metric Ton"/>
-      <xs:enumeration value="Pounds per Cubic Foot"/>
-      <xs:enumeration value="Pounds Per Cubic Inch"/>
-      <xs:enumeration value="Pounds per Foot"/>
-      <xs:enumeration value="Pounds per Gallon"/>
-      <xs:enumeration value="Pounds Per Hour"/>
-      <xs:enumeration value="Pounds per Inch of Length"/>
-      <xs:enumeration value="Pounds per Inch of Width"/>
-      <xs:enumeration value="Pounds Per Piece of Product"/>
-      <xs:enumeration value="Pounds Per Pound of Product"/>
-      <xs:enumeration value="Pounds per Ream"/>
-      <xs:enumeration value="Pounds per Sq. Ft."/>
-      <xs:enumeration value="Pounds per Sq. Inch"/>
-      <xs:enumeration value="Pounds Per Square Inch Absolute"/>
-      <xs:enumeration value="Pounds Per Square Inch Gauge"/>
-      <xs:enumeration value="Pounds per Thousand"/>
-      <xs:enumeration value="Pounds, Decimal - Pounds per Square Foot - Pound Gage"/>
-      <xs:enumeration value="Pounds-Percentage"/>
-      <xs:enumeration value="Powder-Filled Vials"/>
-      <xs:enumeration value="Price Per Share"/>
-      <xs:enumeration value="Print Point"/>
-      <xs:enumeration value="Program"/>
-      <xs:enumeration value="Project"/>
-      <xs:enumeration value="Proof Gallons"/>
-      <xs:enumeration value="Pump"/>
-      <xs:enumeration value="Quart"/>
-      <xs:enumeration value="Quart, Dry U.S."/>
-      <xs:enumeration value="Quart, Imperial"/>
-      <xs:enumeration value="Quarter"/>
-      <xs:enumeration value="Quarter (Time)"/>
-      <xs:enumeration value="Quarter Dozen"/>
-      <xs:enumeration value="Quarter Hours"/>
-      <xs:enumeration value="Quarter Kilogram"/>
-      <xs:enumeration value="Quarter Mile"/>
-      <xs:enumeration value="Quire"/>
-      <xs:enumeration value="Rack"/>
-      <xs:enumeration value="Radian"/>
-      <xs:enumeration value="Radians Per Second"/>
-      <xs:enumeration value="Radians Per Second Squared"/>
-      <xs:enumeration value="Ration"/>
-      <xs:enumeration value="Ream"/>
-      <xs:enumeration value="Ream-Metric Measure"/>
-      <xs:enumeration value="Reel"/>
-      <xs:enumeration value="Resets"/>
-      <xs:enumeration value="Revenue Ton Miles"/>
-      <xs:enumeration value="Revolutions Per Minute"/>
-      <xs:enumeration value="Ring"/>
-      <xs:enumeration value="Rod (area) - 16.25 Square Yards"/>
-      <xs:enumeration value="Rod (length) - 5.5 Yards"/>
-      <xs:enumeration value="Roentgen"/>
-      <xs:enumeration value="Roentgen Equivalent in Man (REM)"/>
-      <xs:enumeration value="Roll"/>
-      <xs:enumeration value="Roll-Metric Measure"/>
-      <xs:enumeration value="Round"/>
-      <xs:enumeration value="Run"/>
-      <xs:enumeration value="Running or Operating Hours"/>
-      <xs:enumeration value="Sack"/>
-      <xs:enumeration value="Sandwich"/>
-      <xs:enumeration value="Saybold Universal Second"/>
-      <xs:enumeration value="Season"/>
-      <xs:enumeration value="Seat"/>
-      <xs:enumeration value="Seconds"/>
-      <xs:enumeration value="Section"/>
-      <xs:enumeration value="Segment"/>
-      <xs:enumeration value="Seismic Level"/>
-      <xs:enumeration value="Seismic Line"/>
-      <xs:enumeration value="Semester"/>
-      <xs:enumeration value="Semiannual"/>
-      <xs:enumeration value="Session"/>
-      <xs:enumeration value="Sessions"/>
-      <xs:enumeration value="Set"/>
-      <xs:enumeration value="Seven pack"/>
-      <xs:enumeration value="Shares"/>
-      <xs:enumeration value="Sheet"/>
-      <xs:enumeration value="Sheet-Metric Measure"/>
-      <xs:enumeration value="Shelf Package"/>
-      <xs:enumeration value="Ship Set"/>
-      <xs:enumeration value="Shipment"/>
-      <xs:enumeration value="Short Ton"/>
-      <xs:enumeration value="Shot"/>
-      <xs:enumeration value="Siemens"/>
-      <xs:enumeration value="Sitas"/>
-      <xs:enumeration value="Six pack"/>
-      <xs:enumeration value="Sixty-fourths of an Inch"/>
-      <xs:enumeration value="Sizing Factor"/>
-      <xs:enumeration value="Skein"/>
-      <xs:enumeration value="Skid"/>
-      <xs:enumeration value="Sleeve"/>
-      <xs:enumeration value="Slice"/>
-      <xs:enumeration value="Slip Sheet"/>
-      <xs:enumeration value="Small Spray"/>
-      <xs:enumeration value="Solid Pounds"/>
-      <xs:enumeration value="Split Tanktruck"/>
-      <xs:enumeration value="Spool"/>
-      <xs:enumeration value="Square"/>
-      <xs:enumeration value="Square Centimeter"/>
-      <xs:enumeration value="Square Decimeter"/>
-      <xs:enumeration value="Square Feet per Second"/>
-      <xs:enumeration value="Square Foot"/>
-      <xs:enumeration value="Square Inch"/>
-      <xs:enumeration value="Square Kilometer"/>
-      <xs:enumeration value="Square Meter"/>
-      <xs:enumeration value="Square Meters per Second"/>
-      <xs:enumeration value="Square Mile"/>
-      <xs:enumeration value="Square Millimeter"/>
-      <xs:enumeration value="Square Rod"/>
-      <xs:enumeration value="Square Yard"/>
-      <xs:enumeration value="Stage"/>
-      <xs:enumeration value="Standard Advertising Units (SAUs)"/>
-      <xs:enumeration value="Standard Cubic Foot"/>
-      <xs:enumeration value="Statute Mile"/>
-      <xs:enumeration value="Stick"/>
-      <xs:enumeration value="Stokes"/>
-      <xs:enumeration value="Stop"/>
-      <xs:enumeration value="Storage Units"/>
-      <xs:enumeration value="Strand"/>
-      <xs:enumeration value="Strip"/>
-      <xs:enumeration value="Super Bulk Bag"/>
-      <xs:enumeration value="Suppository"/>
-      <xs:enumeration value="Syringe"/>
-      <xs:enumeration value="Tablespoon"/>
-      <xs:enumeration value="Tablet"/>
-      <xs:enumeration value="Tank"/>
-      <xs:enumeration value="Tank Car"/>
-      <xs:enumeration value="Tank Truck"/>
-      <xs:enumeration value="Task"/>
-      <xs:enumeration value="Teaspoon"/>
-      <xs:enumeration value="Telecommunications Lines in Service"/>
-      <xs:enumeration value="Telecommunications Lines in Service - Average"/>
-      <xs:enumeration value="Telecommunications Ports"/>
-      <xs:enumeration value="Ten"/>
-      <xs:enumeration value="Ten Square Feet"/>
-      <xs:enumeration value="Ten Square Yards"/>
-      <xs:enumeration value="Ten Thousand Yards"/>
-      <xs:enumeration value="Ten Yards"/>
-      <xs:enumeration value="Ten-pack"/>
-      <xs:enumeration value="Tenth Cubic Foot"/>
-      <xs:enumeration value="Tenth Hours"/>
-      <xs:enumeration value="Tenth Minutes"/>
-      <xs:enumeration value="Test Specific Scale"/>
-      <xs:enumeration value="Theoretical Kilograms"/>
-      <xs:enumeration value="Theoretical Pounds"/>
-      <xs:enumeration value="Theoretical Tonnes"/>
-      <xs:enumeration value="Theoretical Tons"/>
-      <xs:enumeration value="Therms"/>
-      <xs:enumeration value="Thirty-Six"/>
-      <xs:enumeration value="Thousand"/>
-      <xs:enumeration value="Thousand Bags"/>
-      <xs:enumeration value="Thousand Casings"/>
-      <xs:enumeration value="Thousand Cubic Feet"/>
-      <xs:enumeration value="Thousand Cubic Feet Per Day"/>
-      <xs:enumeration value="Thousand Cubic Meters"/>
-      <xs:enumeration value="Thousand Feet"/>
-      <xs:enumeration value="Thousand Feet (Board)"/>
-      <xs:enumeration value="Thousand Feet (Linear)"/>
-      <xs:enumeration value="Thousand Gallons"/>
-      <xs:enumeration value="Thousand Gallons Per Day"/>
-      <xs:enumeration value="Thousand Impressions"/>
-      <xs:enumeration value="Thousand Kilograms"/>
-      <xs:enumeration value="Thousand Kilowatt Hours"/>
-      <xs:enumeration value="Thousand Linear Inches"/>
-      <xs:enumeration value="Thousand Linear Meters"/>
-      <xs:enumeration value="Thousand Linear Yards"/>
-      <xs:enumeration value="Thousand Pieces"/>
-      <xs:enumeration value="Thousand Pounds Gross"/>
-      <xs:enumeration value="Thousand Rounds"/>
-      <xs:enumeration value="Thousand Sheets"/>
-      <xs:enumeration value="Thousand Sq. Centimeters"/>
-      <xs:enumeration value="Thousand Square Feet"/>
-      <xs:enumeration value="Thousand Square Inches"/>
-      <xs:enumeration value="Thousands of Dollars"/>
-      <xs:enumeration value="Thousandths of an Inch"/>
-      <xs:enumeration value="Three pack"/>
-      <xs:enumeration value="Tire"/>
-      <xs:enumeration value="Ton Miles"/>
-      <xs:enumeration value="Ton Per Hour"/>
-      <xs:enumeration value="Torr"/>
-      <xs:enumeration value="Total Car Count"/>
-      <xs:enumeration value="Total Car Mile"/>
-      <xs:enumeration value="Tote"/>
-      <xs:enumeration value="Track Foot"/>
-      <xs:enumeration value="Trailer"/>
-      <xs:enumeration value="Train"/>
-      <xs:enumeration value="Train Mile"/>
-      <xs:enumeration value="Transactions"/>
-      <xs:enumeration value="Transdermal Patch"/>
-      <xs:enumeration value="Tray"/>
-      <xs:enumeration value="Treatments"/>
-      <xs:enumeration value="Trimester"/>
-      <xs:enumeration value="Troche"/>
-      <xs:enumeration value="Troy Ounce"/>
-      <xs:enumeration value="Troy Pound"/>
-      <xs:enumeration value="Truckload"/>
-      <xs:enumeration value="Tub"/>
-      <xs:enumeration value="Tube"/>
-      <xs:enumeration value="Twenty"/>
-      <xs:enumeration value="Twenty-Five"/>
-      <xs:enumeration value="Twenty-Four"/>
-      <xs:enumeration value="Two Hundred Fifty"/>
-      <xs:enumeration value="Two pack"/>
-      <xs:enumeration value="U.S. Gallons At 60 Degrees Fahrenheit"/>
-      <xs:enumeration value="U.S. Gallons Per Minute"/>
-      <xs:enumeration value="U.S. Pharmacopoeia (USP) Unit"/>
-      <xs:enumeration value="Unit"/>
-      <xs:enumeration value="Unitless"/>
-      <xs:enumeration value="Usage per Telecommunications Line - Average"/>
-      <xs:enumeration value="Vehicle"/>
-      <xs:enumeration value="Vial"/>
-      <xs:enumeration value="Visit"/>
-      <xs:enumeration value="Volt"/>
-      <xs:enumeration value="Volt-ampere per Kilogram"/>
-      <xs:enumeration value="Volt-Ampere Per Pound"/>
-      <xs:enumeration value="Volt-ampere-reactive"/>
-      <xs:enumeration value="Volts (Alternating Current)"/>
-      <xs:enumeration value="Volts (Direct Current)"/>
-      <xs:enumeration value="Volts Per Meter"/>
-      <xs:enumeration value="Wafer"/>
-      <xs:enumeration value="Watt"/>
-      <xs:enumeration value="Watts per Kilogram"/>
-      <xs:enumeration value="Watts Per Pound"/>
-      <xs:enumeration value="Week"/>
-      <xs:enumeration value="Weight per Square Inch"/>
-      <xs:enumeration value="Wet Kilo"/>
-      <xs:enumeration value="Wet Pound"/>
-      <xs:enumeration value="Wet Ton"/>
-      <xs:enumeration value="Wheel"/>
-      <xs:enumeration value="Wine Gallon"/>
-      <xs:enumeration value="Work Days"/>
-      <xs:enumeration value="Working Months"/>
-      <xs:enumeration value="Wrap"/>
-      <xs:enumeration value="Yard"/>
-      <xs:enumeration value="Years"/>
     </xs:restriction>
   </xs:simpleType>
   <!--*** Formats-->
