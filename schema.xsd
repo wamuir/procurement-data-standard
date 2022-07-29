@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- edited with XMLSpy v2017 sp1 (http://www.altova.com) by Judith M. Critzer (Northrop Grumman Systems Corp) -->
+<!-- edited with XMLSpy v2017 sp1 (http://www.altova.com) by Judith Critzer (Northrop Grumman Systems Corp) -->
 <!--
-			FINAL - 23 May 2018  -  FINAL
+			FINAL - 23 July 2019 - FINAL
 
-			- Adds elements to support the Solicitation Module.
+			- Adds additional elements to support the Solicitation Module.
 			- Replaces schema enumeration lists with referenced lists for the following:
-				- Attachment Standard Type
-				- Organization Qualifer Role Type (Address Description)
-				- Unit Of Measure
-				- Unit Of Measure With Dollars
-				- Attachment Data Format
-				- LOA Component Title
-				- Reference Description
-			- Simplifies Business Classification structure to two elements that will be populated with values in a referenced list.
+				- Procurement Instrument Origin
+				- Product Service Code
+				- Solicitation Date Description
+				- Time Zone
+			- Provides a means of carrying HTML code via CDATA for Miscellaneous Text and Clause Text.
+			- For Line Item level Reference Description, requires grouping of PR document and line item numbers.
+			- Provides mechanism to group Product Service Data.
+			- adds Government Unique Entity Identifier to address and originator details.
+			- Changed the name of the following elements to remove the reference to the sited source which is now GENC, not ISO:
+				<CountryISOA3Code> to <CountryA3Code>
+				<CountryIDON3Code> to <CountryN3Code>
 
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="05232018">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="07232019">
   <xs:annotation>
     <xs:documentation>Level 1: top level of Procurement Data Standard for a procurement instrument document.</xs:documentation>
   </xs:annotation>
@@ -31,7 +34,7 @@
           </xs:annotation>
           <xs:simpleType>
             <xs:restriction base="xs:token">
-              <xs:enumeration value="2.6"/>
+              <xs:enumeration value="2.6.1"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -116,25 +119,20 @@
                                 <xs:documentation>CAGE: Commercial and Government Entity  </xs:documentation>
                               </xs:annotation>
                             </xs:element>
-                            <xs:element name="Duns4Number" minOccurs="0">
+                            <xs:element name="Duns4Number" type="Duns4NumberType" minOccurs="0">
                               <xs:annotation>
                                 <xs:documentation>DUNS+4: Data Universal Numbering System identifier with four character suffix.  </xs:documentation>
                               </xs:annotation>
-                              <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                  <xs:pattern value="([0-9]){9}([0-9A-Z]){4}"/>
-                                </xs:restriction>
-                              </xs:simpleType>
                             </xs:element>
-                            <xs:element name="DunsNumber" minOccurs="0">
+                            <xs:element name="DunsNumber" type="DunsNumberType" minOccurs="0">
                               <xs:annotation>
                                 <xs:documentation>DUNS:  Data Universal Numbering System Identifier.  </xs:documentation>
                               </xs:annotation>
-                              <xs:simpleType>
-                                <xs:restriction base="xs:string">
-                                  <xs:pattern value="([0-9]){9}"/>
-                                </xs:restriction>
-                              </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" minOccurs="0">
+                              <xs:annotation>
+                                <xs:documentation>Government Unique Entity Identifier.</xs:documentation>
+                              </xs:annotation>
                             </xs:element>
                             <xs:element name="AlternateIdentifier" type="AlternateIdentifierType" minOccurs="0">
                               <xs:annotation>
@@ -371,25 +369,14 @@
       <xs:enumeration value="Ordering Instrument"/>
       <xs:enumeration value="Prior Contract to a Continuation Contract"/>
       <xs:enumeration value="Prior Contract to a Follow-on Contract"/>
+      <xs:enumeration value="Prior Draft Solicitation Number"/>
       <xs:enumeration value="Represented Contract"/>
+      <xs:enumeration value="Represented Offer"/>
       <xs:enumeration value="Represented Solicitation"/>
       <xs:enumeration value="Represented Solicitation and Synopsis"/>
       <xs:enumeration value="Small Business Administration Contract"/>
       <xs:enumeration value="Solicitation being Amended"/>
       <xs:enumeration value="Solicitation Number"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="ProcurementInstrumentOriginType">
-    <xs:annotation>
-      <xs:documentation>Enumeration list for the Procurement Instrument Origin</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="General Services Administration"/>
-      <xs:enumeration value="Department of Defense"/>
-      <xs:enumeration value="Department of Interior"/>
-      <xs:enumeration value="Health and Human Services"/>
-      <xs:enumeration value="National Aeronautics and Space Administration"/>
-      <xs:enumeration value="Veterans Affairs"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="ProcurementInstrumentTypeCodeType">
@@ -454,7 +441,7 @@
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeDetails-DoDAAC">
     <xs:annotation>
-      <xs:documentation>For Modifications and Amendments, captures changes to an DoDAAC element.</xs:documentation>
+      <xs:documentation>For Modifications and Amendments, captures changes to a DoDAAC element.</xs:documentation>
     </xs:annotation>
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
@@ -696,6 +683,7 @@
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousMiscellaneousText" type="xs:string" use="optional"/>
+    <xs:attribute name="previousFormattedMiscellaneousText" type="xs:string" use="optional"/>
     <xs:attribute name="previousCSIDivision" type="CSIDivisionType"/>
     <xs:attribute name="previousCSISection" type="CSISectionType"/>
     <xs:attribute name="previousSection" type="SectionType" use="optional"/>
@@ -743,35 +731,6 @@
     <xs:attribute name="previousAwardFee" type="TrueType" use="optional"/>
     <xs:attribute name="previousPerformanceIncentive" type="TrueType" use="optional"/>
     <xs:attribute name="previousOrderDependent" type="TrueType" use="optional"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="ChangeSection-ProcurementInstrumentIdentifier">
-    <xs:annotation>
-      <xs:documentation>Records changes to a Procurement Instrument Identifier section</xs:documentation>
-    </xs:annotation>
-    <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
-    <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousOrigin" type="ProcurementInstrumentOriginType" use="optional"/>
-    <xs:attribute name="previousVehicle" type="ProcurementInstrumentListType" use="optional"/>
-    <xs:attribute name="previousDescription" type="ProcurementInstrumentDescriptionType" use="optional"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="ChangeSection-ProcurementInstrumentIdentifierAndNumber">
-    <xs:annotation>
-      <xs:documentation>Records changes to a Procurement Instrument Identifier and Number section</xs:documentation>
-    </xs:annotation>
-    <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
-    <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousOrigin" type="ProcurementInstrumentOriginType" use="optional"/>
-    <xs:attribute name="previousVehicle" type="ProcurementInstrumentListType" use="optional"/>
-    <xs:attribute name="previousDescription" type="ProcurementInstrumentDescriptionType" use="optional"/>
-    <xs:attribute name="previousEnterpriseIdentifier" type="xs:string" use="optional"/>
-    <xs:attribute name="previousYear" type="xs:string" use="optional"/>
-    <xs:attribute name="previousTypeCode" type="ProcurementInstrumentTypeCodeType" use="optional"/>
-    <xs:attribute name="previousSerializedIdentifier" type="xs:string" use="optional"/>
-    <xs:attribute name="previousOrderNumber" type="OrderNumberType" use="optional"/>
-    <xs:attribute name="previousOrderModificationIdentifier" type="OrderModificationIdentifierType" use="optional"/>
-    <xs:attribute name="previousProcurementInstrumentModificationIdentifier" type="ProcurementInstrumentModificationIdentifierType" use="optional"/>
-    <xs:attribute name="previousAmendmentNumber" type="AmendmentNumberType" use="optional"/>
-    <xs:attribute name="previousNonDoDNumber" type="NonDoDNumberType" use="optional"/>
   </xs:attributeGroup>
   <!--Level 2:  DocumentLevel-->
   <xs:complexType name="AwardInstrumentType">
@@ -894,7 +853,7 @@
                             <xs:sequence>
                               <xs:element name="LineItemChangeText" type="xs:string">
                                 <xs:annotation>
-                                  <xs:documentation>Description of the line item change that applies to the section/division provided in CSI Dvision, CSI Section, or Section.</xs:documentation>
+                                  <xs:documentation>Description of the line item change that applies to the section/division provided in CSI Division, CSI Section, or Section.</xs:documentation>
                                 </xs:annotation>
                               </xs:element>
                               <xs:group ref="ProcurementInstrumentLocationGroup"/>
@@ -1187,7 +1146,7 @@
       </xs:element>
       <xs:element name="SolicitationOfferInformation" type="SolicitationOfferInformationType" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Miscellaneous information about solicitations, bids, and offers that pertain to the procurement instrument.</xs:documentation>
+          <xs:documentation>Miscellaneous information about solicitations and offers that pertain to the procurement instrument.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -1595,9 +1554,9 @@
       <xs:documentation>Details about a procurement instrument number as well as the procurement instrument number.  For award/original document only.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="ProcurementInstrumentOrigin" type="ProcurementInstrumentOriginType">
+      <xs:element name="ProcurementInstrumentOrigin" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Federal/ DoD Agency or Service from where the procurement instrument is originating. (see list)</xs:documentation>
+          <xs:documentation>Federal/ DoD Agency or Service from where the procurement instrument is originating. (see Procurement Instrument Origin list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="ProcurementInstrumentVehicle" type="ProcurementInstrumentListType">
@@ -1671,7 +1630,7 @@
     <xs:sequence>
       <xs:element name="MustShipCompleteIndicator" type="TrueFalseType" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>indicates partial shipments will not be accepted.</xs:documentation>
+          <xs:documentation>Indicates partial shipments will not be accepted.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="ShipInPlaceIndicator" type="TrueFalseType" minOccurs="0">
@@ -1708,7 +1667,7 @@
     <xs:sequence>
       <xs:element name="AcceptWithinDays" type="xs:positiveInteger" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The number of days from the date for receipt of offers or bids that, if the government accepts the offer/bid in that time, the offeror/bidder agrees to furnish any or all items in accordance with the price set, the designated delivery point(s), and  the stated schedule.  If not provided by the offeror/bidder, 60 days is the default.</xs:documentation>
+          <xs:documentation>The number of days from the date for receipt of offers that, if the government accepts the offer in that time, the offeror agrees to furnish any or all items in accordance with the price set, the designated delivery point(s), and  the stated schedule.  If not provided by the offeror, 60 days is the default.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="AddendaAttached" type="TrueFalseType" minOccurs="0">
@@ -1768,7 +1727,7 @@
       </xs:element>
       <xs:element name="SizeStandard" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The threshold of employees or amount the offeror/bidder must meet to respond to the solicitation.</xs:documentation>
+          <xs:documentation>The threshold of employees or amount the offeror must meet to respond to the solicitation.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:choice>
@@ -1804,7 +1763,7 @@
       </xs:element>
       <xs:element name="AcknowledgedAmendments" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>The list of amendments to the solicitation that the offeror/bidder acknowledges receiving.</xs:documentation>
+          <xs:documentation>The list of amendments to the solicitation that the offeror acknowledges receiving.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:sequence>
@@ -1823,23 +1782,23 @@
       </xs:element>
       <xs:element name="OfferDelivery" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Information on where bids or offers are to be delivered such as number of copies, due date, etc.</xs:documentation>
+          <xs:documentation>Information on where offers are to be delivered such as number of copies, due date, etc.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:sequence>
             <xs:element name="SealedCopies" type="xs:positiveInteger" minOccurs="0">
               <xs:annotation>
-                <xs:documentation>The number of sealed copies of the bid or offer that must be provided.</xs:documentation>
+                <xs:documentation>The number of sealed copies of the offer that must be provided.</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:element name="DepositoryLocation" type="xs:string" minOccurs="0">
               <xs:annotation>
-                <xs:documentation>Describes the place where offers or bids are taken when hand carried.</xs:documentation>
+                <xs:documentation>Describes the place where offers are taken when hand carried.</xs:documentation>
               </xs:annotation>
             </xs:element>
             <xs:element name="RequiredBefore" type="DateTimeType" minOccurs="0">
               <xs:annotation>
-                <xs:documentation>Date and time by which a bid or offer must be delivered.</xs:documentation>
+                <xs:documentation>Date and time by which an offer must be delivered.</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -1847,7 +1806,7 @@
       </xs:element>
       <xs:element name="OfferSignature" type="SigneeType" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>The name, title, and signature date of the offeror or bidder.</xs:documentation>
+          <xs:documentation>The name, title, and signature date of the offeror.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="SetAsideDetails" type="SetAsideDetailsType" minOccurs="0">
@@ -1855,7 +1814,7 @@
           <xs:documentation>Provides set aside percentage and organization type.  If not provided, the solicitation is unrestricted.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="SolicitationContact" type="ContactType" minOccurs="0">
+      <xs:element name="SolicitationContact" type="ContactType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Person or entity that is the contact for the solicitation.</xs:documentation>
         </xs:annotation>
@@ -1866,19 +1825,10 @@
         </xs:annotation>
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="SolicitationDateDescription">
+            <xs:element name="SolicitationDateDescription" type="xs:string">
               <xs:annotation>
-                <xs:documentation>Categorizes the date relevant to a solicitation. (see list)</xs:documentation>
+                <xs:documentation>Categorizes the date relevant to a solicitation. (see Solicitation Date Description list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Bid Opening Date and Time"/>
-                  <xs:enumeration value="Date of Site or Property Inspection"/>
-                  <xs:enumeration value="Pre-Proposal Conference"/>
-                  <xs:enumeration value="Pre-Solicitation Conference"/>
-                  <xs:enumeration value="Synopsis Archiving Date"/>
-                </xs:restriction>
-              </xs:simpleType>
             </xs:element>
             <xs:element name="SolicitationDate" type="DateTimeType">
               <xs:annotation>
@@ -2480,7 +2430,7 @@
         <xs:complexType>
           <xs:simpleContent>
             <xs:extension base="xs:string">
-              <xs:attributeGroup ref="ChangeDetails-AddDelete"/>
+              <xs:attributeGroup ref="ChangeDetails-AddDeleteNoChangeText"/>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -2502,14 +2452,14 @@
           </xs:complexContent>
         </xs:complexType>
       </xs:element>
-      <xs:element name="ShareRatio" type="ShareRatioType 1" minOccurs="0">
+      <xs:element name="ShareRatio" type="ShareRatioModificationType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>The government and contractor share ratios.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="SolicitationOfferInformation" type="SolicitationOfferInformationModificationType" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Miscellaneous information about solicitations, bids, and offers that pertain to the procurement instrument.  May only be used when amending a solicitation procurement instrument.</xs:documentation>
+          <xs:documentation>Miscellaneous information about solicitations and offers that pertain to the procurement instrument.  May only be used when amending a solicitation procurement instrument.</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -3111,7 +3061,7 @@
                       <xs:documentation>The line item list to which the share ratio being modified is associated.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="ItemShareRatioModification" type="ShareRatioType 1">
+                  <xs:element name="ItemShareRatioModification" type="ShareRatioModificationType">
                     <xs:annotation>
                       <xs:documentation>Records the share ratio that has been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
@@ -3130,7 +3080,7 @@
                       <xs:documentation>Records line items that have been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="ShareRatioChange" type="ShareRatioType 1">
+                  <xs:element name="ShareRatioChange" type="ShareRatioModificationType">
                     <xs:annotation>
                       <xs:documentation>Records the share ratio that has been added, removed, or modified.</xs:documentation>
                     </xs:annotation>
@@ -3367,7 +3317,7 @@
       </xs:element>
       <xs:element name="Limits" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>Used to indicate ordering  limits on the procurement instrument.</xs:documentation>
+          <xs:documentation>Used to indicate ordering limits on the procurement instrument.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:complexContent>
@@ -3842,25 +3792,27 @@
               <xs:simpleType>
                 <xs:restriction base="xs:token">
                   <xs:enumeration value="Additional Work"/>
-                  <xs:enumeration value="Supplemental Agreement For Work Within Scope"/>
-                  <xs:enumeration value="Funding Only Action"/>
                   <xs:enumeration value="Change Order"/>
-                  <xs:enumeration value="Terminate For Default (Complete Or Partial)"/>
-                  <xs:enumeration value="Terminate For Convenience (Complete Or Partial)"/>
-                  <xs:enumeration value="Exercise An Option"/>
-                  <xs:enumeration value="Definitize Letter Contract"/>
-                  <xs:enumeration value="Novation Agreement"/>
+                  <xs:enumeration value="Change Procurement Instrument Number"/>
                   <xs:enumeration value="Close Out"/>
                   <xs:enumeration value="Definitize Change Order"/>
-                  <xs:enumeration value="Other Administrative Action"/>
+                  <xs:enumeration value="Definitize Letter Contract"/>
+                  <xs:enumeration value="Exercise An Option"/>
+                  <xs:enumeration value="Extension Of Due Date"/>
+                  <xs:enumeration value="Funding Only Action"/>
                   <xs:enumeration value="Legal Contract Cancellation"/>
-                  <xs:enumeration value="Rerepresentation Of Non-Novated Merger/Acquisition"/>
+                  <xs:enumeration value="Novation Agreement"/>
+                  <xs:enumeration value="Other Administrative Action"/>
                   <xs:enumeration value="Rerepresentation"/>
-                  <xs:enumeration value="Change Procurement Instrument Number"/>
+                  <xs:enumeration value="Rerepresentation Of Non-Novated Merger/Acquisition"/>
+                  <xs:enumeration value="Solicitation Cancellation"/>
+                  <xs:enumeration value="Supplemental Agreement For Work Within Scope"/>
+                  <xs:enumeration value="Terminate For Convenience (Complete Or Partial)"/>
+                  <xs:enumeration value="Terminate For Default (Complete Or Partial)"/>
                   <xs:enumeration value="Termination For Cause"/>
                   <xs:enumeration value="Transfer Action"/>
-                  <xs:enumeration value="Vendor DUNS Change"/>
                   <xs:enumeration value="Vendor Address Change"/>
+                  <xs:enumeration value="Vendor DUNS Change"/>
                 </xs:restriction>
               </xs:simpleType>
             </xs:element>
@@ -4112,12 +4064,12 @@
         </xs:annotation>
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="AddedReferenceNumber" type="DocumentReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="AddedReferenceNumber" type="ReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
               <xs:annotation>
                 <xs:documentation>Contains reference numbers that were added.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="DeletedReferenceNumber" type="DocumentReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="DeletedReferenceNumber" type="ReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
               <xs:annotation>
                 <xs:documentation>Contains reference numbers that were removed.</xs:documentation>
               </xs:annotation>
@@ -4133,12 +4085,12 @@
                       <xs:documentation>Description of the change to the reference number.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="CurrentReferenceNumber" type="DocumentReferenceNumberType">
+                  <xs:element name="CurrentReferenceNumber" type="ReferenceNumberType">
                     <xs:annotation>
                       <xs:documentation>The reference number after the change was applied.  The result.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
-                  <xs:element name="PreviousReferenceNumber" type="DocumentReferenceNumberType">
+                  <xs:element name="PreviousReferenceNumber" type="ReferenceNumberType">
                     <xs:annotation>
                       <xs:documentation>The reference number before the change was applied.  The original.</xs:documentation>
                     </xs:annotation>
@@ -4337,7 +4289,7 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="ShareRatioType 1">
+  <xs:complexType name="ShareRatioModificationType">
     <xs:choice>
       <xs:element name="AddedShareRatio" type="ShareRatioType">
         <xs:annotation>
@@ -4382,7 +4334,7 @@
     <xs:sequence>
       <xs:element name="MustShipCompleteIndicator" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>indicates partial shipments will not be accepted.</xs:documentation>
+          <xs:documentation>Indicates partial shipments will not be accepted.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
@@ -5006,6 +4958,30 @@
           <xs:documentation>Denotes that the attachment should be provided as part of the response to a solicitation.  (see list)</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="RestrictedAccessList" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>List of potential offerors that are allowed to see the attachment.  Only allowed on solicitations and amendments.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:choice>
+            <xs:element name="RestrictedCage" type="CAGEType" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Commercial and Government Entity (CAGE) of a potential offeror allowed to view the attachment. </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="RestrictedDunsNumber" type="DunsNumberType" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Data Universal Numbering System identifier (DUNS) of a potential offeror allowed to view the attachment. </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="RestrictedGovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Government Unique Entity Identifier of a potential offeror allowed to view the attachment.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="BusinessClassificationType">
@@ -5031,254 +5007,19 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="BusinessOrOrganizationType">
-    <xs:sequence>
-      <xs:element name="AbilityOne" type="TrueType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes that the business or organization is a certified distributor of Ability One products.  (see list)</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="ForeignOwnedAndLocated" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes that the business or organization is owned by and located in a foreign (non-US) country.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="IRSDesignation">
-        <xs:annotation>
-          <xs:documentation>IRS designation of the vendor.  Used for tax purposes.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Corporate Entity, Not Tax Exempt (Pays Federal Income Taxes)"/>
-            <xs:enumeration value="Corporate Entity, Tax Exempt (Does Not Pay Federal Income Taxes)"/>
-            <xs:enumeration value="International Organization"/>
-            <xs:enumeration value="Limited Liability Company"/>
-            <xs:enumeration value="Other"/>
-            <xs:enumeration value="Partnership or Limited Liability Partnership"/>
-            <xs:enumeration value="Sole Proprietorship"/>
-            <xs:enumeration value="Subchapter S Corporation"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="LimitedLiabilityCompany" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes whether or not the business or organization is a limited liability company.  (see list)</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="ManufacturerOfGoods" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes whether or not the business or organization is a manufacturer of goods.  (see list)</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="MinorityOwned" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Indicates type of minority ownership.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Asian Pacific American Owned"/>
-            <xs:enumeration value="Black American Owned"/>
-            <xs:enumeration value="Hispanic American Owned"/>
-            <xs:enumeration value="Native American Owned"/>
-            <xs:enumeration value="Subcontinent Asian (Asian Indian) American Owned"/>
-            <xs:enumeration value="Other"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="ProfitStructure">
-        <xs:annotation>
-          <xs:documentation>Identifies the profit structure of the business or organization.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="For-Profit Organization"/>
-            <xs:enumeration value="Non-Profit Organization"/>
-            <xs:enumeration value="Other - Not for Profit Organization"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="SmallAgriculturalCooperative" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes whether or not the business or organization is a small agricultural cooperative.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="SubchapterSCorporation" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Denotes whether or not the business or organization meets the IRS requirements to be taxed under Subchapter S of the Internal Revenue Code.  (see list)</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="SocioEconomic" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Indicates applicable socio-economic types.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="SocioEconomicGroup" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Identifies one or more socioeconomic groups of the business or organization.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="8(a) Joint Venture"/>
-                  <xs:enumeration value="Community Development Corporation Owned Firm"/>
-                  <xs:enumeration value="Labor Surplus Area Firm"/>
-                  <xs:enumeration value="SBA Certified 8(a) Program Participant"/>
-                  <xs:enumeration value="SBA Certified Hubzone Contractor"/>
-                  <xs:enumeration value="SBA Certified Small Disadvantaged Business"/>
-                  <xs:enumeration value="Self Certified Small Disadvantaged Business"/>
-                  <xs:enumeration value="Women Owned Business"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:choice>
-              <xs:element name="ServiceDisabledVeteranOwned" type="TrueType" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>Denotes that the business or organization is owned by a veteran that was disabled during service.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-              <xs:element name="NonServiceDisabledVeteranOwned" type="TrueType" minOccurs="0">
-                <xs:annotation>
-                  <xs:documentation>Denotes that the business or organization is owned by a veteran that was disabled outside of service.</xs:documentation>
-                </xs:annotation>
-              </xs:element>
-            </xs:choice>
-            <xs:element name="WomanOwned" minOccurs="0">
-              <xs:annotation>
-                <xs:documentation>Indicates applicable woman owned types.</xs:documentation>
-              </xs:annotation>
-              <xs:complexType>
-                <xs:sequence>
-                  <xs:element name="JointVentureSmallBusiness" type="TrueType" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>Denotes that the woman owned small business or organization is a joint venture.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:element name="JointVentureEconomicallyDisadvantagedSmallBusiness" type="TrueType" minOccurs="0">
-                    <xs:annotation>
-                      <xs:documentation>Denotes that the woman owned economically disadvantaged small business or organization is a joint venture.</xs:documentation>
-                    </xs:annotation>
-                  </xs:element>
-                  <xs:choice>
-                    <xs:element name="EconomicallyDisadvantagedSmallBusiness" type="TrueType" minOccurs="0">
-                      <xs:annotation>
-                        <xs:documentation>Denotes that the woman owned small business or organization is economically disadvantage.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                    <xs:element name="SmallBusiness" type="TrueType" minOccurs="0">
-                      <xs:annotation>
-                        <xs:documentation>Denotes that the woman owned small business or organization is not economically disadvantage.</xs:documentation>
-                      </xs:annotation>
-                    </xs:element>
-                  </xs:choice>
-                </xs:sequence>
-              </xs:complexType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="BusinessTypeTypeOld">
-    <xs:sequence>
-      <xs:element name="DotCertifiedDbe" type="TrueFalseType" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>States whether or not the business is certified by a state certifying agency as a Department of Transportation (DOT) Disadvantaged Business Enterprise (DBE). </xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="FederallyRecognizedNativeAmericanEntity" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Indicates type(s) of Native American organization.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Alaskan Native Corporation Owned Firm"/>
-            <xs:enumeration value="American Indian Owned"/>
-            <xs:enumeration value="Federally Recognized Indian Tribe"/>
-            <xs:enumeration value="Native Hawaiian Organization Owned Firm"/>
-            <xs:enumeration value="Tribally Owned Firm"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="OrganizationCategory">
-        <xs:annotation>
-          <xs:documentation>Information about the Government Entity or Agency.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:choice>
-            <xs:element name="GovernmentEntityOrAgency" type="GovernmentEntityOrAgencyType">
-              <xs:annotation>
-                <xs:documentation>Information about a Government Entity or Agency.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-            <xs:element name="BusinessOrOrganization" type="BusinessOrOrganizationType">
-              <xs:annotation>
-                <xs:documentation>Information about a Business or Organization.</xs:documentation>
-              </xs:annotation>
-            </xs:element>
-          </xs:choice>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="BusinessFactors" minOccurs="0">
-        <xs:annotation>
-          <xs:documentation>Information about the Business or Organization.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="Miscellaneous" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Indicates type(s) of non-educational institutions such as hospital, domestic shelter, etc.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Community Development Corporation"/>
-                  <xs:enumeration value="Domestic Shelter"/>
-                  <xs:enumeration value="Foundation"/>
-                  <xs:enumeration value="Hospital"/>
-                  <xs:enumeration value="Veterinary Hospital"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-            <xs:element name="EducationalInstitution" minOccurs="0" maxOccurs="unbounded">
-              <xs:annotation>
-                <xs:documentation>Indicates type(s) of educational institutions such as minority, tribal college, etc.  (see list)</xs:documentation>
-              </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="1862 Land Grant College"/>
-                  <xs:enumeration value="1890 Land Grant College"/>
-                  <xs:enumeration value="1994 Land Grant College"/>
-                  <xs:enumeration value="Alaskan Native Servicing Institution"/>
-                  <xs:enumeration value="Hispanic Servicing Institution"/>
-                  <xs:enumeration value="Historically Black College or University (HBCU)"/>
-                  <xs:enumeration value="Minority Institutions"/>
-                  <xs:enumeration value="Native Hawaiian Servicing Institution"/>
-                  <xs:enumeration value="Other Educational Institution"/>
-                  <xs:enumeration value="Private University or College"/>
-                  <xs:enumeration value="School of Forestry"/>
-                  <xs:enumeration value="State Controlled Institution of Higher Learning"/>
-                  <xs:enumeration value="Tribal College"/>
-                  <xs:enumeration value="Veterinary College"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:element>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
   <xs:complexType name="BusinessTypeType">
     <xs:annotation>
       <xs:documentation>Contractor Business Type structure.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="BusinessTypeDescription" type="xs:anySimpleType">
+      <xs:element name="BusinessTypeDescription" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Business category from the System for Award Management (SAM).</xs:documentation>
+          <xs:documentation>Business category from the System for Award Management (SAM).  (see Business Type Description list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="BusinessTypeValue" type="xs:string" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>Specific business type for the category provided in Business Type Description; from the System for Award Management (SAM).</xs:documentation>
+          <xs:documentation>Specific business type for the category provided in Business Type Description; from the System for Award Management (SAM).  (see Business Type list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -5684,6 +5425,11 @@
           <xs:documentation>Complete text of the clause or provision.</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="FormattedClauseFullText" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Complete text of the clause or provision with html tags.  Contents must be enclosed with CDATA.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
       <xs:element name="ClauseFillinText" type="ClauseFillinTextType" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Use this section to provide only the fill-in text as required to complete the clause or provision in the regulation, and apply the clause or provision to this transaction. </xs:documentation>
@@ -5693,7 +5439,7 @@
   </xs:complexType>
   <xs:complexType name="CLINAccountingDetailType1">
     <xs:annotation>
-      <xs:documentation>Not for LOA reference. used other than LOA reference.</xs:documentation>
+      <xs:documentation>Not for LOA reference.  Used for other than LOA reference.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
       <xs:element name="DeliveryReferenceDescription">
@@ -5762,6 +5508,17 @@
         <xs:annotation>
           <xs:documentation>Name of the person or entity.</xs:documentation>
         </xs:annotation>
+      </xs:element>
+      <xs:element name="GovernmentPointOfEntryIdentifier" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>When multiple government contacts are provided on a solicitation, identifies the primary and secondary contact.  (see list)</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="Primary"/>
+            <xs:enumeration value="Secondary"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
       <xs:element name="Grade" type="xs:string" minOccurs="0">
         <xs:annotation>
@@ -5998,9 +5755,9 @@
                 </xs:simpleContent>
               </xs:complexType>
             </xs:element>
-            <xs:element name="TimeZone" type="TimeZoneType">
+            <xs:element name="TimeZone" type="xs:string">
               <xs:annotation>
-                <xs:documentation>The time zone of the value provided in Time Element.  (see list)</xs:documentation>
+                <xs:documentation>The time zone of the value provided in Time Element.   (see Time Zone list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
             </xs:element>
           </xs:sequence>
@@ -6256,7 +6013,7 @@
   </xs:complexType>
   <xs:complexType name="DiscountRangeAndValueType">
     <xs:annotation>
-      <xs:documentation>Used to define Step Ladder/ Incremental/ Groupage, Volume discounts. Should always be defined as repeatable element when used. </xs:documentation>
+      <xs:documentation>Used to define Step Ladder/ Incremental/ Grouping, Volume discounts. Should always be defined as repeatable element when used. </xs:documentation>
     </xs:annotation>
     <xs:sequence>
       <xs:choice>
@@ -6401,7 +6158,7 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="DocumentReferenceNumberType">
+  <xs:complexType name="ReferenceNumberType">
     <xs:annotation>
       <xs:documentation>A generic structure specifying a reference number.</xs:documentation>
     </xs:annotation>
@@ -6595,77 +6352,6 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="GovernmentEntityOrAgencyType">
-    <xs:sequence>
-      <xs:element name="GovernmentType" type="GovernmentTypeType">
-        <xs:annotation>
-          <xs:documentation>The type of government entity or agency.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="GovernmentOrganization" minOccurs="0" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Denotes a type of government organization such as Airport Authority.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Airport Authority"/>
-            <xs:enumeration value="Council of Government"/>
-            <xs:enumeration value="Housing Authorities Public/Tribal"/>
-            <xs:enumeration value="Interstate Entity"/>
-            <xs:enumeration value="Planning Commission"/>
-            <xs:enumeration value="Port Authority"/>
-            <xs:enumeration value="Transit Authority"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="GovernmentTypeType">
-    <xs:choice>
-      <xs:element name="USFederal">
-        <xs:annotation>
-          <xs:documentation>Distinguishes between a federally funded research and development corporation or a federal agency when the government type is US Federal.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="Federal Agency"/>
-            <xs:enumeration value="Federally Funded Research and Development Corporation"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="USState" type="TrueType">
-        <xs:annotation>
-          <xs:documentation>Denotes that the government is a US state government.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="USLocal" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>Denotes one or more US local government types such as County or School District.  (see list)</xs:documentation>
-        </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="City"/>
-            <xs:enumeration value="County"/>
-            <xs:enumeration value="Inter-Municipal"/>
-            <xs:enumeration value="Local Government Owned"/>
-            <xs:enumeration value="Municipality"/>
-            <xs:enumeration value="School District"/>
-            <xs:enumeration value="Township"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
-      <xs:element name="Tribal" type="TrueType">
-        <xs:annotation>
-          <xs:documentation>Denotes that the government is a US tribal government.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="Foreign" type="TrueType">
-        <xs:annotation>
-          <xs:documentation>Denotes that the government is a foreign (non-US) government.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-    </xs:choice>
-  </xs:complexType>
   <xs:complexType name="HazardousMaterialType">
     <xs:sequence>
       <xs:element name="ClassCodeSource" type="HAZMATClassCodeSourceType">
@@ -6701,7 +6387,7 @@
       </xs:sequence>
       <xs:element name="OrderDependent" type="TrueType">
         <xs:annotation>
-          <xs:documentation>May be used when the represented document is a Blanket Purchase Agreement, Basic Ordering Agreement, Indefinte Delivery Contract, or a Requirements Contract to denote that the Pricing Arrangement varies and is provided on the individual orders. (see list)</xs:documentation>
+          <xs:documentation>May be used when the represented document is a Blanket Purchase Agreement, Basic Ordering Agreement, Indefiinte Delivery Contract, or a Requirements Contract to denote that the Pricing Arrangement varies and is provided on the individual orders. (see list)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:choice>
@@ -6970,6 +6656,71 @@
       </xs:element>
     </xs:sequence>
   </xs:complexType>
+  <xs:complexType name="ItemReferenceNumberType">
+    <xs:annotation>
+      <xs:documentation>A generic structure specifying a reference number.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="DescriptionText" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Contains additional information when needed. </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:choice>
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="ReferenceDescription" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>The item for which a reference number is being provided.  (see Reference Description list at dodprocurementtoolbox.com)</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="AlternateDescription" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Description of the reference number when not covered by one of the reference description options.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+          <xs:element name="ReferenceValue" type="xs:string">
+            <xs:annotation>
+              <xs:documentation>The reference number which identifies the item. </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+        <xs:element name="PurchaseRequestDetails" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>Provide one iteration for each referenced Purchase Request/MIPR and its corresponding Line item number.  May only be provided at the line item level.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:choice>
+                <xs:element name="PurchaseRequisitionNumber" type="xs:string">
+                  <xs:annotation>
+                    <xs:documentation>The Purchase Requisition Number. </xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+                <xs:element name="MIPRNumber" type="xs:string">
+                  <xs:annotation>
+                    <xs:documentation>The Military Interdepartmental Purchase Request (MIPR) Number</xs:documentation>
+                  </xs:annotation>
+                </xs:element>
+              </xs:choice>
+              <xs:element name="PurchaseRequisitionLineItemNumber" type="xs:string">
+                <xs:annotation>
+                  <xs:documentation>The Purchase Request or Military Interdepartmental Purchase Request (MIPR) Line Item Number.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+      <xs:group ref="ProcurementInstrumentLocationGroup"/>
+      <xs:element name="VersionDate" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The date that identifies the version of the item or document provided in ReferenceValue.  Date in CCYY-MM-DD format.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
   <xs:complexType name="LimitsType">
     <xs:sequence>
       <xs:element name="LimitDescription" type="LimitDescriptionType">
@@ -7043,7 +6794,7 @@
           <xs:documentation>Denotes whether or not the line item is an option line item.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="SpecialReportingRequirement" minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="SpecialReportingRequirement" type="xs:string" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Denotes special reporting requirements when needed.  (see Special Reporting Requirement list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
@@ -7333,7 +7084,7 @@
                               </xs:element>
                               <xs:element name="SpecialPreservationCode" minOccurs="0" maxOccurs="unbounded">
                                 <xs:annotation>
-                                  <xs:documentation>Specialized preservation codes (MIL STD 2073-1D J.4.2.1).</xs:documentation>
+                                  <xs:documentation>Specialized preservation codes (MIL_STD_2073-1D J.4.2.1).</xs:documentation>
                                 </xs:annotation>
                                 <xs:simpleType>
                                   <xs:restriction base="xs:token">
@@ -7363,7 +7114,7 @@
                               </xs:element>
                               <xs:element name="SupplementaryOrSpecialRequirements" type="xs:string" minOccurs="0">
                                 <xs:annotation>
-                                  <xs:documentation>Supplementary or Special Requirements.  (MIL STD 2073-1D J.1.4.c)</xs:documentation>
+                                  <xs:documentation>Supplementary or Special Requirements.  (MIL_STD_2073-1D J.1.4.c)</xs:documentation>
                                 </xs:annotation>
                               </xs:element>
                             </xs:sequence>
@@ -7479,9 +7230,7 @@
             <xs:documentation>Date in CCYY-MM format.</xs:documentation>
           </xs:annotation>
           <xs:simpleType>
-            <xs:restriction base="xs:date">
-              <xs:pattern value="CCYYMM"/>
-            </xs:restriction>
+            <xs:restriction base="xs:gYearMonth"/>
           </xs:simpleType>
         </xs:element>
         <xs:element name="LineItemPeriod" type="DatePeriodType">
@@ -7606,7 +7355,7 @@
           <xs:documentation>Recurring payments of a fixed amount that occur on a specified schedule such as rent.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="ReferenceNumber" type="DocumentReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="ReferenceNumber" type="ItemReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Use to provide numbers referencing documents (MIPR, SOW, GBL, Requisition etc.). Numbers (FMS Case, Package, Drawing etc.), Codes (SFC, Project, Weapon System, etc.) and other Reference Values.</xs:documentation>
         </xs:annotation>
@@ -7797,11 +7546,18 @@
       <xs:documentation>Free form text and the UCF section it belongs to.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:element name="MiscellaneousText" type="xs:string">
-        <xs:annotation>
-          <xs:documentation>Text associated with a particular section from the Federal Uniform Contract Format (UCF) or CSI Division or Section.</xs:documentation>
-        </xs:annotation>
-      </xs:element>
+      <xs:choice>
+        <xs:element name="MiscellaneousText" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Text associated with a particular section from the Federal Uniform Contract Format (UCF) or CSI Division or Section.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="FormattedMiscellaneousText" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Text associated with a particular section from the Federal Uniform Contract Format (UCF) or CSI Division or Section with html tags.  Contents must be enclosed with CDATA.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:choice>
       <xs:group ref="ProcurementInstrumentLocationGroup">
         <xs:annotation>
           <xs:documentation>Provides the procurement instrument location that the information is associated with.</xs:documentation>
@@ -7812,7 +7568,7 @@
   <xs:complexType name="OrganizationIDType">
     <xs:annotation>
       <xs:documentation>Organization ID as pre-defined by various entities.  Examples are DUNS, CAGE, DoDAAC etc. 
-In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:documentation>
+In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:documentation>
     </xs:annotation>
     <xs:sequence>
       <xs:element name="AustinTetraNumber" minOccurs="0">
@@ -7855,25 +7611,30 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:docu
           <xs:documentation>DODAAC: Department of Defense Activity Address Code. </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="Duns4Number" minOccurs="0">
+      <xs:element name="Duns4Number" type="Duns4NumberType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>DUNS+4: Data Universal Numbering System identifier with four character suffix.  </xs:documentation>
         </xs:annotation>
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9]){9}([0-9A-Z]){4}"/>
-          </xs:restriction>
-        </xs:simpleType>
       </xs:element>
-      <xs:element name="DunsNumber" minOccurs="0">
+      <xs:element name="DunsNumber" type="DunsNumberType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>DUNS:  Data Universal Numbering System Identifier.  </xs:documentation>
         </xs:annotation>
+      </xs:element>
+      <xs:element name="EFTIndicator" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The Electronic Funds Transfer (EFT) indicator.</xs:documentation>
+        </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:pattern value="([0-9]){9}"/>
+            <xs:pattern value="([0-9A-Z]){4}"/>
           </xs:restriction>
         </xs:simpleType>
+      </xs:element>
+      <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Government Unique Entity Identifier.</xs:documentation>
+        </xs:annotation>
       </xs:element>
       <xs:element name="Mapac" type="MAPACType" minOccurs="0">
         <xs:annotation>
@@ -8299,7 +8060,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:docu
           <xs:documentation>Recurring payments of a fixed amount that occur on a specified schedule such as rent.  Do not provide on a Solicitation.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="ReferenceNumber" type="DocumentReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="ReferenceNumber" type="ReferenceNumberType" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Use to provide numbers referencing documents (MIPR, SOW, GBL, Requisition etc.). Numbers (FMS Case, Package, Drawing etc.), Codes (FSC, Project, Weapon System, etc.) and other Reference Values.</xs:documentation>
         </xs:annotation>
@@ -8409,16 +8170,32 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:docu
   </xs:complexType>
   <xs:complexType name="ProductServiceIdentifierType">
     <xs:sequence>
-      <xs:element name="DataDescription" type="ProductServiceIdQualifierType">
+      <xs:element name="ProductServiceGroup" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Description of the Data Value contents. (see list)</xs:documentation>
+          <xs:documentation>Label that identifies a related set of product service data.  It will not appear on the rendered document.</xs:documentation>
         </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="80"/>
+            <xs:minLength value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
-      <xs:element name="DataValue" type="xs:string">
+      <xs:sequence maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>The value associated with the product or service. </xs:documentation>
+          <xs:documentation>May only provide multiple iterations at this location if Product Service Group is provided.</xs:documentation>
         </xs:annotation>
-      </xs:element>
+        <xs:element name="DataDescription" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>Description of the Data Value contents. (see Product Service Data list at dodprocurementtoolbox.com)</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="DataValue" type="xs:string">
+          <xs:annotation>
+            <xs:documentation>The value associated with the product or service. </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ProductServiceQuantityType">
@@ -8904,7 +8681,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:docu
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="CountryISOA3Code" minOccurs="0">
+      <xs:element name="CountryA3Code" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Three character alpha Country code from Geopolitical Entities, Names, and Codes (GENC).  (see Country list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
@@ -8914,7 +8691,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION IDENTIFIER entity.</xs:docu
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="CountryISON3Code" minOccurs="0">
+      <xs:element name="CountryN3Code" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Three digit numeric Country code from Geopolitical Entities, Names, and Codes (GENC).  (see Country list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
@@ -8979,7 +8756,7 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
       </xs:element>
       <xs:element name="SACIndicator">
         <xs:annotation>
-          <xs:documentation>On an Award or Modification document, indicates whether there is a charge, allowance/discount, or no charge for the service.  On a Solicitation, indicates the bidder is to provide an amount in the offer.  (see list)</xs:documentation>
+          <xs:documentation>On an Award or Modification document, indicates whether there is a charge, allowance/discount, or no charge for the service.  On a Solicitation, indicates the offeror is to provide an amount in the offer.  (see list)</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:token">
@@ -9064,7 +8841,7 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
                 <xs:sequence>
                   <xs:element name="OccupationSubCode" type="xs:string">
                     <xs:annotation>
-                      <xs:documentation>The occupation sub-code.  for example, 01011.</xs:documentation>
+                      <xs:documentation>The occupation sub-code.  For example, 01011.</xs:documentation>
                     </xs:annotation>
                   </xs:element>
                   <xs:element name="OccupationSubTitle" type="xs:string">
@@ -9099,7 +8876,7 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
       </xs:element>
       <xs:element name="SmallBusinessType">
         <xs:annotation>
-          <xs:documentation>The type of business the set aside percentage is for.  For example, Hubzone Small Business.  The following are not for use by DoD:  Emerging Small Business; Historically Black College, University, or Minority Institution; Very Small Business; Veteran Owned Business.  (see list) </xs:documentation>
+          <xs:documentation>The type of business the set aside percentage is for.  For example, HubZone Small Business.  The following are not for use by DoD:  Emerging Small Business; Historically Black College, University, or Minority Institution; Very Small Business; Veteran Owned Business.  (see list) </xs:documentation>
         </xs:annotation>
         <xs:simpleType>
           <xs:restriction base="xs:token">
@@ -9152,30 +8929,6 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
       <xs:element name="ContractorShare" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>When the total final negotiated cost is greater than the total target cost, the percentage or amount that is used to establish the total final price (FAR 52.216-10 (e)(1), 52.216-16 (d)(2)(ii), 52.216-17 (d)(2)(ii)).  For a Cost Sharing Contract (FAR 16.303), the percentage of costs to be borne by the Contractor.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:complexContent>
-            <xs:extension base="ShareType"/>
-          </xs:complexContent>
-        </xs:complexType>
-      </xs:element>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="ShareRatioType2">
-    <xs:sequence>
-      <xs:element name="GovernmentShare" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>When the total final negotiated cost is less than the total target cost, the percentage or amount that is used to establish the total final price (FAR 52.216-10 (e)(1), 52.216-16 (d)(2)(iii), 52.216-17 (d)(4)(iii)).  For a Cost Sharing Contract (FAR 16.303), the percentage of costs to be reimbursed by the Government.</xs:documentation>
-        </xs:annotation>
-        <xs:complexType>
-          <xs:complexContent>
-            <xs:extension base="ShareType"/>
-          </xs:complexContent>
-        </xs:complexType>
-      </xs:element>
-      <xs:element name="ContractorShare" maxOccurs="unbounded">
-        <xs:annotation>
-          <xs:documentation>When the total final negotiated cost is greater than the total target cost, the percentage or amount that is used to establish the total final price (FAR 52.216-10 (e)(1), 52.216-16 (d)(2)(ii), 52.216-17 (d)(4)(ii)).  For a Cost Sharing Contract (FAR 16.303), the percentage of costs to be reimbursed by the Contractor.</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:complexContent>
@@ -10224,18 +9977,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="16999"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="CurrencyCodeType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  TBD  (ISO Standard?)</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token"/>
-  </xs:simpleType>
-  <xs:simpleType name="DateFormatType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  TBD</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:date"/>
-  </xs:simpleType>
   <xs:simpleType name="DeliveryDescriptionType">
     <xs:annotation>
       <xs:documentation>Enumerates all types of dates in a procurement instrument</xs:documentation>
@@ -10944,6 +10685,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Basic Ordering Agreement"/>
       <xs:enumeration value="Blanket Purchase Agreement Under Federal Supply Schedule"/>
       <xs:enumeration value="Blanket Purchase Agreement"/>
+      <xs:enumeration value="Broad Agency Announcement"/>
       <xs:enumeration value="Call Order"/>
       <xs:enumeration value="Contract (Definitive)"/>
       <xs:enumeration value="Delivery Order"/>
@@ -10956,441 +10698,12 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Purchase Order"/>
       <xs:enumeration value="Request for Price Proposal"/>
       <xs:enumeration value="Request for Proposal"/>
-      <xs:enumeration value="Request for Quotation - Automated"/>
-      <xs:enumeration value="Request for Quotation - Manual"/>
+      <xs:enumeration value="Request for Quotation"/>
       <xs:enumeration value="Request for Technical Proposal"/>
       <xs:enumeration value="Requirements"/>
-      <xs:enumeration value="Sales Contract"/>
       <xs:enumeration value="Schedule"/>
       <xs:enumeration value="Short Form Research Contract"/>
       <xs:enumeration value="Task Order"/>
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="ProductServiceIdQualifierType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Color, case, Upc No, SKU No, Model No etc.</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="Additional Product Identification Assigned by the Manufacturer"/>
-      <xs:enumeration value="Advertising Package Identification Code"/>
-      <xs:enumeration value="Age"/>
-      <xs:enumeration value="Aggregation Code (Used to Consolidate Part Families)"/>
-      <xs:enumeration value="Air Transportation Association Proprietary Rights Code"/>
-      <xs:enumeration value="Allocation Methodology Identification Code"/>
-      <xs:enumeration value="Alternate ISBN"/>
-      <xs:enumeration value="American Dental Association Codes"/>
-      <xs:enumeration value="American Trucking Associations Assembly"/>
-      <xs:enumeration value="American Trucking Associations Part"/>
-      <xs:enumeration value="American Trucking Associations System"/>
-      <xs:enumeration value="Anniversary"/>
-      <xs:enumeration value="Application Completion Method"/>
-      <xs:enumeration value="Application State"/>
-      <xs:enumeration value="Appraisal Product Type"/>
-      <xs:enumeration value="Appraisal Service"/>
-      <xs:enumeration value="ARINC Part Number"/>
-      <xs:enumeration value="Assembly"/>
-      <xs:enumeration value="Assembly Lot Number"/>
-      <xs:enumeration value="Asset Category"/>
-      <xs:enumeration value="Asset Number"/>
-      <xs:enumeration value="Asset Type"/>
-      <xs:enumeration value="Assortability Code"/>
-      <xs:enumeration value="Author Code"/>
-      <xs:enumeration value="Authorized Parts List Number"/>
-      <xs:enumeration value="Automatic Transmission Serial Number"/>
-      <xs:enumeration value="Auxiliary Transmission Serial Number"/>
-      <xs:enumeration value="Axle Ratio"/>
-      <xs:enumeration value="Axle Serial Number"/>
-      <xs:enumeration value="Backing"/>
-      <xs:enumeration value="Bale Number"/>
-      <xs:enumeration value="Bar-Coded Serial Number"/>
-      <xs:enumeration value="Batch Number"/>
-      <xs:enumeration value="Beam Number"/>
-      <xs:enumeration value="Benefit ID"/>
-      <xs:enumeration value="Beverage Common Code"/>
-      <xs:enumeration value="Bill Credit Code"/>
-      <xs:enumeration value="Bill Subgroup Code"/>
-      <xs:enumeration value="Billboards Commercial"/>
-      <xs:enumeration value="Binding Code"/>
-      <xs:enumeration value="Brand/Label"/>
-      <xs:enumeration value="Broker Price Opinion Service"/>
-      <xs:enumeration value="Bus Body Serial Number"/>
-      <xs:enumeration value="Buyer Ground Shade Identifier"/>
-      <xs:enumeration value="Buyers Catalog Number"/>
-      <xs:enumeration value="Buyers Color"/>
-      <xs:enumeration value="Buyers End Product Number"/>
-      <xs:enumeration value="Buyers Engineering Change Level Number"/>
-      <xs:enumeration value="Buyers Item Number"/>
-      <xs:enumeration value="Buyers Part Number"/>
-      <xs:enumeration value="Buyers Size Code"/>
-      <xs:enumeration value="Buyers Style Number"/>
-      <xs:enumeration value="Candidate Oil"/>
-      <xs:enumeration value="Carry-over Part Number"/>
-      <xs:enumeration value="Case"/>
-      <xs:enumeration value="Catalog Number"/>
-      <xs:enumeration value="Channel"/>
-      <xs:enumeration value="Chassis Serial Number"/>
-      <xs:enumeration value="Chemical Abstract Service (CAS) Registry Number"/>
-      <xs:enumeration value="Classification"/>
-      <xs:enumeration value="Cognizance Symbol"/>
-      <xs:enumeration value="Color"/>
-      <xs:enumeration value="Combined NCCMA/Bank Service Code"/>
-      <xs:enumeration value="Commercial and Government Entity (CAGE) Code"/>
-      <xs:enumeration value="Commission Identifier"/>
-      <xs:enumeration value="Commission Year"/>
-      <xs:enumeration value="Committee for Uniform Security Identification Procedure (CUSIP) Number"/>
-      <xs:enumeration value="Commodity Grouping"/>
-      <xs:enumeration value="Commodity Name"/>
-      <xs:enumeration value="Common Language Equipment Identifier (CLEI)"/>
-      <xs:enumeration value="Company Part Number"/>
-      <xs:enumeration value="Company-Owned Unit Train Number"/>
-      <xs:enumeration value="Compatible Cut Number"/>
-      <xs:enumeration value="Compensation Allocation Code"/>
-      <xs:enumeration value="Compensation Type Code"/>
-      <xs:enumeration value="Completion Number"/>
-      <xs:enumeration value="Concept Code"/>
-      <xs:enumeration value="Configuration Item Identifier"/>
-      <xs:enumeration value="Connector Type"/>
-      <xs:enumeration value="Continuation (ID Number Spans Multiple Product ID Data Elements)"/>
-      <xs:enumeration value="Contribution Year"/>
-      <xs:enumeration value="Country from which Procured"/>
-      <xs:enumeration value="Country of Origin Code"/>
-      <xs:enumeration value="Coupon Family Code"/>
-      <xs:enumeration value="Coverage Risk Type"/>
-      <xs:enumeration value="Coverage Type"/>
-      <xs:enumeration value="Current Procedural Terminology (CPT) Codes"/>
-      <xs:enumeration value="Customer Provided Equipment"/>
-      <xs:enumeration value="Cut Number"/>
-      <xs:enumeration value="Data Category Code"/>
-      <xs:enumeration value="Department of Defense Identification Code (DoDIC)"/>
-      <xs:enumeration value="Deposit Item Number"/>
-      <xs:enumeration value="Design Number"/>
-      <xs:enumeration value="Device Family"/>
-      <xs:enumeration value="Device Type"/>
-      <xs:enumeration value="Diagnosis Code Pointer"/>
-      <xs:enumeration value="Die Number"/>
-      <xs:enumeration value="Discontinued Part Number"/>
-      <xs:enumeration value="Discount Grouping"/>
-      <xs:enumeration value="Distributor"/>
-      <xs:enumeration value="Dividend Use"/>
-      <xs:enumeration value="Document Identification Code"/>
-      <xs:enumeration value="Drawing Revision Number"/>
-      <xs:enumeration value="Drug U.P.C. Consumer Package Code (1-4-6-1)"/>
-      <xs:enumeration value="Drug U.P.C. Shipping Container Code (1-2-4-6-1)"/>
-      <xs:enumeration value="Dun and Bradstreet Standard Product and Service Code"/>
-      <xs:enumeration value="Dye Lot Number"/>
-      <xs:enumeration value="EAN-99 In-store Coupon Code"/>
-      <xs:enumeration value="Edition Code"/>
-      <xs:enumeration value="End Item Serial Number"/>
-      <xs:enumeration value="End-Item Description"/>
-      <xs:enumeration value="Engine Displacement Identification"/>
-      <xs:enumeration value="Engine Serial Number"/>
-      <xs:enumeration value="Engineering Change Level"/>
-      <xs:enumeration value="Engineering Data List"/>
-      <xs:enumeration value="Equipment Code per COPAS standard"/>
-      <xs:enumeration value="Equipment Hierarchical Sequence Identifier"/>
-      <xs:enumeration value="Equipment Identification Number"/>
-      <xs:enumeration value="Equipment Location"/>
-      <xs:enumeration value="Equipment Type"/>
-      <xs:enumeration value="European Article Number (EAN) (2-5-5-1)"/>
-      <xs:enumeration value="Event Type"/>
-      <xs:enumeration value="Exchanged Part, Assembly or Product"/>
-      <xs:enumeration value="Exhibit Identifier"/>
-      <xs:enumeration value="Expendable Container Identification"/>
-      <xs:enumeration value="Expense Identifier"/>
-      <xs:enumeration value="Fabric Pieces Per Roll"/>
-      <xs:enumeration value="Failed Subassembly Model Number"/>
-      <xs:enumeration value="Failed Subassembly Serial Number"/>
-      <xs:enumeration value="Feature"/>
-      <xs:enumeration value="Federal Aviation Administration (FAA) Service Bulletin Number"/>
-      <xs:enumeration value="Fifth Wheel Serial Number"/>
-      <xs:enumeration value="Final Test Lot Number"/>
-      <xs:enumeration value="Finish Lot Number"/>
-      <xs:enumeration value="Finish Number"/>
-      <xs:enumeration value="Finish/Hand Standard Reference"/>
-      <xs:enumeration value="Form Number"/>
-      <xs:enumeration value="Former Publisher"/>
-      <xs:enumeration value="Front Axle Driven Serial Number"/>
-      <xs:enumeration value="Front Axle Non Driven Serial Number"/>
-      <xs:enumeration value="Front Axle Serial Number"/>
-      <xs:enumeration value="Fuel Tank Serial Number"/>
-      <xs:enumeration value="GAS*FLOW Invoice Posting Code"/>
-      <xs:enumeration value="GAS*FLOW Product or Service Charge Code"/>
-      <xs:enumeration value="Gathering"/>
-      <xs:enumeration value="Gear Ratio"/>
-      <xs:enumeration value="General Specification Number"/>
-      <xs:enumeration value="Generic Name Description"/>
-      <xs:enumeration value="Glider Kit"/>
-      <xs:enumeration value="Grade Code"/>
-      <xs:enumeration value="Grade Name"/>
-      <xs:enumeration value="Grain Direction"/>
-      <xs:enumeration value="Graphics Industry Bar Code (GIBC)"/>
-      <xs:enumeration value="Ground Shade Standard Reference"/>
-      <xs:enumeration value="Group ID"/>
-      <xs:enumeration value="Group Qualifier Code"/>
-      <xs:enumeration value="Health Care Financing Administration Common Procedural Coding System (HCPCS) Codes"/>
-      <xs:enumeration value="Health Care Financing Administration National Standard Format Podiatry Codes"/>
-      <xs:enumeration value="Heat Number"/>
-      <xs:enumeration value="HIBC (Health Care Industry Bar Code)"/>
-      <xs:enumeration value="Home Infusion EDI Coalition (HIEC) Product/Service Code"/>
-      <xs:enumeration value="Ignition Key Number"/>
-      <xs:enumeration value="Imprint (Trademark Code of Subsidiary)"/>
-      <xs:enumeration value="incomplete vehicle with a vehicle identification"/>
-      <xs:enumeration value="Information Media Type"/>
-      <xs:enumeration value="Ingredient"/>
-      <xs:enumeration value="Insurance Plan Description Characteristics"/>
-      <xs:enumeration value="Insurer's Fund Code"/>
-      <xs:enumeration value="Interchangeability Code"/>
-      <xs:enumeration value="Interior Color Number"/>
-      <xs:enumeration value="Internal Number"/>
-      <xs:enumeration value="International Classification of Diseases Clinical Modification (ICD-9-CM) - Diagnosis"/>
-      <xs:enumeration value="International Classification of Diseases Clinical Modification (ICD-9-CM) - Procedure"/>
-      <xs:enumeration value="International Harmonized Commodity Code"/>
-      <xs:enumeration value="International Standard Book Number (ISBN)"/>
-      <xs:enumeration value="International Standard Serial Number (ISSN)"/>
-      <xs:enumeration value="Investment Fund Type"/>
-      <xs:enumeration value="IRS Qualification Code"/>
-      <xs:enumeration value="Item Management Code"/>
-      <xs:enumeration value="Item Type Number"/>
-      <xs:enumeration value="Job Number"/>
-      <xs:enumeration value="Job Sequence Number"/>
-      <xs:enumeration value="Joint Life Type"/>
-      <xs:enumeration value="Jurisdiction Specific Procedure and Supply Codes"/>
-      <xs:enumeration value="Kanban Plan Number"/>
-      <xs:enumeration value="Labor Group"/>
-      <xs:enumeration value="Laboratory Sample Identification"/>
-      <xs:enumeration value="Laboratory Test Condition Code"/>
-      <xs:enumeration value="Library of Congress Code"/>
-      <xs:enumeration value="Life/Annuity Product Code"/>
-      <xs:enumeration value="Life/Annuity Service Features"/>
-      <xs:enumeration value="Lift Gate Serial Number"/>
-      <xs:enumeration value="Load Sequence"/>
-      <xs:enumeration value="Locally Assigned Control Number"/>
-      <xs:enumeration value="Location Code"/>
-      <xs:enumeration value="Logical Observation Identifier Names and Codes"/>
-      <xs:enumeration value="Lot Number"/>
-      <xs:enumeration value="Lot Pricing Unit Number"/>
-      <xs:enumeration value="Machine Number"/>
-      <xs:enumeration value="Maintenance Index Page Reference Number"/>
-      <xs:enumeration value="Major Product/Material/Machine Type"/>
-      <xs:enumeration value="Manual Transmission Serial Number"/>
-      <xs:enumeration value="Manufacturer's CAGE"/>
-      <xs:enumeration value="Manufacturer's DUNS"/>
-      <xs:enumeration value="Manufacturer's Name"/>
-      <xs:enumeration value="Manufacturer's Part Number"/>
-      <xs:enumeration value="Market Program Code"/>
-      <xs:enumeration value="Material Control Code"/>
-      <xs:enumeration value="Material Discharge Number"/>
-      <xs:enumeration value="Medical Information Bureau (MIB) Authorization"/>
-      <xs:enumeration value="Medication Code"/>
-      <xs:enumeration value="Military Specification (MILSPEC) Number"/>
-      <xs:enumeration value="Military Standard (MIL-STD) Number"/>
-      <xs:enumeration value="Military Type Designation"/>
-      <xs:enumeration value="Model Number"/>
-      <xs:enumeration value="Motor Equipment Manufacturing Association (MEMA) Product Type Code"/>
-      <xs:enumeration value="Motor Vehicle ID Number"/>
-      <xs:enumeration value="Motor Vehicle-Line Designator"/>
-      <xs:enumeration value="Movement Type Code"/>
-      <xs:enumeration value="National Drug Code (NDC)"/>
-      <xs:enumeration value="National Drug Code in 4-4-2 Format"/>
-      <xs:enumeration value="National Drug Code in 5-3-2 Format"/>
-      <xs:enumeration value="National Drug Code in 5-4-1 Format"/>
-      <xs:enumeration value="National Drug Code in 5-4-2 Format"/>
-      <xs:enumeration value="National Health Related Item Code"/>
-      <xs:enumeration value="National Health Related Item Code in 4-6 Format"/>
-      <xs:enumeration value="National Health Related Item Code in 5-5 Format"/>
-      <xs:enumeration value="National Retail Merchants Association Color Code"/>
-      <xs:enumeration value="National Retail Merchants Association Size Code"/>
-      <xs:enumeration value="National Stock Number"/>
-      <xs:enumeration value="National Uniform Billing Committee (NUBC) UB82 Codes"/>
-      <xs:enumeration value="National Uniform Billing Committee (NUBC) UB92 Codes"/>
-      <xs:enumeration value="New Microcode"/>
-      <xs:enumeration value="New Replacement Part or Assembly Defective"/>
-      <xs:enumeration value="Next Higher Used Assembly"/>
-      <xs:enumeration value="Number of Positions on Machine"/>
-      <xs:enumeration value="Obsolete Part Number"/>
-      <xs:enumeration value="Old Common Language Equipment Identifier (CLEI) Code"/>
-      <xs:enumeration value="Old Microcode"/>
-      <xs:enumeration value="Old U.P.C./EAN Case Code"/>
-      <xs:enumeration value="Old U.P.C./EAN Consumer Package Code"/>
-      <xs:enumeration value="Old U.P.C./EAN Module Code"/>
-      <xs:enumeration value="Old U.P.C./EAN Multipack Code"/>
-      <xs:enumeration value="Operator Assigned Property Identification"/>
-      <xs:enumeration value="Opposite-Hand Part Number"/>
-      <xs:enumeration value="Optical Cable Code"/>
-      <xs:enumeration value="Optical Industry Product Code"/>
-      <xs:enumeration value="Original Equipment Number"/>
-      <xs:enumeration value="Outside Production Operation Sheet Number"/>
-      <xs:enumeration value="Package Type Code"/>
-      <xs:enumeration value="Packaging Drawing"/>
-      <xs:enumeration value="Packaging Specification Number"/>
-      <xs:enumeration value="Part Drawing"/>
-      <xs:enumeration value="Part Number Description"/>
-      <xs:enumeration value="Part Reference Number"/>
-      <xs:enumeration value="Pattern Number"/>
-      <xs:enumeration value="Phase"/>
-      <xs:enumeration value="Pieces in Roll"/>
-      <xs:enumeration value="Piggyback Commercial"/>
-      <xs:enumeration value="Pipeline Transaction Code"/>
-      <xs:enumeration value="Plan Code"/>
-      <xs:enumeration value="Plant Equipment Number"/>
-      <xs:enumeration value="Ply"/>
-      <xs:enumeration value="Policy Form"/>
-      <xs:enumeration value="Position"/>
-      <xs:enumeration value="Preferred Manufacturer"/>
-      <xs:enumeration value="Preferred National Stock Number"/>
-      <xs:enumeration value="Preferred Part Number"/>
-      <xs:enumeration value="Premium Rate Type"/>
-      <xs:enumeration value="Premium Use"/>
-      <xs:enumeration value="Previous Carrier"/>
-      <xs:enumeration value="Previous Sample Identification"/>
-      <xs:enumeration value="Prime Contractor Part Number"/>
-      <xs:enumeration value="Print Color Standard Reference"/>
-      <xs:enumeration value="Print or Drawing"/>
-      <xs:enumeration value="Process Number"/>
-      <xs:enumeration value="Product Change Notice Number"/>
-      <xs:enumeration value="Product Date Code (A code indicating the period during which a product was manufactured.)"/>
-      <xs:enumeration value="Product ID Attribute Code"/>
-      <xs:enumeration value="Product Type Code"/>
-      <xs:enumeration value="Property and Casualty Service Code"/>
-      <xs:enumeration value="Property System Identifier"/>
-      <xs:enumeration value="Publication Number"/>
-      <xs:enumeration value="Publisher Code"/>
-      <xs:enumeration value="Purchaser's Item Code"/>
-      <xs:enumeration value="Rack Number"/>
-      <xs:enumeration value="Radiator Serial Number"/>
-      <xs:enumeration value="Railroad-Owned Unit Train Number"/>
-      <xs:enumeration value="Random Weight Aggregation Code"/>
-      <xs:enumeration value="Rear Axle Front Rear Driven Serial Number"/>
-      <xs:enumeration value="Rear Axle Rear Driven Serial Number"/>
-      <xs:enumeration value="Rear Axle Rear Non Driven Serial Number"/>
-      <xs:enumeration value="Rear Axle Serial Number"/>
-      <xs:enumeration value="Reclamation Process"/>
-      <xs:enumeration value="Record Keeping or Model Year"/>
-      <xs:enumeration value="Reefer Serial Number"/>
-      <xs:enumeration value="Reel Number"/>
-      <xs:enumeration value="Reel Type"/>
-      <xs:enumeration value="Reference Oil"/>
-      <xs:enumeration value="Refined Product Code"/>
-      <xs:enumeration value="Related Model Number"/>
-      <xs:enumeration value="Related Model Type"/>
-      <xs:enumeration value="Relative Value Units"/>
-      <xs:enumeration value="Release Number"/>
-      <xs:enumeration value="Religious Retail Non-book Item"/>
-      <xs:enumeration value="Repair From Product Code"/>
-      <xs:enumeration value="Repair Induction Identifier"/>
-      <xs:enumeration value="Repair Tag Number"/>
-      <xs:enumeration value="Replaced Part Number"/>
-      <xs:enumeration value="Replacement National Stock Number"/>
-      <xs:enumeration value="Replacement Product Number"/>
-      <xs:enumeration value="Replacement Subassembly Model Number"/>
-      <xs:enumeration value="Replacement Subassembly Serial Number"/>
-      <xs:enumeration value="Retail Price Look Up Number (PLU)"/>
-      <xs:enumeration value="Return Code"/>
-      <xs:enumeration value="Returnable Container Serial Number"/>
-      <xs:enumeration value="Roll Number"/>
-      <xs:enumeration value="Roll Sequence Number"/>
-      <xs:enumeration value="Run Number"/>
-      <xs:enumeration value="Schematic Diagram Reference Number"/>
-      <xs:enumeration value="Seat Serial Number"/>
-      <xs:enumeration value="Secondary Ply"/>
-      <xs:enumeration value="Section Print Number"/>
-      <xs:enumeration value="Seller's Date Code"/>
-      <xs:enumeration value="Seller's Lot Number"/>
-      <xs:enumeration value="Serial Item and Contribution Identifier (Defined in ANSI 239.56)"/>
-      <xs:enumeration value="Serial Number"/>
-      <xs:enumeration value="Series Identifier"/>
-      <xs:enumeration value="Service code per COPAS standard"/>
-      <xs:enumeration value="Service Control Identification"/>
-      <xs:enumeration value="Service Feature ID"/>
-      <xs:enumeration value="Service Rendered"/>
-      <xs:enumeration value="Service Requested"/>
-      <xs:enumeration value="Set Number"/>
-      <xs:enumeration value="Shelf-Life Action Code"/>
-      <xs:enumeration value="Shelf-Life Code"/>
-      <xs:enumeration value="Shift Worked"/>
-      <xs:enumeration value="Side Up/Side Down"/>
-      <xs:enumeration value="Skill Code"/>
-      <xs:enumeration value="Sleeper Box Key Number"/>
-      <xs:enumeration value="Sleeper Box Serial Number"/>
-      <xs:enumeration value="Special Material Identification Code"/>
-      <xs:enumeration value="SSCC-18 and Application Identifier"/>
-      <xs:enumeration value="State Sample Identification"/>
-      <xs:enumeration value="Stock Keeping Unit (SKU)"/>
-      <xs:enumeration value="Stock Number"/>
-      <xs:enumeration value="Style Number"/>
-      <xs:enumeration value="Submission Number"/>
-      <xs:enumeration value="Subsistence Identification Number"/>
-      <xs:enumeration value="Substitute Product Number"/>
-      <xs:enumeration value="Superseded Part Number"/>
-      <xs:enumeration value="Supplier Brand Code"/>
-      <xs:enumeration value="Supplier Company Registry Number"/>
-      <xs:enumeration value="Surface Finish"/>
-      <xs:enumeration value="System Identifier"/>
-      <xs:enumeration value="Systematized Nomenclature of Human and Veterinary Medicine (SNOMED)"/>
-      <xs:enumeration value="Technical Document Number (excludes Technical Manuals)"/>
-      <xs:enumeration value="Technical Manual Number"/>
-      <xs:enumeration value="Telecommunications Circuit ID"/>
-      <xs:enumeration value="Telecommunications Industry Service Code"/>
-      <xs:enumeration value="Telephone Industry Manufacturer Code"/>
-      <xs:enumeration value="Tested Material Identification Number"/>
-      <xs:enumeration value="Tex"/>
-      <xs:enumeration value="The Air Cargo Tariff (TACT) Commodity Code"/>
-      <xs:enumeration value="Time Compliant Technical Order"/>
-      <xs:enumeration value="Title Code"/>
-      <xs:enumeration value="Trade In Identifier"/>
-      <xs:enumeration value="Transfer Case Serial Number"/>
-      <xs:enumeration value="Transmission Serial Number"/>
-      <xs:enumeration value="Treatment Codes"/>
-      <xs:enumeration value="Truck Body Serial Number"/>
-      <xs:enumeration value="Type Selvage"/>
-      <xs:enumeration value="U.P.C. Case Code Number (1-1-5-5)"/>
-      <xs:enumeration value="U.P.C. Consumer Package Code (1-5-5)"/>
-      <xs:enumeration value="U.P.C. Consumer Package Code (1-5-5-1)"/>
-      <xs:enumeration value="U.P.C. Coupon Code (1-5-5-1)"/>
-      <xs:enumeration value="U.P.C. Shipping Container Code (1-2-5-5)"/>
-      <xs:enumeration value="U.P.C. Suffix (Defines Packing Variations)"/>
-      <xs:enumeration value="U.P.C./EAN Case Code (2-5-5)"/>
-      <xs:enumeration value="U.P.C./EAN Consumer Package Code (2-5-5)"/>
-      <xs:enumeration value="U.P.C./EAN Coupon Code (2-5-5)"/>
-      <xs:enumeration value="U.P.C./EAN Module Code (2-5-5)"/>
-      <xs:enumeration value="U.P.C./EAN Multipack Code"/>
-      <xs:enumeration value="U.P.C./EAN Shipping Container Code (1-2-5-5-1)"/>
-      <xs:enumeration value="UCC/EAN-128 Coupon Extended Code"/>
-      <xs:enumeration value="Uniform Stock Symbol System Code Number"/>
-      <xs:enumeration value="United Nations (UN) Number (Dangerous Goods)"/>
-      <xs:enumeration value="United Nations Common Coding System (UNCCS)"/>
-      <xs:enumeration value="Universal Product Number"/>
-      <xs:enumeration value="Universal Vendor Marking, Long Code (UVM; R,P,M Lines)"/>
-      <xs:enumeration value="Universal Vendor Marking, Short Code (UVM; U Line)"/>
-      <xs:enumeration value="User-Defined Shipping Container Identifier"/>
-      <xs:enumeration value="Vary Item Product Number"/>
-      <xs:enumeration value="Vehicle Maintenance Reporting Standards"/>
-      <xs:enumeration value="Vendor Alphanumeric Size Code (NRMA)"/>
-      <xs:enumeration value="Vendor Color"/>
-      <xs:enumeration value="Vendor Ground Shade Identifier"/>
-      <xs:enumeration value="Vendor's (Seller's) Catalog Number"/>
-      <xs:enumeration value="Vendor's (Seller's) Item Number"/>
-      <xs:enumeration value="Vendor's (Seller's) Part Number"/>
-      <xs:enumeration value="Vendor's Basic Unit Number"/>
-      <xs:enumeration value="Vendor's Engineering Change Level Number"/>
-      <xs:enumeration value="Vendor's Order Number"/>
-      <xs:enumeration value="Vendor's Specification Number"/>
-      <xs:enumeration value="Vendor's Style Number"/>
-      <xs:enumeration value="Vendor's Supplemental Item Number"/>
-      <xs:enumeration value="Vintage"/>
-      <xs:enumeration value="Volume Set"/>
-      <xs:enumeration value="Volume Type Identification Code"/>
-      <xs:enumeration value="Volume Usage Identification Code"/>
-      <xs:enumeration value="Wafer Lot Identifier"/>
-      <xs:enumeration value="Well Number"/>
-      <xs:enumeration value="Wheel Chair Lift Serial Number"/>
-      <xs:enumeration value="Woolen Cut"/>
-      <xs:enumeration value="Woolen Run"/>
-      <xs:enumeration value="Work Unit Number"/>
-      <xs:enumeration value="World Code"/>
-      <xs:enumeration value="Yarn Count - English"/>
-      <xs:enumeration value="Yarn Count - Metric"/>
-      <xs:enumeration value="Yarn Count Worsted"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="QualificationRequirementsType">
@@ -11398,6 +10711,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:documentation>Enumeration List:  Qualification Requirements values.</xs:documentation>
     </xs:annotation>
     <xs:restriction base="xs:token">
+      <xs:enumeration value="Must be on Authorized Parties List"/>
       <xs:enumeration value="Must be on Manufacturers List"/>
       <xs:enumeration value="Must be on Qualified Bidders List"/>
       <xs:enumeration value="Must be on Qualified Suppliers List"/>
@@ -12532,31 +11846,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Well Service"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="TimeZoneType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:  Time Zones</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="Alaska Daylight Time"/>
-      <xs:enumeration value="Alaska Standard Time"/>
-      <xs:enumeration value="Central Daylight Time"/>
-      <xs:enumeration value="Central Standard Time"/>
-      <xs:enumeration value="Eastern Daylight Time"/>
-      <xs:enumeration value="Eastern Standard Time"/>
-      <xs:enumeration value="Greenwich Mean Time/Universal Time Coordinate"/>
-      <xs:enumeration value="Hawaii-Aleutian Daylight Time"/>
-      <xs:enumeration value="Hawaii-Aleutian Standard Time"/>
-      <xs:enumeration value="Non-US Local Time"/>
-      <xs:enumeration value="Mountain Daylight Time"/>
-      <xs:enumeration value="Mountain Standard Time"/>
-      <xs:enumeration value="Newfoundland Daylight Time"/>
-      <xs:enumeration value="Newfoundland Standard Time"/>
-      <xs:enumeration value="Pacific Daylight Time"/>
-      <xs:enumeration value="Pacific Standard Time"/>
-      <xs:enumeration value="Atlantic Daylight Time"/>
-      <xs:enumeration value="Atlantic Standard Time"/>
-    </xs:restriction>
-  </xs:simpleType>
   <xs:simpleType name="TransportationMethodType">
     <xs:annotation>
       <xs:documentation>Enumeration List:  Transportation Methods</xs:documentation>
@@ -12828,6 +12117,22 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:pattern value="([0-9A-Z]){6}"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="Duns4NumberType">
+    <xs:annotation>
+      <xs:documentation>Duns + 4 format.  9 numeric followed by 4 alphanumeric.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9]){9}([0-9A-Z]){4}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DunsNumberType">
+    <xs:annotation>
+      <xs:documentation>Duns format.  9 numeric.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9]){9}"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="ElinBaseType">
     <xs:annotation>
       <xs:documentation>One or two character Exhibit Line Item Base.</xs:documentation>
@@ -12854,6 +12159,14 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:minLength value="1"/>
       <xs:maxLength value="8"/>
       <xs:pattern value="([0-9A-Z]){1}([0-9A-Z ])*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="GovernmentUniqueEntityIdentiferType">
+    <xs:annotation>
+      <xs:documentation>Standard format for Government Unique Entity Identifier.  Also known as SAMMI.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([1-9A-Z]){1}([0-9A-Z]){11}"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="LineItemBaseType">
