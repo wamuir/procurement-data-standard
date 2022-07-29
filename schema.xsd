@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- edited with XMLSpy v2017 sp1 (http://www.altova.com) by Judith Critzer (Northrop Grumman Systems Corp) -->
+<!-- edited with XMLSpy v2020 sp1 (http://www.altova.com) by Judy Critzer (NGTS HEADQUARTERS) -->
 <!--
-			FINAL - 23 July 2019 - FINAL
-
-			- Adds additional elements to support the Solicitation Module.
+			FINAL  -  13 August 2021  -  FINAL
+		
+			- Adds additional elements and sections to support Undefinitized Contract Actions (UCA).
 			- Replaces schema enumeration lists with referenced lists for the following:
-				- Procurement Instrument Origin
-				- Product Service Code
-				- Solicitation Date Description
-				- Time Zone
-			- Provides a means of carrying HTML code via CDATA for Miscellaneous Text and Clause Text.
-			- For Line Item level Reference Description, requires grouping of PR document and line item numbers.
-			- Provides mechanism to group Product Service Data.
-			- adds Government Unique Entity Identifier to address and originator details.
-			- Changed the name of the following elements to remove the reference to the sited source which is now GENC, not ISO:
-				<CountryISOA3Code> to <CountryA3Code>
-				<CountryIDON3Code> to <CountryN3Code>
+				- Modification Reason
+				- Not Full And Open Competition
+				- Other Amount Description
+				- Small Business Type
+			- Adds the capablity to carry a delivery and a performance Performance Incentive at the same time.
+			- Adds the ability to carry multiple CINS on the same obligated amount at the line.
+			- For labor rates, increases the digits allowed after the decimal point from 2 to 5.
+			- For the Enterprise Identifier in DoD numbers, adds a length restriction so that it must be 6 positions.
+			- Changed the name of the type [GovernmentUniqueEntityIdentiferType] to [GovernmentUniqueEntityIdentifierType] to correct the spelling.
 
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="07232019">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="08132021">
   <xs:annotation>
     <xs:documentation>Level 1: top level of Procurement Data Standard for a procurement instrument document.</xs:documentation>
   </xs:annotation>
@@ -34,7 +32,7 @@
           </xs:annotation>
           <xs:simpleType>
             <xs:restriction base="xs:token">
-              <xs:enumeration value="2.6.1"/>
+              <xs:enumeration value="2.6.2"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
@@ -129,7 +127,7 @@
                                 <xs:documentation>DUNS:  Data Universal Numbering System Identifier.  </xs:documentation>
                               </xs:annotation>
                             </xs:element>
-                            <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" minOccurs="0">
+                            <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentifierType" minOccurs="0">
                               <xs:annotation>
                                 <xs:documentation>Government Unique Entity Identifier.</xs:documentation>
                               </xs:annotation>
@@ -315,28 +313,6 @@
       <xs:enumeration value="Government Obligation to Order"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="NotFullOpenCompetitionType">
-    <xs:annotation>
-      <xs:documentation>Enumeration list for Not Full and Open Competition</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="Authorized or Required by Statute (10 U.S.C. 2304(c)(5))"/>
-      <xs:enumeration value="Authorized or Required by Statute (41 U.S.C. 253(c)(5))"/>
-      <xs:enumeration value="Industrial Mobilization; Engineering, Developmental, or Research Capability; or Expert Services (10 U.S.C. 2304(c)(3))"/>
-      <xs:enumeration value="Industrial Mobilization; Engineering, Developmental, or Research Capability; or Expert Services (41 U.S.C. 253(c)(3))"/>
-      <xs:enumeration value="International Agreement (10 U.S.C. 2304(c)(4))"/>
-      <xs:enumeration value="International Agreement (41 U.S.C. 253(c)(4))"/>
-      <xs:enumeration value="National Security (10 U.S.C. 2304(c)(6))"/>
-      <xs:enumeration value="National Security (41 U.S.C. 253(c)(6))"/>
-      <xs:enumeration value="None"/>
-      <xs:enumeration value="Only One Responsible Source and No Other Supplies or Services Will Satisfy Agency Requirements (10 U.S.C. 2304(c)(1))"/>
-      <xs:enumeration value="Only One Responsible Source and No Other Supplies or Services Will Satisfy Agency Requirements (41 U.S.C. 253(c)(1))"/>
-      <xs:enumeration value="Public Interest (10 U.S.C. 2304(c)(7))"/>
-      <xs:enumeration value="Public Interest (41 U.S.C. 253(c)(7))"/>
-      <xs:enumeration value="Unusual and Compelling Urgency (10 U.S.C. 2304(c)(2))"/>
-      <xs:enumeration value="Unusual and Compelling Urgency (41 U.S.C. 253(c)(2))"/>
-    </xs:restriction>
-  </xs:simpleType>
   <xs:simpleType name="PaymentMethodType">
     <xs:annotation>
       <xs:documentation>Enumeration list for Payment Method</xs:documentation>
@@ -511,14 +487,6 @@
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousValue" type="EffortCategoryType" use="optional"/>
   </xs:attributeGroup>
-  <xs:attributeGroup name="ChangeDetails-DocumentPurpose">
-    <xs:annotation>
-      <xs:documentation>Records changes to the Document Purpose element</xs:documentation>
-    </xs:annotation>
-    <xs:attribute name="changeFlag" type="ChangeListType-Modify" use="optional"/>
-    <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousPurpose" type="DocumentPurposeType" use="optional"/>
-  </xs:attributeGroup>
   <xs:attributeGroup name="ChangeDetails-DoDMultiAgency">
     <xs:annotation>
       <xs:documentation>Records changes to the DoD Multi Agency element</xs:documentation>
@@ -526,14 +494,6 @@
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousValue" type="DoDMultiAgencyType" use="optional"/>
-  </xs:attributeGroup>
-  <xs:attributeGroup name="ChangeDetails-NotFullOpenCompetition">
-    <xs:annotation>
-      <xs:documentation>Records changes to the Not Full and Open Competition element</xs:documentation>
-    </xs:annotation>
-    <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
-    <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousValue" type="NotFullOpenCompetitionType" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeDetails-SpecialHandlingCode">
     <xs:annotation>
@@ -647,7 +607,7 @@
     </xs:annotation>
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousAmountDescription" type="AmountDescriptionType" use="optional"/>
+    <xs:attribute name="previousAmountDescription" type="xs:string" use="optional"/>
     <xs:attribute name="previousAmount" type="DecimalElement5ZeroPlusType" use="optional"/>
     <xs:attribute name="deltaAmount" type="DecimalElement5Type" use="optional"/>
     <xs:attribute name="previousTargetFeePercentIncrease" type="DecimalElement5OverZeroType" use="optional"/>
@@ -717,7 +677,7 @@
     </xs:annotation>
     <xs:attribute name="changeFlag" type="ChangeListType-All" use="optional"/>
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
-    <xs:attribute name="previousAmountDescription" type="AmountDescriptionType" use="optional"/>
+    <xs:attribute name="previousAmountDescription" type="xs:string" use="optional"/>
     <xs:attribute name="previousAmount" type="DecimalElement5ZeroPlusType" use="optional"/>
     <xs:attribute name="deltaAmount" type="DecimalElement5Type" use="optional"/>
   </xs:attributeGroup>
@@ -729,7 +689,8 @@
     <xs:attribute name="changeText" type="xs:string" use="optional"/>
     <xs:attribute name="previousPricingArrangementBase" type="PricingArrangementBaseType" use="optional"/>
     <xs:attribute name="previousAwardFee" type="TrueType" use="optional"/>
-    <xs:attribute name="previousPerformanceIncentive" type="TrueType" use="optional"/>
+    <xs:attribute name="previousPerformanceIncentive1" type="PerformanceIncentiveType" use="optional"/>
+    <xs:attribute name="previousPerformanceIncentive2" type="PerformanceIncentiveType" use="optional"/>
     <xs:attribute name="previousOrderDependent" type="TrueType" use="optional"/>
   </xs:attributeGroup>
   <!--Level 2:  DocumentLevel-->
@@ -1099,15 +1060,10 @@
           <xs:documentation>Text relating to the procurement instrument that cannot be captured as discrete elements.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="NotFullOpenCompetition" minOccurs="0">
+      <xs:element name="NotFullOpenCompetition" type="xs:string" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Competition in Contracting Act (CICA) authority for using other than full and open competition.  (see list)</xs:documentation>
+          <xs:documentation>Competition in Contracting Act (CICA) authority for using other than full and open competition.  (see Not Full and Open Competition list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
-        <xs:complexType>
-          <xs:simpleContent>
-            <xs:extension base="NotFullOpenCompetitionType"/>
-          </xs:simpleContent>
-        </xs:complexType>
       </xs:element>
       <xs:element name="AwardInstrumentSecurityLevel" minOccurs="0">
         <xs:annotation>
@@ -1147,6 +1103,11 @@
       <xs:element name="SolicitationOfferInformation" type="SolicitationOfferInformationType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Miscellaneous information about solicitations and offers that pertain to the procurement instrument.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="TargetDefinitizationSchedule" type="TargetDefinitizationScheduleType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>The schedule for definitizing a contract action.   Multiple iterations are allowed only on conformed documents from Electronic Data Access (EDA).</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -1320,6 +1281,25 @@
               </xs:annotation>
             </xs:element>
             <xs:element name="SpecialPricing" type="SpecialPricingType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GroupUndefinitizedIdentifier" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Undefinitized Identifier denotiing an undefinitized contract action that applies to a group of procurement instrument line items.   Multiple iterations are allowed only on conformed documents from Electronic Data Access (EDA).</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="LineItemList" type="LineItemIdentifierType" minOccurs="2" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>A list of two or more procurement instrument line items.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="UndefinitizedIdentifier" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Identifies a specific undefinitized contract action  (UCA).</xs:documentation>
+              </xs:annotation>
+            </xs:element>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -1547,6 +1527,11 @@
           <xs:documentation>Amounts other than obligated amounts.</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="UndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Amounts applicable to undefinitized contract actions.   Multiple iterations are allowed only on conformed documents from Electronic Data Access (EDA).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ProcurementInstrumentType">
@@ -1565,10 +1550,14 @@
         </xs:annotation>
       </xs:element>
       <xs:choice>
-        <xs:element name="UniformProcurementInstrumentIdentifier" type="UniformProcurementInstrumentIdentifierType"/>
+        <xs:element name="UniformProcurementInstrumentIdentifier" type="UniformProcurementInstrumentIdentifierType">
+          <xs:annotation>
+            <xs:documentation>Procurement Instrument Number defined following the rules of the applicable non-DoD agency and/or vehicle.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
         <xs:element name="ProcurementInstrumentNumber">
           <xs:annotation>
-            <xs:documentation>Procurement Instrument Number defined following the rules of the applicable agency and/or vehicle.</xs:documentation>
+            <xs:documentation>Procurement Instrument Number defined following the rules of the applicable DoD agency and/or vehicle.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:complexContent>
@@ -2369,9 +2358,7 @@
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
-            <xs:extension base="DocumentPurposeType">
-              <xs:attributeGroup ref="ChangeDetails-DocumentPurpose"/>
-            </xs:extension>
+            <xs:extension base="DocumentPurposeType"/>
           </xs:simpleContent>
         </xs:complexType>
       </xs:element>
@@ -2401,12 +2388,12 @@
       </xs:element>
       <xs:element name="NotFullOpenCompetition" minOccurs="0">
         <xs:annotation>
-          <xs:documentation>Competition in Contracting Act (CICA) authority for using other than full and open competition.  (see list)</xs:documentation>
+          <xs:documentation>Competition in Contracting Act (CICA) authority for using other than full and open competition.  (see Not Full and Open Competition list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:complexType>
           <xs:simpleContent>
-            <xs:extension base="NotFullOpenCompetitionType">
-              <xs:attributeGroup ref="ChangeDetails-NotFullOpenCompetition"/>
+            <xs:extension base="xs:string">
+              <xs:attributeGroup ref="ChangeDetails-String"/>
             </xs:extension>
           </xs:simpleContent>
         </xs:complexType>
@@ -2461,6 +2448,49 @@
         <xs:annotation>
           <xs:documentation>Miscellaneous information about solicitations and offers that pertain to the procurement instrument.  May only be used when amending a solicitation procurement instrument.</xs:documentation>
         </xs:annotation>
+      </xs:element>
+      <xs:element name="TargetDefinitizationSchedule" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The schedule for definitizing a contract action.   Multiple iterations are allowed only on conformed documents from Electronic Data Access (EDA).</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="AddedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+              <xs:annotation>
+                <xs:documentation>Contains the target definitization schedule that is added.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="DeletedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+              <xs:annotation>
+                <xs:documentation>Contains the target definitization schedule that is removed.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="ChangedTargetDefinitizationSchedule">
+              <xs:annotation>
+                <xs:documentation>Used to record changes to the target definitization schedule.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="TargetDefinitizationScheduleChangeText" type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation>Description of the change to the target definitization schedule.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="CurrentTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+                    <xs:annotation>
+                      <xs:documentation>The target definitization schedule after the changes were applied.  The results.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="PreviousTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+                    <xs:annotation>
+                      <xs:documentation>The target definitization schedule before the changes were applied.  The original.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
       </xs:element>
     </xs:sequence>
   </xs:complexType>
@@ -3143,6 +3173,72 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="GroupUndefinitizedIdentifier" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Changes to undefinitized Identifiers  that applies to a group of procurement instrument line items.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="LineItemListChangeOnly" type="LineItemListChangeType" minOccurs="0" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Use when the only change for a Undefinitized Identifier group is to the list of line items.  The requirements description is unchanged.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="UndefinitizedIdentifierChangeOnly" minOccurs="0" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Use when the only change is to the Undefinitized Identifier.  The line item list is unchanged.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="LineItemList" type="LineItemIdentifierType" minOccurs="2" maxOccurs="unbounded">
+                    <xs:annotation>
+                      <xs:documentation>The line item list to which the Undefinitized Identifier being modified is associated.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="UndefinitizedIdentifierModification">
+                    <xs:annotation>
+                      <xs:documentation>Records a Undefinitized Identifier that has been added or removed.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attributeGroup ref="ChangeDetails-AddDeleteNoChangeText"/>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="BothListAndUndefinitizedIdentifierChange" minOccurs="0" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Use when both the Undefinitized Identifier and the line item list of the group changes.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="LineItemListChange" type="LineItemListChangeType">
+                    <xs:annotation>
+                      <xs:documentation>Records line items that have been added or removed.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="UndefinitizedIdentifierModification">
+                    <xs:annotation>
+                      <xs:documentation>Records a Undefinitized Identifier that has been added or removed.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                          <xs:attributeGroup ref="ChangeDetails-AddDeleteNoChangeText"/>
+                        </xs:extension>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="GroupVariablePricing" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Changes to variable pricing that applies to a group of procurement instrument line items.</xs:documentation>
@@ -3626,6 +3722,49 @@
           </xs:complexContent>
         </xs:complexType>
       </xs:element>
+      <xs:element name="UndefinitizedOtherAmountsModificationDetails" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Changes to undefinitized other amounts.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="AddedUndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Contains undefinitized other amounts that are added.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="DeletedUndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType" minOccurs="0" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Used when undefinitized other amounts are reduced to zero because of the modification.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="ChangedUndefinitizedOtherAmounts" minOccurs="0" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Used to record changes to an existing undefinitized other amounts that does not result in a zero undefinitized other amount.</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="UndefinitizedOtherAmountsChangeText" type="xs:string">
+                    <xs:annotation>
+                      <xs:documentation>Description of the change to the undefinitized other amounts.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="CurrentUndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType">
+                    <xs:annotation>
+                      <xs:documentation>The undefinitized other amounts after the change was applied.  The result.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                  <xs:element name="PreviousUndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType">
+                    <xs:annotation>
+                      <xs:documentation>The undefinitized other amounts before the change was applied.  The original.</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ProcurementInstrumentHeaderModificationDetails">
@@ -3785,36 +3924,10 @@
                 <xs:documentation>A short text description of the purpose and content of the modification or amendment.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="ModificationReason" minOccurs="0">
+            <xs:element name="ModificationReason" type="xs:string" minOccurs="0">
               <xs:annotation>
-                <xs:documentation>The reason for the modification.  Required for modifications.  May not be used for amendments.  (see list)</xs:documentation>
+                <xs:documentation>The reason for the modification.  Required for modifications. (see Modification Reason list at dodprocurementtoolbox.com)</xs:documentation>
               </xs:annotation>
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="Additional Work"/>
-                  <xs:enumeration value="Change Order"/>
-                  <xs:enumeration value="Change Procurement Instrument Number"/>
-                  <xs:enumeration value="Close Out"/>
-                  <xs:enumeration value="Definitize Change Order"/>
-                  <xs:enumeration value="Definitize Letter Contract"/>
-                  <xs:enumeration value="Exercise An Option"/>
-                  <xs:enumeration value="Extension Of Due Date"/>
-                  <xs:enumeration value="Funding Only Action"/>
-                  <xs:enumeration value="Legal Contract Cancellation"/>
-                  <xs:enumeration value="Novation Agreement"/>
-                  <xs:enumeration value="Other Administrative Action"/>
-                  <xs:enumeration value="Rerepresentation"/>
-                  <xs:enumeration value="Rerepresentation Of Non-Novated Merger/Acquisition"/>
-                  <xs:enumeration value="Solicitation Cancellation"/>
-                  <xs:enumeration value="Supplemental Agreement For Work Within Scope"/>
-                  <xs:enumeration value="Terminate For Convenience (Complete Or Partial)"/>
-                  <xs:enumeration value="Terminate For Default (Complete Or Partial)"/>
-                  <xs:enumeration value="Termination For Cause"/>
-                  <xs:enumeration value="Transfer Action"/>
-                  <xs:enumeration value="Vendor Address Change"/>
-                  <xs:enumeration value="Vendor DUNS Change"/>
-                </xs:restriction>
-              </xs:simpleType>
             </xs:element>
             <xs:element name="ProjectNumber" type="xs:string" minOccurs="0">
               <xs:annotation>
@@ -4864,14 +4977,19 @@
   </xs:complexType>
   <xs:complexType name="AmountType">
     <xs:sequence>
-      <xs:element name="AmountDescription" type="AmountDescriptionType">
+      <xs:element name="AmountDescription" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Type of Amount (see list)</xs:documentation>
+          <xs:documentation>Type of Amount.  If multiple Cancellation Ceilings are provided, must be a multi year contract.  (see Amount Description list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="Amount" type="DecimalElement5ZeroPlusType">
         <xs:annotation>
           <xs:documentation>The amount value.  On an award, must be greater than zero. On a mod, may be zero or greater only when Amount Description is "Header Only - Total Contract Value".</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="CancellationCeilingDateAndDescription" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>May only be provided when Amount Description is Cancellation Ceiling.  Required when multiple Cancellation Ceilings are provided.  </xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -4974,7 +5092,7 @@
                 <xs:documentation>Data Universal Numbering System identifier (DUNS) of a potential offeror allowed to view the attachment. </xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="RestrictedGovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" maxOccurs="unbounded">
+            <xs:element name="RestrictedGovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentifierType" maxOccurs="unbounded">
               <xs:annotation>
                 <xs:documentation>Government Unique Entity Identifier of a potential offeror allowed to view the attachment.</xs:documentation>
               </xs:annotation>
@@ -6379,9 +6497,9 @@
             <xs:documentation>Denotes whether or not there is an award fee.</xs:documentation>
           </xs:annotation>
         </xs:element>
-        <xs:element name="PerformanceIncentive" type="TrueType" minOccurs="0">
+        <xs:element name="PerformanceIncentive" type="PerformanceIncentiveType" minOccurs="0" maxOccurs="2">
           <xs:annotation>
-            <xs:documentation>Denotes whether or not there is a performance incentive.</xs:documentation>
+            <xs:documentation>Denotes whether or not there is a performance incentive.  Cannot be true if any other value is provided.  (see list)</xs:documentation>
           </xs:annotation>
         </xs:element>
       </xs:sequence>
@@ -6520,9 +6638,9 @@
           <xs:documentation>Obligation amount.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="CIN" type="xs:string" minOccurs="0">
+      <xs:element name="CIN" type="xs:string" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
-          <xs:documentation>Commitment Identification Number. Unique number associated with a specific Line Of Accounting. Used to record and track a commitment in the accounting system.</xs:documentation>
+          <xs:documentation>Commitment Identification Number. Unique number used to record and track a commitment in the accounting system.</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="FinancialReferenceCode" maxOccurs="unbounded">
@@ -6539,9 +6657,9 @@
   </xs:complexType>
   <xs:complexType name="ItemOtherAmountsType">
     <xs:sequence>
-      <xs:element name="AmountDescription" type="AmountDescriptionType">
+      <xs:element name="AmountDescription" type="xs:string">
         <xs:annotation>
-          <xs:documentation>Type of Amount (see list)</xs:documentation>
+          <xs:documentation>Type of Amount  (see Amount Description list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="Amount" type="DecimalElement5ZeroPlusType">
@@ -6641,7 +6759,7 @@
                 <xs:documentation>The type of rate.  For example, "Contractor's Site Rates".</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="Rate" type="DecimalElement2OverZeroType" minOccurs="0">
+            <xs:element name="Rate" type="DecimalElement5OverZeroType" minOccurs="0">
               <xs:annotation>
                 <xs:documentation>The labor rate.  Required on Award and Modification documents.  Not allowed on Solicitation or Amendment documents.</xs:documentation>
               </xs:annotation>
@@ -6777,6 +6895,11 @@
           <xs:documentation>Amounts other than the obligated amount.  Must be provided if Multiple Line Items Information/ Group Other Amounts is not provided for this line item.</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="UndefinitizedOtherAmounts" type="UndefinitizedOtherAmountsType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Amounts applicable to undefinitized contract actions that apply to the line.   Multiple iterations are allowed only on lines being changed or deleted and on conformed documents from Electronic Data Access (EDA).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="LineItemBasicInformationType">
@@ -6797,6 +6920,11 @@
       <xs:element name="SpecialReportingRequirement" type="xs:string" minOccurs="0" maxOccurs="unbounded">
         <xs:annotation>
           <xs:documentation>Denotes special reporting requirements when needed.  (see Special Reporting Requirement list at dodprocurementtoolbox.com)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UndefinitizedIdentifier" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>An identifier that is used to group line items together to relate information, such as amounts, on a specific undefinitized contract action.  When used, there must be two or more lines with the same value.  Only used when the individual procurement document is setting the line to undefinitzed.   Multiple iterations are allowed only on conformed documents from Electronic Data Access (EDA).</xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="LineItemSolicitationInformation" minOccurs="0">
@@ -7631,7 +7759,7 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentiferType" minOccurs="0">
+      <xs:element name="GovernmentUniqueEntityIdentifier" type="GovernmentUniqueEntityIdentifierType" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Government Unique Entity Identifier.</xs:documentation>
         </xs:annotation>
@@ -8094,10 +8222,16 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
   </xs:complexType>
   <xs:complexType name="ProcurementInstrumentNumberFormatType">
     <xs:sequence>
-      <xs:element name="EnterpriseIdentifier" type="xs:string">
+      <xs:element name="EnterpriseIdentifier">
         <xs:annotation>
           <xs:documentation>A generic code that identifies the entity that issued the procurement instrument.</xs:documentation>
         </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="6"/>
+            <xs:maxLength value="6"/>
+          </xs:restriction>
+        </xs:simpleType>
       </xs:element>
       <xs:element name="Year">
         <xs:annotation>
@@ -8161,9 +8295,9 @@ In accordance with DoD BTA BEA 4.1 OV-7 ORGANIZATION_IDENTIFIER entity.</xs:docu
           <xs:documentation>Denotes whether or not there is an award fee.</xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="PerformanceIncentive" type="TrueType" minOccurs="0">
+      <xs:element name="PerformanceIncentive" type="PerformanceIncentiveType" minOccurs="0" maxOccurs="2">
         <xs:annotation>
-          <xs:documentation>Denotes whether or not there is a performance incentive.</xs:documentation>
+          <xs:documentation>Denotes whether or not there is a performance incentive.  Cannot be true if any other value is provided.  (see list)</xs:documentation>
         </xs:annotation>
       </xs:element>
     </xs:sequence>
@@ -8876,21 +9010,10 @@ above which repair/overhaul of the item is not cost effective. Express 4.25% as 
       </xs:element>
       <xs:element name="SmallBusinessType">
         <xs:annotation>
-          <xs:documentation>The type of business the set aside percentage is for.  For example, HubZone Small Business.  The following are not for use by DoD:  Emerging Small Business; Historically Black College, University, or Minority Institution; Very Small Business; Veteran Owned Business.  (see list) </xs:documentation>
+          <xs:documentation>The type of business the set aside percentage is for.  For example, HubZone Small Business.  (see Small Business Type list at dodprocurementtoolbox.com)</xs:documentation>
         </xs:annotation>
         <xs:simpleType>
-          <xs:restriction base="xs:token">
-            <xs:enumeration value="8(A)"/>
-            <xs:enumeration value="Economically Disadvantaged Women Owned Small Business"/>
-            <xs:enumeration value="Emerging Small Business"/>
-            <xs:enumeration value="Historically Black College, University, or Minority Institution"/>
-            <xs:enumeration value="Hubzone Small Business"/>
-            <xs:enumeration value="Service-Disabled Veteran-Owned Small Business"/>
-            <xs:enumeration value="Small Business"/>
-            <xs:enumeration value="Women Owned Small Business"/>
-            <xs:enumeration value="Very Small Business"/>
-            <xs:enumeration value="Veteran Owned Business"/>
-          </xs:restriction>
+          <xs:restriction base="xs:string"/>
         </xs:simpleType>
       </xs:element>
     </xs:sequence>
@@ -9845,34 +9968,6 @@ government-owned facilities or commercial companies.</xs:documentation>
     </xs:simpleType>
   </xs:attribute>
   <!--*** Enumeration Lists-->
-  <xs:simpleType name="AmountDescriptionType">
-    <xs:annotation>
-      <xs:documentation>Enumeration List:   Amount Descriptions</xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:token">
-      <xs:enumeration value="Award Fee"/>
-      <xs:enumeration value="Base Price"/>
-      <xs:enumeration value="Cancellation Ceiling"/>
-      <xs:enumeration value="Ceiling Price"/>
-      <xs:enumeration value="Estimated Cost"/>
-      <xs:enumeration value="Fee for using Contract Vehicle"/>
-      <xs:enumeration value="Firm Price"/>
-      <xs:enumeration value="Fixed Fee"/>
-      <xs:enumeration value="Funded Amount"/>
-      <xs:enumeration value="Initial Target Cost"/>
-      <xs:enumeration value="Initial Target Profit"/>
-      <xs:enumeration value="Maximum Fee"/>
-      <xs:enumeration value="Minimum Fee"/>
-      <xs:enumeration value="Not to Exceed Amount (Funding)"/>
-      <xs:enumeration value="Profit Ceiling"/>
-      <xs:enumeration value="Profit Floor"/>
-      <xs:enumeration value="Target Cost"/>
-      <xs:enumeration value="Target Fee"/>
-      <xs:enumeration value="Target Price"/>
-      <xs:enumeration value="Target Profit"/>
-      <xs:enumeration value="Header Only - Total Contract Value"/>
-    </xs:restriction>
-  </xs:simpleType>
   <xs:simpleType name="Classification">
     <xs:annotation>
       <xs:documentation>Enumeration List:  Security Classifications</xs:documentation>
@@ -10558,7 +10653,6 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Letter Contract"/>
       <xs:enumeration value="Purchase Order"/>
       <xs:enumeration value="Requirements"/>
-      <xs:enumeration value="Sales Contract"/>
       <xs:enumeration value="Schedule"/>
       <xs:enumeration value="Short Form Research Contract"/>
       <xs:enumeration value="Task Order"/>
@@ -10651,6 +10745,16 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Weight per 1000 units"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="PerformanceIncentiveType">
+    <xs:annotation>
+      <xs:documentation>Enumeration List:  Performance Incentive</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="Delivery"/>
+      <xs:enumeration value="Performance"/>
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="PricingArrangementBaseType">
     <xs:annotation>
       <xs:documentation>Enumeration List:  Pricing Arrangements</xs:documentation>
@@ -10698,6 +10802,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:enumeration value="Purchase Order"/>
       <xs:enumeration value="Request for Price Proposal"/>
       <xs:enumeration value="Request for Proposal"/>
+      <xs:enumeration value="Request for Proposal Under Fair Opportunity"/>
       <xs:enumeration value="Request for Quotation"/>
       <xs:enumeration value="Request for Technical Proposal"/>
       <xs:enumeration value="Requirements"/>
@@ -12161,7 +12266,7 @@ government-owned facilities or commercial companies.</xs:documentation>
       <xs:pattern value="([0-9A-Z]){1}([0-9A-Z ])*"/>
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="GovernmentUniqueEntityIdentiferType">
+  <xs:simpleType name="GovernmentUniqueEntityIdentifierType">
     <xs:annotation>
       <xs:documentation>Standard format for Government Unique Entity Identifier.  Also known as SAMMI.</xs:documentation>
     </xs:annotation>
@@ -12305,4 +12410,70 @@ government-owned facilities or commercial companies.</xs:documentation>
     </xs:choice>
   </xs:group>
   <!--New stuff to be categorized.-->
+  <xs:complexType name="UndefinitizedOtherAmountsType">
+    <xs:sequence>
+      <xs:element name="UndefinitizedIdentifier" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>An identifier that is used to group line items together to relate specific information such as amounts related to a specific undefinitized contract action.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UndefinitizedOtherAmount" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Amounts specific to undefinitized contract actions (UCA).</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="UndefinitizedAmountDescription" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Type of Amount applicable to an undefinitized contract actions. (see Undefinitized Amount Description list at dodprocurementtoolbox.com)</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="UndefinitizedAmount" type="DecimalElement5ZeroPlusType">
+              <xs:annotation>
+                <xs:documentation>The amount value.  On an award, must be greater than zero. </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TargetDefinitizationScheduleType">
+    <xs:sequence>
+      <xs:element name="UndefinitizedIdentifier" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>An identifier that unqiuely identifies an undefinitized contract action.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ScheduleDates" minOccurs="3" maxOccurs="6">
+        <xs:annotation>
+          <xs:documentation>Definitization schedule dates.  Must provide the original target date for definitization and dates for the submission of proposal and the beginning of negotiations.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ScheduleDateDescription">
+              <xs:annotation>
+                <xs:documentation>Description of the schedule date.  (see list)</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:token">
+                  <xs:enumeration value="Definitization Target"/>
+                  <xs:enumeration value="Proposal Submission"/>
+                  <xs:enumeration value="Negotiation Start"/>
+                  <xs:enumeration value="Make Or Buy Submission"/>
+                  <xs:enumeration value="Subcontracting Plan Submission"/>
+                  <xs:enumeration value="Certified Cost Or Pricing Data Submission"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="ScheduleDate" type="DateTimeType">
+              <xs:annotation>
+                <xs:documentation>The schedule date.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
 </xs:schema>
