@@ -1,22 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- edited with XMLSpy v2020 sp1 (http://www.altova.com) by Judy Critzer (NGTS HEADQUARTERS) -->
 <!--
-			FINAL  -  13 August 2021  -  FINAL
+			v2.6.2.1  -  1 December 2021  -  FINAL
 		
-			- Adds additional elements and sections to support Undefinitized Contract Actions (UCA).
-			- Replaces schema enumeration lists with referenced lists for the following:
-				- Modification Reason
-				- Not Full And Open Competition
-				- Other Amount Description
-				- Small Business Type
-			- Adds the capablity to carry a delivery and a performance Performance Incentive at the same time.
-			- Adds the ability to carry multiple CINS on the same obligated amount at the line.
-			- For labor rates, increases the digits allowed after the decimal point from 2 to 5.
-			- For the Enterprise Identifier in DoD numbers, adds a length restriction so that it must be 6 positions.
-			- Changed the name of the type [GovernmentUniqueEntityIdentiferType] to [GovernmentUniqueEntityIdentifierType] to correct the spelling.
+			- addresses cardinality issues in modifications related to Undefinitized Contract Actions (UCA).
+			- adds missing attribute {previousCancellationDateAndDescription}.
+
+			Note:  <SchemaVersionUsed> value remains "2.6.2".
 
 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="08132021">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="12012021">
   <xs:annotation>
     <xs:documentation>Level 1: top level of Procurement Data Standard for a procurement instrument document.</xs:documentation>
   </xs:annotation>
@@ -680,6 +673,7 @@
     <xs:attribute name="previousAmountDescription" type="xs:string" use="optional"/>
     <xs:attribute name="previousAmount" type="DecimalElement5ZeroPlusType" use="optional"/>
     <xs:attribute name="deltaAmount" type="DecimalElement5Type" use="optional"/>
+    <xs:attribute name="previousCancellationCeilingDateAndDescription" type="xs:string" use="optional"/>
   </xs:attributeGroup>
   <xs:attributeGroup name="ChangeSection-HeaderPricingArrangement">
     <xs:annotation>
@@ -2455,17 +2449,17 @@
         </xs:annotation>
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="AddedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+            <xs:element name="AddedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType" minOccurs="0">
               <xs:annotation>
                 <xs:documentation>Contains the target definitization schedule that is added.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="DeletedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType">
+            <xs:element name="DeletedTargetDefinitizationSchedule" type="TargetDefinitizationScheduleType" minOccurs="0" maxOccurs="unbounded">
               <xs:annotation>
                 <xs:documentation>Contains the target definitization schedule that is removed.</xs:documentation>
               </xs:annotation>
             </xs:element>
-            <xs:element name="ChangedTargetDefinitizationSchedule">
+            <xs:element name="ChangedTargetDefinitizationSchedule" minOccurs="0" maxOccurs="unbounded">
               <xs:annotation>
                 <xs:documentation>Used to record changes to the target definitization schedule.</xs:documentation>
               </xs:annotation>
@@ -3173,7 +3167,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element name="GroupUndefinitizedIdentifier" minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="GroupUndefinitizedIdentifier" minOccurs="0">
         <xs:annotation>
           <xs:documentation>Changes to undefinitized Identifiers  that applies to a group of procurement instrument line items.</xs:documentation>
         </xs:annotation>
